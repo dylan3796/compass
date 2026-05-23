@@ -1,0 +1,16 @@
+{
+  "name": "compass-cli",
+  "version": "0.1.0",
+  "description": "Scan ~/.claude/ and generate an HTML report of Claude Code agent activity, tools, outcomes, and costs",
+  "type": "module",
+  "bin": {
+    "compass-cli": "./bin/compass-cli.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "example-report.html"
+  ],
+  "keywords": ["claude", "claude-code", "agent", "attribution", "report"],
+  "license": "MIT"
+}

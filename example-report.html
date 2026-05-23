@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compass — Claude Code Agent Report</title>
+<style>
+  @font-face {
+    font-family: 'Instrument Serif';
+    src: local('Instrument Serif'), local('InstrumentSerif-Regular');
+    font-weight: 400;
+    font-display: swap;
+  }
+
+  :root {
+    --cream: #FAFAF7;
+    --ink: #1a1a18;
+    --ink-50: #1a1a1880;
+    --ink-20: #1a1a1833;
+    --ink-10: #1a1a181a;
+    --ink-05: #1a1a180d;
+    --green: #4a7c59;
+    --green-light: #4a7c5920;
+    --rust: #c45d3e;
+    --rust-light: #c45d3e18;
+    --blue: #2d6a9f;
+    --blue-light: #2d6a9f18;
+    --border: #d4d0c8;
+    --card-bg: #ffffff;
+    --font-serif: 'Instrument Serif', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    --font-sans: 'Geist', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 24px;
+  }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-title {
+    font-family: var(--font-serif);
+    font-size: 48px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+
+  .hero-subtitle {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-50);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+
+  .hero-stat {
+    text-align: center;
+  }
+
+  .hero-stat-num {
+    font-family: var(--font-serif);
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+
+  .hero-stat-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-50);
+    margin-top: 4px;
+  }
+
+  /* Agent cards */
+  .agents-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 48px;
+  }
+
+  .agent-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    transition: box-shadow 0.15s;
+  }
+
+  .agent-card:hover {
+    box-shadow: 0 2px 12px rgba(26, 26, 24, 0.06);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .card-title h3 {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    margin-bottom: 2px;
+  }
+
+  .card-dir {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-50);
+  }
+
+  .card-stats-right {
+    display: flex;
+    gap: 16px;
+    align-items: baseline;
+    flex-shrink: 0;
+  }
+
+  .card-cost {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    color: var(--rust);
+  }
+
+  .card-sessions, .card-last-used {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-50);
+  }
+
+  .card-section {
+    margin-top: 16px;
+  }
+
+  .card-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-50);
+    margin-bottom: 8px;
+  }
+
+  /* Tool pills */
+  .tool-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tool-pill {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    background: var(--ink-05);
+    border: 1px solid var(--ink-10);
+    color: var(--ink);
+  }
+
+  /* MCP */
+  .mcp-server {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .mcp-name {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--green);
+  }
+
+  .mcp-tools {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-50);
+  }
+
+  /* Outcomes */
+  .outcomes-row {
+    font-size: 13px;
+    line-height: 2;
+  }
+
+  .stat-num {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    color: var(--ink);
+    margin-right: 2px;
+  }
+
+  .sep {
+    margin: 0 10px;
+    color: var(--ink-20);
+  }
+
+  .muted {
+    color: var(--ink-50);
+    font-style: italic;
+    font-size: 12px;
+  }
+
+  /* Chips */
+  .chip {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    color: #fff;
+    letter-spacing: 0.02em;
+  }
+
+  /* Model bar */
+  .model-bar {
+    display: flex;
+    height: 28px;
+    border-radius: 4px;
+    overflow: hidden;
+    gap: 2px;
+  }
+
+  .model-segment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    transition: flex 0.3s;
+  }
+
+  .model-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 6px;
+  }
+
+  /* Session summaries */
+  .session-row {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--ink-05);
+  }
+
+  .session-row:last-child { border-bottom: none; }
+
+  .session-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .completion-clean { color: var(--green); }
+  .completion-interrupted { color: var(--rust); }
+
+  .session-summary {
+    font-size: 12px;
+    color: var(--ink-50);
+    line-height: 1.4;
+  }
+
+  /* Spend strip */
+  .spend-section {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+
+  .spend-title {
+    font-family: var(--font-serif);
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .spend-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--ink-05);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  .spend-row:last-child { border-bottom: none; }
+
+  .spend-model { flex: 2; }
+  .spend-tokens { flex: 1; text-align: right; color: var(--ink-50); }
+  .spend-cost { flex: 1; text-align: right; color: var(--rust); font-weight: 600; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-50);
+  }
+
+  @media (max-width: 640px) {
+    .hero-title { font-size: 32px; }
+    .hero-stats { gap: 24px; }
+    .card-header { flex-direction: column; }
+    .card-stats-right { order: -1; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="hero">
+    <h1 class="hero-title">Compass</h1>
+    <div class="hero-subtitle">Claude Code Agent Report</div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">14</div>
+        <div class="hero-stat-label">Agents</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">388</div>
+        <div class="hero-stat-label">Sessions</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">2231</div>
+        <div class="hero-stat-label">Outcomes</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">$9664.91</div>
+        <div class="hero-stat-label">Estimated Spend</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="agents-grid">
+    
+  <div class="agent-card">
+    <div class="card-header">
+      <div class="card-title">
+        <h3>attribution</h3>
+        <span class="card-dir">/Users/tejaaluru/projects/attribution</span>
+      </div>
+      <div class="card-stats-right">
+        <span class="card-cost">$31.09</span>
+        <span class="card-sessions">1 sessions</span>
+        <span class="card-last-used">0m ago</span>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">TOOLS</div>
+      <div class="tool-list"><span class="tool-pill">Bash</span><span class="tool-pill">Edit</span><span class="tool-pill">Read</span><span class="tool-pill">Write</span></div>
+    </div>
+
+    
+
+    <div class="card-section">
+      <div class="card-label">OUTCOMES</div>
+      <div class="outcomes-row"><span class="stat-num">2</span> commits<span class="sep">·</span><span class="stat-num">10</span> files changed<span class="sep">·</span><span class="stat-num">2</span> tests passed</div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">MODEL BREAKDOWN</div>
+      <div class="model-bar"><div class="model-segment" style="flex:171;background:#c45d3e" title="claude-opus-4-6: 171 turns (100%)">
+        <span class="model-label">opus-4-6</span>
+      </div></div>
+    </div>
+
+    
+    <div class="card-section">
+      <div class="card-label">RECENT SESSIONS</div>
+      <div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        <span class="chip" style="background:#4a7c59">committed</span> <span class="chip" style="background:#6b5b3a">tests passed</span> <span class="chip" style="background:#5a6b4a">wrote 10 files</span>
+      </div>
+      <div class="session-summary">Excellent. The report looks solid:
+- 14 agents with real project names
+- Rich tool detection (27 different tools for polymarket_mm including worktree ops, teams, push notifications)
+- Outcome attribut</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="agent-card">
+    <div class="card-header">
+      <div class="card-title">
+        <h3>projects</h3>
+        <span class="card-dir">/Users/tejaaluru/projects</span>
+      </div>
+      <div class="card-stats-right">
+        <span class="card-cost">$270.23</span>
+        <span class="card-sessions">5 sessions</span>
+        <span class="card-last-used">23m ago</span>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">TOOLS</div>
+      <div class="tool-list"><span class="tool-pill">Agent</span><span class="tool-pill">AskUserQuestion</span><span class="tool-pill">Bash</span><span class="tool-pill">Edit</span><span class="tool-pill">Read</span><span class="tool-pill">Skill</span><span class="tool-pill">TaskCreate</span><span class="tool-pill">TaskUpdate</span><span class="tool-pill">ToolSearch</span><span class="tool-pill">Write</span></div>
+    </div>
+
+    
+
+    <div class="card-section">
+      <div class="card-label">OUTCOMES</div>
+      <div class="outcomes-row"><span class="stat-num">33</span> commits<span class="sep">·</span><span class="stat-num">8</span> pushes<span class="sep">·</span><span class="stat-num">57</span> files changed<span class="sep">·</span><span class="stat-num">19</span> tests passed</div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">MODEL BREAKDOWN</div>
+      <div class="model-bar"><div class="model-segment" style="flex:944;background:#c45d3e" title="claude-opus-4-6: 944 turns (75%)">
+        <span class="model-label">opus-4-6</span>
+      </div><div class="model-segment" style="flex:290;background:#4a7c59" title="claude-sonnet-4-6: 290 turns (23%)">
+        <span class="model-label">sonnet-4-6</span>
+      </div><div class="model-segment" style="flex:29;background:#2d6a9f" title="claude-haiku-4-5-20251001: 29 turns (2%)">
+        <span class="model-label">haiku-4-5</span>
+      </div></div>
+    </div>
+
+    
+    <div class="card-section">
+      <div class="card-label">RECENT SESSIONS</div>
+      <div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        <span class="chip" style="background:#4a7c59">committed</span> <span class="chip" style="background:#6b5b3a">tests passed</span> <span class="chip" style="background:#2d6a9f">pushed</span> <span class="chip" style="background:#5a6b4a">wrote 18 files</span>
+      </div>
+      <div class="session-summary">The GitHub App is registered. Let me check that the credentials</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        <span class="chip" style="background:#5a6b4a">wrote 1 files</span>
+      </div>
+      <div class="session-summary">Done. Added `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` to the `env` section of `~/.claude/settings.json`. It will take effect on the next session (or after a config reload).</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        <span class="chip" style="background:#4a7c59">committed</span> <span class="chip" style="background:#6b5b3a">tests passed</span> <span class="chip" style="background:#2d6a9f">pushed</span> <span class="chip" style="background:#5a6b4a">wrote 18 files</span>
+      </div>
+      <div class="session-summary">The GitHub App is registered. Let me check that the credentials</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary"><em>no summary</em></div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary"><em>no summary</em></div>
+    </div>
+    </div>
+  </div>
+
+  <div class="agent-card">
+    <div class="card-header">
+      <div class="card-title">
+        <h3>polymarket_mm</h3>
+        <span class="card-dir">/Users/tejaaluru/crypto/polymarket_mm</span>
+      </div>
+      <div class="card-stats-right">
+        <span class="card-cost">$7131.33</span>
+        <span class="card-sessions">229 sessions</span>
+        <span class="card-last-used">3d ago</span>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">TOOLS</div>
+      <div class="tool-list"><span class="tool-pill">Agent</span><span class="tool-pill">AskUserQuestion</span><span class="tool-pill">Bash</span><span class="tool-pill">Edit</span><span class="tool-pill">EnterPlanMode</span><span class="tool-pill">EnterWorktree</span><span class="tool-pill">ExitPlanMode</span><span class="tool-pill">ExitWorktree</span><span class="tool-pill">Glob</span><span class="tool-pill">Grep</span><span class="tool-pill">Monitor</span><span class="tool-pill">PushNotification</span><span class="tool-pill">Read</span><span class="tool-pill">SendMessage</span><span class="tool-pill">Skill</span><span class="tool-pill">TaskCreate</span><span class="tool-pill">TaskList</span><span class="tool-pill">TaskOutput</span><span class="tool-pill">TaskStop</span><span class="tool-pill">TaskUpdate</span><span class="tool-pill">TeamCreate</span><span class="tool-pill">TeamDelete</span><span class="tool-pill">TodoWrite</span><span class="tool-pill">ToolSearch</span><span class="tool-pill">WebFetch</span><span class="tool-pill">WebSearch</span><span class="tool-pill">Write</span></div>
+    </div>
+
+    
+    <div class="card-section">
+      <div class="card-label">MCP SERVERS</div>
+      <div class="mcp-server">
+      <span class="mcp-name">linear</span>
+      <span class="mcp-tools">authenticate, delete_attachment, get_issue, get_milestone, get_project, list_comments, list_issue_statuses, list_issues, list_milestones, list_projects, list_teams, save_comment, save_issue, save_milestone, save_project</span>
+    </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">OUTCOMES</div>
+      <div class="outcomes-row"><span class="stat-num">142</span> commits<span class="sep">·</span><span class="stat-num">81</span> pushes<span class="sep">·</span><span class="stat-num">246</span> files changed<span class="sep">·</span><span class="stat-num">292</span> tests passed<span class="sep">·</span><span class="stat-num">827</span> linear actions</div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">MODEL BREAKDOWN</div>
+      <div class="model-bar"><div class="model-segment" style="flex:11978;background:#c45d3e" title="claude-opus-4-6: 11978 turns (46%)">
+        <span class="model-label">opus-4-6</span>
+      </div><div class="model-segment" style="flex:6386;background:#c45d3e" title="claude-opus-4-7: 6386 turns (24%)">
+        <span class="model-label">opus-4-7</span>
+      </div><div class="model-segment" style="flex:6064;background:#2d6a9f" title="claude-haiku-4-5-20251001: 6064 turns (23%)">
+        <span class="model-label">haiku-4-5</span>
+      </div><div class="model-segment" style="flex:1273;background:#4a7c59" title="claude-sonnet-4-6: 1273 turns (5%)">
+        <span class="model-label">sonnet-4-6</span>
+      </div><div class="model-segment" style="flex:399;background:#c45d3e" title="claude-opus-4-5-20251101: 399 turns (2%)">
+        <span class="model-label">opus-4-5</span>
+      </div><div class="model-segment" style="flex:77;background:#4a7c59" title="claude-sonnet-4-5-20250929: 77 turns (0%)">
+        <span class="model-label">sonnet-4-5</span>
+      </div></div>
+    </div>
+
+    
+    <div class="card-section">
+      <div class="card-label">RECENT SESSIONS</div>
+      <div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        <span class="chip" style="background:#6b5b3a">tests passed</span> <span class="chip" style="background:#4a7c59">committed</span> <span class="chip" style="background:#2d6a9f">pushed</span> <span class="chip" style="background:#5a6b4a">wrote 6 files</span>
+      </div>
+      <div class="session-summary">Updated. The previously-deferred test-plan checkbox now reads:
+
+&gt; [x] Smoke against real `parquet_files/` end-to-end: rebuilt full-tree manifests, then `emit-config` + `run` on window 1777569900 (300s</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        <span class="chip" style="background:#6b5b3a">tests passed</span> <span class="chip" style="background:#5a6b4a">wrote 2 files</span> <span class="chip" style="background:#7c4a6e">24 MCP actions</span>
+      </div>
+      <div class="session-summary">Wind-down complete. Summary:
+
+**Findings doc**
+- `docs/fv_autoresearch_findings.md` — what worked (era-aware routing, capped-agreement EWMA, linear damping toward 0.5), what didn't (Coinbase first-pri</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        
+      </div>
+      <div class="session-summary">Good, you've provided the official Polymarket docs. Let me cross-reference them against our codebase to identify any discrepancies or missed edge cases.
+
+## Cross-referencing docs vs codebase
+
+### 1. </div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        <span class="chip" style="background:#6b5b3a">tests passed</span> <span class="chip" style="background:#4a7c59">committed</span> <span class="chip" style="background:#2d6a9f">pushed</span> <span class="chip" style="background:#5a6b4a">wrote 19 files</span> <span class="chip" style="background:#7c4a6e">19 MCP actions</span>
+      </div>
+      <div class="session-summary">Yes — all three confirmed:
+
+- **Working tree:** clean, branch up-to-date with remote.
+- **Cleanup commit:** `dab74c8` (`POL-11/POL-16: DRY cleanup pass`) is pushed; it sits at the tip of `worktree-pol</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        <span class="chip" style="background:#6b5b3a">tests passed</span> <span class="chip" style="background:#4a7c59">committed</span> <span class="chip" style="background:#5a6b4a">wrote 4 files</span>
+      </div>
+      <div class="session-summary">Committed to main as `e13238a`.</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="agent-card">
+    <div class="card-header">
+      <div class="card-title">
+        <h3>tejaaluru</h3>
+        <span class="card-dir">/Users/tejaaluru</span>
+      </div>
+      <div class="card-stats-right">
+        <span class="card-cost">$54.66</span>
+        <span class="card-sessions">7 sessions</span>
+        <span class="card-last-used">9d ago</span>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">TOOLS</div>
+      <div class="tool-list"><span class="tool-pill">AskUserQuestion</span><span class="tool-pill">Bash</span><span class="tool-pill">Glob</span><span class="tool-pill">Grep</span><span class="tool-pill">Read</span><span class="tool-pill">TodoWrite</span><span class="tool-pill">Write</span></div>
+    </div>
+
+    
+
+    <div class="card-section">
+      <div class="card-label">OUTCOMES</div>
+      <div class="outcomes-row"><span class="stat-num">1</span> files changed</div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">MODEL BREAKDOWN</div>
+      <div class="model-bar"><div class="model-segment" style="flex:413;background:#2d6a9f" title="claude-haiku-4-5-20251001: 413 turns (57%)">
+        <span class="model-label">haiku-4-5</span>
+      </div><div class="model-segment" style="flex:182;background:#c45d3e" title="claude-opus-4-6: 182 turns (25%)">
+        <span class="model-label">opus-4-6</span>
+      </div><div class="model-segment" style="flex:107;background:#c45d3e" title="claude-opus-4-7: 107 turns (15%)">
+        <span class="model-label">opus-4-7</span>
+      </div><div class="model-segment" style="flex:16;background:#4a7c59" title="claude-sonnet-4-5-20250929: 16 turns (2%)">
+        <span class="model-label">sonnet-4-5</span>
+      </div><div class="model-segment" style="flex:2;background:#c45d3e" title="claude-opus-4-5-20251101: 2 turns (0%)">
+        <span class="model-label">opus-4-5</span>
+      </div></div>
+    </div>
+
+    
+    <div class="card-section">
+      <div class="card-label">RECENT SESSIONS</div>
+      <div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary"><em>no summary</em></div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary"><em>no summary</em></div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        
+      </div>
+      <div class="session-summary">I need sudo to uninstall — `/opt/homebrew/lib/node_modules/@openai/codex` is root-owned. Two options:
+
+1. **Approve `sudo npm` here**, and I'll run `sudo npm uninstall -g @openai/codex &amp;&amp; sudo npm ins</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        
+      </div>
+      <div class="session-summary">Done — you're at ~117 GB free now.</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        
+      </div>
+      <div class="session-summary">macOS does have iTerm2 registered for notifications (`auth = 7` means authorized). The problem is squarely on the iTerm2 side.
+
+**Root cause: `&quot;Silence Bell&quot; = 1` in your iTerm2 profile.** This suppre</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="agent-card">
+    <div class="card-header">
+      <div class="card-title">
+        <h3>wallet_track</h3>
+        <span class="card-dir">/Users/tejaaluru/crypto/wallet_track</span>
+      </div>
+      <div class="card-stats-right">
+        <span class="card-cost">$52.17</span>
+        <span class="card-sessions">4 sessions</span>
+        <span class="card-last-used">9d ago</span>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">TOOLS</div>
+      <div class="tool-list"><span class="tool-pill">Bash</span><span class="tool-pill">Grep</span><span class="tool-pill">Read</span><span class="tool-pill">ToolSearch</span></div>
+    </div>
+
+    
+
+    <div class="card-section">
+      <div class="card-label">OUTCOMES</div>
+      <div class="outcomes-row"><span class="muted">no outcomes detected</span></div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">MODEL BREAKDOWN</div>
+      <div class="model-bar"><div class="model-segment" style="flex:150;background:#c45d3e" title="claude-opus-4-6: 150 turns (85%)">
+        <span class="model-label">opus-4-6</span>
+      </div><div class="model-segment" style="flex:26;background:#c45d3e" title="claude-opus-4-7: 26 turns (15%)">
+        <span class="model-label">opus-4-7</span>
+      </div></div>
+    </div>
+
+    
+    <div class="card-section">
+      <div class="card-label">RECENT SESSIONS</div>
+      <div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        
+      </div>
+      <div class="session-summary">This was a research question, not an implementation task — no plan file needed. Let me know if you want a deeper look at any of the 12 plans or want to act on one.</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        
+      </div>
+      <div class="session-summary">Here's the finer-grained analysis:
+
+---
+
+## Refined Strategy Analysis — GoingBackwards
+
+### 1. Maker vs Taker: This Bot is a Maker
+
+The fill data strongly indicates this is a **limit-order (maker) str</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        
+      </div>
+      <div class="session-summary">This was a research question, not an implementation task — no plan file needed. Let me know if you want a deeper look at any of the 12 plans or want to act on one.</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        
+      </div>
+      <div class="session-summary">Here's the finer-grained analysis:
+
+---
+
+## Refined Strategy Analysis — GoingBackwards
+
+### 1. Maker vs Taker: This Bot is a Maker
+
+The fill data strongly indicates this is a **limit-order (maker) str</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="agent-card">
+    <div class="card-header">
+      <div class="card-title">
+        <h3>agent-context-mpp</h3>
+        <span class="card-dir">/Users/tejaaluru/crypto/agent-context-mpp</span>
+      </div>
+      <div class="card-stats-right">
+        <span class="card-cost">$1842.76</span>
+        <span class="card-sessions">32 sessions</span>
+        <span class="card-last-used">10d ago</span>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">TOOLS</div>
+      <div class="tool-list"><span class="tool-pill">Agent</span><span class="tool-pill">AskUserQuestion</span><span class="tool-pill">Bash</span><span class="tool-pill">Edit</span><span class="tool-pill">EnterWorktree</span><span class="tool-pill">ExitPlanMode</span><span class="tool-pill">ExitWorktree</span><span class="tool-pill">PushNotification</span><span class="tool-pill">Read</span><span class="tool-pill">Skill</span><span class="tool-pill">TaskCreate</span><span class="tool-pill">TaskUpdate</span><span class="tool-pill">ToolSearch</span><span class="tool-pill">WebFetch</span><span class="tool-pill">WebSearch</span><span class="tool-pill">Write</span></div>
+    </div>
+
+    
+    <div class="card-section">
+      <div class="card-label">MCP SERVERS</div>
+      <div class="mcp-server">
+      <span class="mcp-name">linear</span>
+      <span class="mcp-tools">get_issue, get_milestone, list_comments, list_issue_statuses, list_issues, list_milestones, list_projects, list_teams, save_comment, save_issue, save_milestone, save_project</span>
+    </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">OUTCOMES</div>
+      <div class="outcomes-row"><span class="stat-num">35</span> commits<span class="sep">·</span><span class="stat-num">42</span> pushes<span class="sep">·</span><span class="stat-num">136</span> files changed<span class="sep">·</span><span class="stat-num">152</span> tests passed<span class="sep">·</span><span class="stat-num">133</span> linear actions</div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">MODEL BREAKDOWN</div>
+      <div class="model-bar"><div class="model-segment" style="flex:5422;background:#c45d3e" title="claude-opus-4-6: 5422 turns (69%)">
+        <span class="model-label">opus-4-6</span>
+      </div><div class="model-segment" style="flex:1109;background:#c45d3e" title="claude-opus-4-7: 1109 turns (14%)">
+        <span class="model-label">opus-4-7</span>
+      </div><div class="model-segment" style="flex:929;background:#4a7c59" title="claude-sonnet-4-6: 929 turns (12%)">
+        <span class="model-label">sonnet-4-6</span>
+      </div><div class="model-segment" style="flex:350;background:#2d6a9f" title="claude-haiku-4-5-20251001: 350 turns (4%)">
+        <span class="model-label">haiku-4-5</span>
+      </div></div>
+    </div>
+
+    
+    <div class="card-section">
+      <div class="card-label">RECENT SESSIONS</div>
+      <div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        <span class="chip" style="background:#6b5b3a">tests passed</span> <span class="chip" style="background:#2d6a9f">pushed</span> <span class="chip" style="background:#5a6b4a">wrote 1 files</span>
+      </div>
+      <div class="session-summary">All clean. Here's the final state:
+
+**Main** — pushed and up to date with origin.
+
+**Kept** (open PRs):
+- PR #15 `worktree-agent-lo-age-16-publisher-subscriptions` — worktree + branch intact
+- PR #16 </div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        <span class="chip" style="background:#5a6b4a">wrote 2 files</span>
+      </div>
+      <div class="session-summary">Saved to `PLAN.md` in the project root.</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        <span class="chip" style="background:#6b5b3a">tests passed</span> <span class="chip" style="background:#5a6b4a">wrote 13 files</span>
+      </div>
+      <div class="session-summary">The home page content is now in the HTML. Try refreshing `http://localhost:3000` in your browser — you should see the Thoth home page with the &quot;Connect Wallet&quot; button.</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        <span class="chip" style="background:#4a7c59">committed</span> <span class="chip" style="background:#6b5b3a">tests passed</span> <span class="chip" style="background:#5a6b4a">wrote 24 files</span>
+      </div>
+      <div class="session-summary">Committed as `c7187d3`. The repo is now structured with `backend/` and `web/` as siblings, frontend builds cleanly, and the Neo-Academic design system is in place with `DESIGN.md` + CSS variables + pl</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        <span class="chip" style="background:#6b5b3a">tests passed</span> <span class="chip" style="background:#4a7c59">committed</span> <span class="chip" style="background:#2d6a9f">pushed</span> <span class="chip" style="background:#5a6b4a">wrote 15 files</span> <span class="chip" style="background:#7c4a6e">2 MCP actions</span>
+      </div>
+      <div class="session-summary">Pushed. PR #11 is updated with the new commit `3ba9d17`.</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="agent-card">
+    <div class="card-header">
+      <div class="card-title">
+        <h3>ppo_autoresearch</h3>
+        <span class="card-dir">/Users/tejaaluru/robotics/ppo_autoresearch</span>
+      </div>
+      <div class="card-stats-right">
+        <span class="card-cost">$0.00</span>
+        <span class="card-sessions">2 sessions</span>
+        <span class="card-last-used">20d ago</span>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">TOOLS</div>
+      <div class="tool-list"></div>
+    </div>
+
+    
+
+    <div class="card-section">
+      <div class="card-label">OUTCOMES</div>
+      <div class="outcomes-row"><span class="muted">no outcomes detected</span></div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">MODEL BREAKDOWN</div>
+      <div class="model-bar"><span class="muted">no model data</span></div>
+    </div>
+
+    
+    <div class="card-section">
+      <div class="card-label">RECENT SESSIONS</div>
+      <div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary"><em>no summary</em></div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary"><em>no summary</em></div>
+    </div>
+    </div>
+  </div>
+
+  <div class="agent-card">
+    <div class="card-header">
+      <div class="card-title">
+        <h3>robotics</h3>
+        <span class="card-dir">/Users/tejaaluru/robotics</span>
+      </div>
+      <div class="card-stats-right">
+        <span class="card-cost">$1.93</span>
+        <span class="card-sessions">1 sessions</span>
+        <span class="card-last-used">22d ago</span>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">TOOLS</div>
+      <div class="tool-list"><span class="tool-pill">Bash</span><span class="tool-pill">Glob</span><span class="tool-pill">ToolSearch</span></div>
+    </div>
+
+    
+
+    <div class="card-section">
+      <div class="card-label">OUTCOMES</div>
+      <div class="outcomes-row"><span class="muted">no outcomes detected</span></div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">MODEL BREAKDOWN</div>
+      <div class="model-bar"><div class="model-segment" style="flex:17;background:#c45d3e" title="claude-opus-4-6: 17 turns (100%)">
+        <span class="model-label">opus-4-6</span>
+      </div></div>
+    </div>
+
+    
+    <div class="card-section">
+      <div class="card-label">RECENT SESSIONS</div>
+      <div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        
+      </div>
+      <div class="session-summary">Done. All project files have been moved into `mjc_demo/`. The `.git`, `.claude`, and `.venv` directories remain at the repo root since they're repo/tool-level config that should stay top-level.</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="agent-card">
+    <div class="card-header">
+      <div class="card-title">
+        <h3>crypto</h3>
+        <span class="card-dir">/Users/tejaaluru/crypto</span>
+      </div>
+      <div class="card-stats-right">
+        <span class="card-cost">$94.91</span>
+        <span class="card-sessions">3 sessions</span>
+        <span class="card-last-used">25d ago</span>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">TOOLS</div>
+      <div class="tool-list"><span class="tool-pill">Agent</span><span class="tool-pill">Bash</span><span class="tool-pill">Read</span><span class="tool-pill">Skill</span><span class="tool-pill">ToolSearch</span><span class="tool-pill">WebFetch</span></div>
+    </div>
+
+    
+
+    <div class="card-section">
+      <div class="card-label">OUTCOMES</div>
+      <div class="outcomes-row"><span class="muted">no outcomes detected</span></div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">MODEL BREAKDOWN</div>
+      <div class="model-bar"><div class="model-segment" style="flex:196;background:#c45d3e" title="claude-opus-4-7: 196 turns (46%)">
+        <span class="model-label">opus-4-7</span>
+      </div><div class="model-segment" style="flex:150;background:#2d6a9f" title="claude-haiku-4-5-20251001: 150 turns (35%)">
+        <span class="model-label">haiku-4-5</span>
+      </div><div class="model-segment" style="flex:83;background:#c45d3e" title="claude-opus-4-6: 83 turns (19%)">
+        <span class="model-label">opus-4-6</span>
+      </div></div>
+    </div>
+
+    
+    <div class="card-section">
+      <div class="card-label">RECENT SESSIONS</div>
+      <div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        
+      </div>
+      <div class="session-summary">I've now examined reconciliation, feature engines, pricing, ML, and all the peripheral machinery on both sides. Here's what I found.
+
+## Reconciliation
+
+**tb has a full reconciliation layer. polymarke</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary">Good — the `agent-context-mpp` repo exists but is essentially empty (just a one-line README). This is a pure greenfield spec. Let me consult the advisor before drafting.</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        
+      </div>
+      <div class="session-summary">I've now examined reconciliation, feature engines, pricing, ML, and all the peripheral machinery on both sides. Here's what I found.
+
+## Reconciliation
+
+**tb has a full reconciliation layer. polymarke</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="agent-card">
+    <div class="card-header">
+      <div class="card-title">
+        <h3>mpp_context_pass</h3>
+        <span class="card-dir">/Users/tejaaluru/crypto/mpp_context_pass</span>
+      </div>
+      <div class="card-stats-right">
+        <span class="card-cost">$0.00</span>
+        <span class="card-sessions">1 sessions</span>
+        <span class="card-last-used">25d ago</span>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">TOOLS</div>
+      <div class="tool-list"></div>
+    </div>
+
+    
+
+    <div class="card-section">
+      <div class="card-label">OUTCOMES</div>
+      <div class="outcomes-row"><span class="muted">no outcomes detected</span></div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">MODEL BREAKDOWN</div>
+      <div class="model-bar"><span class="muted">no model data</span></div>
+    </div>
+
+    
+    <div class="card-section">
+      <div class="card-label">RECENT SESSIONS</div>
+      <div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary"><em>no summary</em></div>
+    </div>
+    </div>
+  </div>
+
+  <div class="agent-card">
+    <div class="card-header">
+      <div class="card-title">
+        <h3>polyfill-rs</h3>
+        <span class="card-dir">/Users/tejaaluru/crypto/polyfill-rs</span>
+      </div>
+      <div class="card-stats-right">
+        <span class="card-cost">$77.38</span>
+        <span class="card-sessions">9 sessions</span>
+        <span class="card-last-used">25d ago</span>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">TOOLS</div>
+      <div class="tool-list"><span class="tool-pill">Agent</span><span class="tool-pill">Bash</span><span class="tool-pill">Edit</span><span class="tool-pill">Read</span><span class="tool-pill">Skill</span><span class="tool-pill">TaskCreate</span><span class="tool-pill">TaskUpdate</span><span class="tool-pill">ToolSearch</span><span class="tool-pill">WebFetch</span><span class="tool-pill">WebSearch</span><span class="tool-pill">Write</span></div>
+    </div>
+
+    
+
+    <div class="card-section">
+      <div class="card-label">OUTCOMES</div>
+      <div class="outcomes-row"><span class="stat-num">7</span> files changed</div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">MODEL BREAKDOWN</div>
+      <div class="model-bar"><div class="model-segment" style="flex:208;background:#c45d3e" title="claude-opus-4-7: 208 turns (82%)">
+        <span class="model-label">opus-4-7</span>
+      </div><div class="model-segment" style="flex:26;background:#2d6a9f" title="claude-haiku-4-5-20251001: 26 turns (10%)">
+        <span class="model-label">haiku-4-5</span>
+      </div><div class="model-segment" style="flex:20;background:#c45d3e" title="claude-opus-4-6: 20 turns (8%)">
+        <span class="model-label">opus-4-6</span>
+      </div></div>
+    </div>
+
+    
+    <div class="card-section">
+      <div class="card-label">RECENT SESSIONS</div>
+      <div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        <span class="chip" style="background:#5a6b4a">wrote 7 files</span>
+      </div>
+      <div class="session-summary">Done. Summary of what shipped:
+
+**Resolved by hitting the API + reading `Polymarket/py-clob-client-v2@a2ec069`:**
+- **`expiration` stays in the wire body** (default `&quot;0&quot;`); only removed from the EIP-7</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary">Let me invoke the linear-method skill and explore the project context in parallel.</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        <span class="chip" style="background:#5a6b4a">wrote 7 files</span>
+      </div>
+      <div class="session-summary">Done. Summary of what shipped:
+
+**Resolved by hitting the API + reading `Polymarket/py-clob-client-v2@a2ec069`:**
+- **`expiration` stays in the wire body** (default `&quot;0&quot;`); only removed from the EIP-7</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary"><em>no summary</em></div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-clean">●</span>
+        
+      </div>
+      <div class="session-summary">I can't run the linear-orchestrator skill — it requires the Linear MCP server (`mcp__linear__*` tools) to be authenticated, but no Linear MCP is registered in this session. The available MCP servers a</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="agent-card">
+    <div class="card-header">
+      <div class="card-title">
+        <h3>analysis</h3>
+        <span class="card-dir">/Users/tejaaluru/crypto/polymarket_mm/analysis</span>
+      </div>
+      <div class="card-stats-right">
+        <span class="card-cost">$0.18</span>
+        <span class="card-sessions">3 sessions</span>
+        <span class="card-last-used">unknown</span>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">TOOLS</div>
+      <div class="tool-list"><span class="tool-pill">Bash</span></div>
+    </div>
+
+    
+
+    <div class="card-section">
+      <div class="card-label">OUTCOMES</div>
+      <div class="outcomes-row"><span class="stat-num">1</span> tests passed</div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">MODEL BREAKDOWN</div>
+      <div class="model-bar"><div class="model-segment" style="flex:48;background:#2d6a9f" title="claude-haiku-4-5-20251001: 48 turns (100%)">
+        <span class="model-label">haiku-4-5</span>
+      </div></div>
+    </div>
+
+    
+    <div class="card-section">
+      <div class="card-label">RECENT SESSIONS</div>
+      <div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary"><em>no summary</em></div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary"><em>no summary</em></div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary"><em>no summary</em></div>
+    </div>
+    </div>
+  </div>
+
+  <div class="agent-card">
+    <div class="card-header">
+      <div class="card-title">
+        <h3>trading-bot-internal</h3>
+        <span class="card-dir">/Users/tejaaluru/crypto/trading-bot-internal</span>
+      </div>
+      <div class="card-stats-right">
+        <span class="card-cost">$106.53</span>
+        <span class="card-sessions">87 sessions</span>
+        <span class="card-last-used">unknown</span>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">TOOLS</div>
+      <div class="tool-list"><span class="tool-pill">Bash</span><span class="tool-pill">Edit</span><span class="tool-pill">Glob</span><span class="tool-pill">Grep</span><span class="tool-pill">Read</span><span class="tool-pill">Write</span></div>
+    </div>
+
+    
+
+    <div class="card-section">
+      <div class="card-label">OUTCOMES</div>
+      <div class="outcomes-row"><span class="stat-num">3</span> files changed<span class="sep">·</span><span class="stat-num">2</span> tests passed</div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">MODEL BREAKDOWN</div>
+      <div class="model-bar"><div class="model-segment" style="flex:2642;background:#2d6a9f" title="claude-haiku-4-5-20251001: 2642 turns (85%)">
+        <span class="model-label">haiku-4-5</span>
+      </div><div class="model-segment" style="flex:365;background:#c45d3e" title="claude-opus-4-5-20251101: 365 turns (12%)">
+        <span class="model-label">opus-4-5</span>
+      </div><div class="model-segment" style="flex:63;background:#4a7c59" title="claude-sonnet-4-5-20250929: 63 turns (2%)">
+        <span class="model-label">sonnet-4-5</span>
+      </div><div class="model-segment" style="flex:35;background:#c45d3e" title="claude-opus-4-6: 35 turns (1%)">
+        <span class="model-label">opus-4-6</span>
+      </div></div>
+    </div>
+
+    
+    <div class="card-section">
+      <div class="card-label">RECENT SESSIONS</div>
+      <div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary"><em>no summary</em></div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary"><em>no summary</em></div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary">Nado Gateway Multi-Ticker Support Implementation Plan</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary">Nado Exchange Integration: Client Order IDs, Fees, Authentication</div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary">Lagged Features with Batch Timestamp Handling</div>
+    </div>
+    </div>
+  </div>
+
+  <div class="agent-card">
+    <div class="card-header">
+      <div class="card-title">
+        <h3>ml_workbench</h3>
+        <span class="card-dir">/Users/tejaaluru/crypto/trading-bot-internal/ml_workbench</span>
+      </div>
+      <div class="card-stats-right">
+        <span class="card-cost">$1.74</span>
+        <span class="card-sessions">4 sessions</span>
+        <span class="card-last-used">unknown</span>
+      </div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">TOOLS</div>
+      <div class="tool-list"><span class="tool-pill">Bash</span><span class="tool-pill">Glob</span><span class="tool-pill">Grep</span><span class="tool-pill">Read</span></div>
+    </div>
+
+    
+
+    <div class="card-section">
+      <div class="card-label">OUTCOMES</div>
+      <div class="outcomes-row"><span class="muted">no outcomes detected</span></div>
+    </div>
+
+    <div class="card-section">
+      <div class="card-label">MODEL BREAKDOWN</div>
+      <div class="model-bar"><div class="model-segment" style="flex:18;background:#2d6a9f" title="claude-haiku-4-5-20251001: 18 turns (58%)">
+        <span class="model-label">haiku-4-5</span>
+      </div><div class="model-segment" style="flex:13;background:#c45d3e" title="claude-opus-4-5-20251101: 13 turns (42%)">
+        <span class="model-label">opus-4-5</span>
+      </div></div>
+    </div>
+
+    
+    <div class="card-section">
+      <div class="card-label">RECENT SESSIONS</div>
+      <div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary"><em>no summary</em></div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary"><em>no summary</em></div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary"><em>no summary</em></div>
+    </div><div class="session-row">
+      <div class="session-meta">
+        <span class="completion-interrupted">○</span>
+        
+      </div>
+      <div class="session-summary"><em>no summary</em></div>
+    </div>
+    </div>
+  </div>
+  </div>
+
+  
+  <div class="spend-section">
+    <h2 class="spend-title">Spend by Model</h2>
+    <div class="spend-row">
+      <span class="spend-model">opus-4-6</span>
+      <span class="spend-tokens">2472.7M tokens</span>
+      <span class="spend-cost">$5609.42</span>
+    </div><div class="spend-row">
+      <span class="spend-model">opus-4-7</span>
+      <span class="spend-tokens">1324.6M tokens</span>
+      <span class="spend-cost">$3752.79</span>
+    </div><div class="spend-row">
+      <span class="spend-model">opus-4-5</span>
+      <span class="spend-tokens">30.0M tokens</span>
+      <span class="spend-cost">$172.12</span>
+    </div><div class="spend-row">
+      <span class="spend-model">haiku-4-5</span>
+      <span class="spend-tokens">363.9M tokens</span>
+      <span class="spend-cost">$72.67</span>
+    </div><div class="spend-row">
+      <span class="spend-model">sonnet-4-6</span>
+      <span class="spend-tokens">79.9M tokens</span>
+      <span class="spend-cost">$51.20</span>
+    </div><div class="spend-row">
+      <span class="spend-model">sonnet-4-5</span>
+      <span class="spend-tokens">5.9M tokens</span>
+      <span class="spend-cost">$6.70</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    Generated 2026-05-23 20:21:51 by compass-cli
+  </div>
+</div>
+</body>
+</html>

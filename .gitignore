@@ -1,0 +1,4 @@
+node_modules/
+compass-report.html
+*.tgz
+.DS_Store
