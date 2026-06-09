@@ -1,0 +1,38 @@
+Subject: [Compass] Weekly agent health report — {{week_of}}
+
+VERITAS AI — FLEET HEALTH
+Week of {{week_of}}
+
+FLEET AT A GLANCE
+  {{n_healthy}} healthy · {{n_attention}} needs attention · {{n_critical}} critical · {{n_new}} new
+  Spend this week:        ${{spend_week}}
+  Projected this month:   ${{spend_projected}}
+  Potential savings:      ${{savings_pending}}/mo ({{n_recs}} pending recommendations)
+
+NEEDS YOUR ATTENTION
+{{#each flagged_agents}}
+  ▸ {{name}} ({{status}}) — health {{health}}
+    {{top_recommendation}}
+    {{#if estimated_savings}}est. savings: ${{estimated_savings}}/mo{{/if}}
+{{/each}}
+
+WHAT CHANGED THIS WEEK
+  {{n_applied}} recommendations applied · {{n_dismissed}} dismissed
+{{#each changes}}
+  ▸ {{agent}}: {{description}} — {{outcome}}
+{{/each}}
+
+REGRESSION WATCH
+{{#each regressions}}
+  ▸ {{agent}} quality {{prev_quality}} → {{curr_quality}} ({{delta_pct}}%)
+    Correlated change: {{version_label}} on {{version_date}}
+{{/each}}
+
+WINNERS
+  Best quality:      {{best_quality_agent}} ({{best_quality_score}})
+  Most efficient:    {{most_efficient_agent}} (${{cost_per_1k_output}}/1k output tokens)
+  Clone candidate:   {{clone_source}} → consider applying its structure to {{clone_target}}
+
+— Compass · agent ROI observability
+Open the fleet dashboard for one-click fixes: {{dashboard_url}}
+You're receiving this because you operate the Veritas AI agent fleet.

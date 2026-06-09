@@ -1,5 +1,9 @@
 # compass-cli
 
+> **Also in this repo:** [`compass/`](compass/README.md) — Compass, the agent
+> ROI observability product (landing page + internal Streamlit dashboard with
+> the Veritas AI demo scenario).
+
 Scan your `~/.claude/` directory and generate a self-contained HTML report showing what your Claude Code agents shipped.
 
 ## What you get

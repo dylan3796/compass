@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compass — Know which AI agents are working</title>
+<meta name="description" content="Compass monitors your AI agent fleet — surfaces what's broken, what to fix, and what to clone.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A0A0A;
+  --surface: #141414;
+  --surface2: #1E1E1E;
+  --border: #232323;
+  --text: #FAFAFA;
+  --muted: #8A8A8A;
+  --green: #10B981;
+  --amber: #F59E0B;
+  --red: #EF4444;
+  --accent: #818CF8;
+  --mono: 'IBM Plex Mono', 'SF Mono', Menlo, monospace;
+  --sans: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.6; }
+a { color: var(--accent); text-decoration: none; }
+.mono { font-family: var(--mono); }
+.container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+section { padding: 88px 0; }
+
+/* ---------- nav ---------- */
+nav { position: sticky; top: 0; z-index: 50; background: rgba(10,10,10,0.85);
+  backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+nav .container { display: flex; justify-content: space-between; align-items: center; height: 60px; }
+.logo { font-family: var(--mono); font-weight: 600; font-size: 17px; color: var(--text); letter-spacing: 0.02em; }
+.logo span { color: var(--accent); }
+nav .links { display: flex; gap: 24px; align-items: center; font-size: 14px; }
+nav .links a { color: var(--muted); }
+nav .links a:hover { color: var(--text); }
+
+/* ---------- buttons ---------- */
+.btn { display: inline-block; font-family: var(--mono); font-size: 14px; font-weight: 600;
+  padding: 12px 22px; border-radius: 6px; cursor: pointer; border: 1px solid transparent;
+  transition: all .15s; }
+.btn-primary { background: var(--accent); color: #0A0A0A; }
+.btn-primary:hover { background: #9aa3fa; }
+.btn-ghost { background: transparent; color: var(--text); border-color: #333; }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---------- hero ---------- */
+.hero { padding: 110px 0 90px; }
+.hero-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 56px; align-items: center; }
+h1 { font-size: 44px; line-height: 1.15; font-weight: 800; letter-spacing: -0.02em; }
+.subhead { margin-top: 20px; font-size: 18px; color: var(--muted); max-width: 480px; }
+.hero-ctas { margin-top: 32px; display: flex; gap: 14px; flex-wrap: wrap; }
+
+/* ---------- vitals widget ---------- */
+.vitals { background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 22px; box-shadow: 0 24px 60px rgba(0,0,0,.5); }
+.vitals-head { display: flex; justify-content: space-between; font-family: var(--mono);
+  font-size: 11px; color: var(--muted); letter-spacing: .12em; text-transform: uppercase;
+  margin-bottom: 16px; }
+.vitals-head .live { color: var(--green); }
+.live::before { content: "●"; margin-right: 6px; animation: blink 1.6s infinite; }
+.agent-row { display: grid; grid-template-columns: 110px 1fr 64px; gap: 12px; align-items: center;
+  padding: 9px 0; border-bottom: 1px solid #1b1b1b; }
+.agent-row:last-child { border-bottom: none; }
+.agent-name { font-family: var(--mono); font-size: 13px; }
+.agent-pct { font-family: var(--mono); font-size: 12px; text-align: right; }
+.bar { height: 7px; background: #222; border-radius: 4px; overflow: hidden; }
+.fill { height: 100%; border-radius: 4px; transform-origin: left; }
+.fill.g { background: var(--green); animation: pulse 2.6s ease-in-out infinite; }
+.fill.a { background: var(--amber); animation: wobble 2.2s ease-in-out infinite; }
+.fill.r { background: var(--red); animation: flatline 1.4s ease-in-out infinite; }
+.g1 { width: 92%; } .g2 { width: 88%; animation-delay: .6s !important; }
+.g3 { width: 84%; animation-delay: 1.1s !important; }
+.a1 { width: 58%; } .r1 { width: 23%; }
+.pct-g { color: var(--green); } .pct-a { color: var(--amber); } .pct-r { color: var(--red); animation: blink 1.4s infinite; }
+@keyframes pulse { 0%,100% { opacity: .75; } 50% { opacity: 1; } }
+@keyframes wobble { 0%,100% { transform: scaleX(1); opacity:.85; } 50% { transform: scaleX(.93); opacity: 1; } }
+@keyframes flatline { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+.vitals-foot { margin-top: 14px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.vitals-foot b { color: var(--red); font-weight: 600; }
+
+/* ---------- section headers ---------- */
+.kicker { font-family: var(--mono); font-size: 12px; letter-spacing: .18em; color: var(--accent);
+  text-transform: uppercase; margin-bottom: 14px; }
+h2 { font-size: 30px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 14px; }
+.lede { color: var(--muted); font-size: 16px; max-width: 620px; }
+
+/* ---------- cards ---------- */
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 40px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 40px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-top: 40px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px; }
+.card h3 { font-size: 16px; font-weight: 600; margin: 10px 0 8px; }
+.card p { font-size: 14px; color: var(--muted); }
+.card .num { font-family: var(--mono); color: var(--accent); font-size: 13px; }
+.card .ex { margin-top: 14px; font-family: var(--mono); font-size: 12px; color: #c9c9c9;
+  background: var(--surface2); border-left: 2px solid var(--accent); padding: 10px 12px; border-radius: 0 6px 6px 0; }
+
+/* ---------- fleet mock ---------- */
+.fleet-mock { background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 22px; margin-top: 40px; font-family: var(--mono); }
+.fleet-head { display:flex; gap: 10px; flex-wrap: wrap; font-size: 11px; margin-bottom: 16px; }
+.chip { padding: 4px 10px; border-radius: 4px; font-weight: 600; letter-spacing: .06em; }
+.chip-g { color: var(--green); background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.3); }
+.chip-a { color: var(--amber); background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.3); }
+.chip-r { color: var(--red); background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); }
+.chip-n { color: var(--accent); background: rgba(129,140,248,.1); border: 1px solid rgba(129,140,248,.3); }
+.fleet-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.fleet-table th { text-align: left; color: var(--muted); font-weight: 500; font-size: 11px;
+  letter-spacing: .1em; text-transform: uppercase; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.fleet-table td { padding: 9px 10px; border-bottom: 1px solid #1a1a1a; }
+.fleet-table tr:last-child td { border-bottom: none; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+.dot-g { background: var(--green); } .dot-a { background: var(--amber); } .dot-r { background: var(--red); }
+.rec-cell { color: var(--muted); }
+.rec-cell b { color: #c9c9c9; font-weight: 500; }
+
+/* ---------- investor ---------- */
+.investor { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.investor blockquote { font-size: 24px; font-weight: 600; line-height: 1.5; max-width: 780px; letter-spacing: -0.01em; }
+.investor blockquote em { color: var(--accent); font-style: normal; }
+
+/* ---------- cta ---------- */
+.cta-box { background: linear-gradient(180deg, var(--surface), #101018); border: 1px solid var(--border);
+  border-radius: 12px; padding: 56px 40px; text-align: center; }
+.email-form { margin: 28px auto 0; display: flex; gap: 10px; max-width: 520px; flex-wrap: wrap; justify-content: center; }
+.email-form input, .email-form select { font-family: var(--mono); font-size: 14px; padding: 12px 14px;
+  background: var(--bg); color: var(--text); border: 1px solid #333; border-radius: 6px; min-width: 200px; }
+.email-form input:focus, .email-form select:focus { outline: none; border-color: var(--accent); }
+.form-ok { display: none; margin-top: 18px; font-family: var(--mono); color: var(--green); font-size: 14px; }
+
+footer { border-top: 1px solid var(--border); padding: 36px 0; font-size: 13px; color: var(--muted); }
+footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+/* ---------- walkthrough modal ---------- */
+.modal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.78);
+  backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 24px; }
+.modal.open { display: flex; }
+.modal-box { background: var(--surface); border: 1px solid #2c2c2c; border-radius: 12px;
+  width: 100%; max-width: 860px; max-height: 92vh; overflow-y: auto; padding: 28px; position: relative; }
+.modal-close { position: absolute; top: 14px; right: 16px; background: none; border: none;
+  color: var(--muted); font-size: 22px; cursor: pointer; }
+.modal-close:hover { color: var(--text); }
+.step-tag { font-family: var(--mono); font-size: 11px; letter-spacing: .15em; color: var(--accent);
+  text-transform: uppercase; }
+.modal-box h3 { font-size: 22px; margin: 8px 0 6px; }
+.modal-box .narr { color: var(--muted); font-size: 14.5px; margin-bottom: 18px; }
+.screen { background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+  padding: 18px; font-family: var(--mono); font-size: 12.5px; min-height: 280px; }
+.modal-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+.step-dots { display: flex; gap: 7px; }
+.step-dots i { width: 7px; height: 7px; border-radius: 50%; background: #333; }
+.step-dots i.on { background: var(--accent); }
+
+/* walkthrough screen widgets */
+.s-row { display: grid; grid-template-columns: 120px 90px 1fr 80px; gap: 10px; padding: 9px 6px;
+  border-bottom: 1px solid #1a1a1a; align-items: center; }
+.s-row.hl { background: rgba(239,68,68,.06); outline: 1px solid rgba(239,68,68,.3); border-radius: 6px; }
+.s-row.hl-a { background: rgba(245,158,11,.06); outline: 1px solid rgba(245,158,11,.3); border-radius: 6px; }
+.s-metric { display: inline-block; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 10px 14px; margin: 4px 6px 4px 0; }
+.s-metric .l { font-size: 10px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+.s-metric .v { font-size: 19px; font-weight: 600; }
+.s-rec { border: 1px solid rgba(129,140,248,.35); background: rgba(129,140,248,.07);
+  border-radius: 8px; padding: 14px; margin-top: 14px; }
+.s-rec .t { color: var(--accent); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+.s-btn { display: inline-block; background: var(--accent); color: #000; font-weight: 600;
+  border-radius: 5px; padding: 7px 14px; font-size: 12px; margin-top: 10px; }
+.s-ok { color: var(--green); }
+.tok-bar { display: flex; height: 26px; border-radius: 6px; overflow: hidden; margin: 12px 0 6px; }
+.tok-in { background: var(--amber); } .tok-out { background: var(--green); }
+.s-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.s-panel { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+.s-panel .h { font-size: 11px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+.diff-add { color: var(--green); } .diff-del { color: var(--red); text-decoration: line-through; opacity: .7; }
+
+@media (max-width: 860px) {
+  .hero-grid, .grid-3, .grid-4, .grid-2, .s-cols { grid-template-columns: 1fr; }
+  h1 { font-size: 34px; }
+  .grid-4 { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div class="logo">⌖ compass<span>_</span></div>
+    <div class="links">
+      <a href="#problem">Problem</a>
+      <a href="#how">How it works</a>
+      <a href="#recommendations">Recommendations</a>
+      <a href="#access" class="btn btn-ghost" style="padding:8px 16px;">Request early access</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="container hero-grid">
+    <div>
+      <h1>You're spending real money on AI agents. Do you know which ones are working?</h1>
+      <p class="subhead">Compass monitors your agent fleet — surfaces what's broken, what to fix, and what to clone.</p>
+      <div class="hero-ctas">
+        <button class="btn btn-primary" onclick="openTour()">See how it works →</button>
+        <a class="btn btn-ghost" href="#access">Request early access</a>
+      </div>
+    </div>
+    <div class="vitals" aria-label="Agent vitals demo widget">
+      <div class="vitals-head"><span>AGENT VITALS</span><span class="live">LIVE</span></div>
+      <div class="agent-row"><span class="agent-name">Scout</span><div class="bar"><div class="fill g g1"></div></div><span class="agent-pct pct-g">90</span></div>
+      <div class="agent-row"><span class="agent-name">Drafter</span><div class="bar"><div class="fill g g2"></div></div><span class="agent-pct pct-g">92</span></div>
+      <div class="agent-row"><span class="agent-name">Classifier</span><div class="bar"><div class="fill g g3"></div></div><span class="agent-pct pct-g">84</span></div>
+      <div class="agent-row"><span class="agent-name">Summarizer</span><div class="bar"><div class="fill a a1"></div></div><span class="agent-pct pct-a">58</span></div>
+      <div class="agent-row"><span class="agent-name">Support</span><div class="bar"><div class="fill r r1"></div></div><span class="agent-pct pct-r">49</span></div>
+      <div class="vitals-foot">▸ Support is completing <b>34%</b> of tasks — guardrail recommended</div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ PROBLEM ============ -->
+<section id="problem">
+  <div class="container">
+    <div class="kicker">The problem</div>
+    <h2>Agent fleets scale faster than your visibility into them.</h2>
+    <div class="grid-3">
+      <div class="card">
+        <span class="num">01</span>
+        <h3>Your agents are running. You just don't know how well.</h3>
+        <p>Logs tell you an agent fired. They don't tell you whether it finished the job, how much it cost, or whether last week's version did it better.</p>
+      </div>
+      <div class="card">
+        <span class="num">02</span>
+        <h3>Token spend ≠ output quality.</h3>
+        <p>Most teams can't tell the difference. An agent reading an 80k-token document to produce a 10-line summary looks "busy" — it's actually your most expensive mistake.</p>
+      </div>
+      <div class="card">
+        <span class="num">03</span>
+        <h3>One bad prompt change and your best agent regresses.</h3>
+        <p>Quality drops the day someone "improves" the prompt. Without a baseline, you find out weeks later — from a customer.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section id="how" style="background: var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="kicker">How it works</div>
+    <h2>Observe → Evaluate → Recommend → Act.</h2>
+    <p class="lede">The agent health loop. Connect once, then every token your fleet spends gets justified — or flagged.</p>
+    <div class="grid-4">
+      <div class="card" style="background: var(--bg);">
+        <span class="num">STEP 1</span>
+        <h3>Connect your agents</h3>
+        <p>Log files, an API wrapper, or a thin SDK. Compass captures inputs, outputs, latency, token cost, and completion signals.</p>
+      </div>
+      <div class="card" style="background: var(--bg);">
+        <span class="num">STEP 2</span>
+        <h3>Compass scores each agent</h3>
+        <p>Cost efficiency, output quality, task completion rate, prompt efficiency — one health score per agent, every day.</p>
+      </div>
+      <div class="card" style="background: var(--bg);">
+        <span class="num">STEP 3</span>
+        <h3>Recommendations surface</h3>
+        <p>"Agent 4 is reading 40k tokens when it needs 400." Specific, ranked by dollars saved — not generic dashboards.</p>
+      </div>
+      <div class="card" style="background: var(--bg);">
+        <span class="num">STEP 4</span>
+        <h3>One click to act</h3>
+        <p>Fix the prompt, clone the winner, or add a guardrail. Then watch the score move.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FLEET VIEW ============ -->
+<section id="fleet">
+  <div class="container">
+    <div class="kicker">The fleet view</div>
+    <h2>Monday morning clarity on every agent in your stack.</h2>
+    <div class="fleet-mock">
+      <div class="fleet-head">
+        <span class="chip chip-g">4 HEALTHY</span>
+        <span class="chip chip-a">3 NEEDS ATTENTION</span>
+        <span class="chip chip-r">1 CRITICAL</span>
+        <span class="chip chip-n">1 NEW</span>
+        <span style="margin-left:auto; color: var(--muted); font-size:11.5px; padding-top:5px;">
+          spend/mo <b style="color:var(--text)">$248.10</b> · potential savings <b style="color:var(--accent)">$94.82</b></span>
+      </div>
+      <table class="fleet-table">
+        <tr><th>Agent</th><th>Cost / run</th><th>Top recommendation</th><th>Health</th></tr>
+        <tr><td><span class="dot dot-r"></span>Support</td><td>$0.027</td><td class="rec-cell"><b>Add guardrail</b> — completes 34% of tasks, stuck in revision loops</td><td style="color:var(--red)">49</td></tr>
+        <tr><td><span class="dot dot-a"></span>Summarizer</td><td>$0.44</td><td class="rec-cell"><b>Trim context</b> — reads 86k tokens to write 1k · save $89/mo</td><td style="color:var(--amber)">58</td></tr>
+        <tr><td><span class="dot dot-a"></span>Coder</td><td>$0.12</td><td class="rec-cell"><b>Clone best performer</b> — Drafter's prompt structure outperforms by 33%</td><td style="color:var(--amber)">63</td></tr>
+        <tr><td><span class="dot dot-a"></span>Outbound</td><td>$0.021</td><td class="rec-cell"><b>Regression</b> — quality fell 40% after a prompt change 3 weeks ago</td><td style="color:var(--amber)">67</td></tr>
+        <tr><td><span class="dot dot-g"></span>Drafter</td><td>$0.016</td><td class="rec-cell">Fleet's best prompt — clone source</td><td style="color:var(--green)">92</td></tr>
+        <tr><td><span class="dot dot-g"></span>Scout</td><td>$0.003</td><td class="rec-cell">—</td><td style="color:var(--green)">90</td></tr>
+        <tr><td><span class="dot dot-g"></span>Classifier</td><td>$0.0001</td><td class="rec-cell">—</td><td style="color:var(--green)">84</td></tr>
+        <tr><td><span class="dot dot-g"></span>Analyst <span class="chip chip-n" style="font-size:9px; padding:2px 6px;">NEW</span></td><td>$0.06</td><td class="rec-cell">—</td><td style="color:var(--green)">75</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RECOMMENDATION TYPES ============ -->
+<section id="recommendations" style="background: var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="kicker">Recommendations</div>
+    <h2>Not another dashboard. A to-do list ranked in dollars.</h2>
+    <div class="grid-2">
+      <div class="card" style="background: var(--bg);">
+        <span class="num">TRIM CONTEXT</span>
+        <h3>Stop paying for context the agent doesn't need.</h3>
+        <p>Fires when an agent's input tokens run far above peers doing similar work.</p>
+        <div class="ex">Summarizer reads full 86k-token documents when it only needs the abstract — est. savings $89/mo</div>
+      </div>
+      <div class="card" style="background: var(--bg);">
+        <span class="num">CLONE BEST PERFORMER</span>
+        <h3>Your best prompt is an asset. Reuse it.</h3>
+        <p>Fires when one agent's structure measurably beats another's on the same class of task.</p>
+        <div class="ex">Drafter's prompt structure outperforms Coder by 33% on quality — clone it in one click</div>
+      </div>
+      <div class="card" style="background: var(--bg);">
+        <span class="num">ADD GUARDRAIL</span>
+        <h3>Catch the agent that's stuck in a loop.</h3>
+        <p>Fires when completion rates collapse or run frequency spikes with no trigger.</p>
+        <div class="ex">Support fails to complete 66% of tasks — add a completion-checker guardrail</div>
+      </div>
+      <div class="card" style="background: var(--bg);">
+        <span class="num">DETECT REGRESSION</span>
+        <h3>Know the day a prompt change hurts you.</h3>
+        <p>Fires when quality drops against its own rolling baseline — correlated with version history.</p>
+        <div class="ex">Outbound quality dropped 40% after the prompt change on day 69 — review v2</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INVESTOR FRAME ============ -->
+<section class="investor">
+  <div class="container">
+    <div class="kicker">Why now</div>
+    <blockquote>
+      AI agent infrastructure is scaling faster than the tooling to manage it.
+      Most teams are flying blind on what their agents actually cost and deliver.
+      <em>Compass is the operating layer that changes that.</em>
+    </blockquote>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section id="access">
+  <div class="container">
+    <div class="cta-box">
+      <div class="kicker">Early access</div>
+      <h2>Every token spent, justified.</h2>
+      <p class="lede" style="margin: 0 auto;">We're onboarding a small group of teams running 5+ agents in production.</p>
+      <form class="email-form" onsubmit="return captureEmail(event)">
+        <input type="email" id="ea-email" placeholder="you@company.com" required>
+        <select id="ea-role" required>
+          <option value="" disabled selected>Your role</option>
+          <option>Founder</option>
+          <option>AI lead</option>
+          <option>Platform team</option>
+        </select>
+        <button class="btn btn-primary" type="submit">Request access</button>
+      </form>
+      <div class="form-ok" id="form-ok">✓ Got it — we'll be in touch.</div>
+      <p style="margin-top:22px; font-size:14px;"><a href="mailto:dylan@compass.dev">Or talk to us directly →</a></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <span class="mono">⌖ compass_ — agent ROI observability</span>
+    <span>© 2026 Compass. <a href="#" onclick="openTour(); return false;">Product walkthrough</a></span>
+  </div>
+</footer>
+
+<!-- ============ WALKTHROUGH MODAL ============ -->
+<div class="modal" id="tour" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeTour()" aria-label="Close">×</button>
+    <span class="step-tag" id="tour-tag"></span>
+    <h3 id="tour-title"></h3>
+    <p class="narr" id="tour-narr"></p>
+    <div class="screen" id="tour-screen"></div>
+    <div class="modal-nav">
+      <button class="btn btn-ghost" id="tour-back" onclick="tourStep(-1)">← Back</button>
+      <div class="step-dots" id="tour-dots"></div>
+      <button class="btn btn-primary" id="tour-next" onclick="tourStep(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- scripted walkthrough (Veritas AI scenario, no backend) ----------
+const STEPS = [
+  {
+    tag: "Step 1 · Fleet overview",
+    title: "Monday morning. One screen.",
+    narr: "Veritas AI runs 8 agents. Compass scores each one daily — four are healthy, three need attention, one is critical.",
+    screen: `
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+        <span class="chip chip-g">4 HEALTHY</span><span class="chip chip-a">3 NEEDS ATTENTION</span>
+        <span class="chip chip-r">1 CRITICAL</span><span class="chip chip-n">1 NEW</span>
+      </div>
+      <div class="s-row"><b>Scout</b><span class="s-ok">● 90</span><span style="color:var(--muted)">research · healthy</span><span>$1.5/mo</span></div>
+      <div class="s-row"><b>Drafter</b><span class="s-ok">● 92</span><span style="color:var(--muted)">email drafting · fleet's best prompt</span><span>$0.9/mo</span></div>
+      <div class="s-row hl-a"><b>Summarizer</b><span style="color:var(--amber)">● 58</span><span style="color:var(--muted)">doc summarization · context bloat</span><span>$96/mo</span></div>
+      <div class="s-row hl"><b>Support</b><span style="color:var(--red)">● 49</span><span style="color:var(--muted)">customer replies · 34% completion</span><span>$5/mo</span></div>`
+  },
+  {
+    tag: "Step 2 · Agent detail",
+    title: "Click Support. 34% task completion.",
+    narr: "It's getting stuck — drafting a reply, second-guessing it, revising forever. The run history shows loop bursts: 12+ runs packed into a single hour.",
+    screen: `
+      <div><span class="s-metric"><div class="l">completion</div><div class="v" style="color:var(--red)">34%</div></span>
+      <span class="s-metric"><div class="l">quality</div><div class="v" style="color:var(--amber)">0.62</div></span>
+      <span class="s-metric"><div class="l">peak runs/hr</div><div class="v" style="color:var(--red)">17</div></span>
+      <span class="s-metric"><div class="l">wasted spend</div><div class="v">$3.4/mo</div></span></div>
+      <div style="margin-top:12px; color:var(--muted)">run log</div>
+      <div class="s-row"><span>14:02:11</span><span style="color:var(--red)">✗ failed</span><span style="color:var(--muted)">Loop detected: no progress after 3 revisions</span><span>$0.03</span></div>
+      <div class="s-row"><span>14:06:48</span><span style="color:var(--red)">✗ failed</span><span style="color:var(--muted)">Loop detected: no progress after 3 revisions</span><span>$0.03</span></div>
+      <div class="s-row"><span>14:09:30</span><span style="color:var(--red)">✗ failed</span><span style="color:var(--muted)">Loop detected: no progress after 3 revisions</span><span>$0.03</span></div>`
+  },
+  {
+    tag: "Step 3 · Recommendation",
+    title: "Compass already knows the fix.",
+    narr: "A completion-checker guardrail detects when the agent stops making progress and breaks the loop.",
+    screen: `
+      <div class="s-rec"><div class="t">▸ recommendation · add_guardrail · HIGH</div>
+      <div style="margin-top:8px; font-size:13px;">Support completes only 34% of tasks — add a <b>completion-checker guardrail</b> to break revision loops.</div>
+      <div style="margin-top:8px; color:var(--muted); font-size:12px;">How detected: completion over last 30 days is 34% (threshold 60%). Failed runs show repeated self-revision without progress.</div>
+      <span class="s-btn">Apply</span> <span style="color:var(--muted); font-size:12px; margin-left:8px;">Dismiss</span></div>`
+  },
+  {
+    tag: "Step 4 · Applied",
+    title: "One click. Done.",
+    narr: "The guardrail is live: max 3 revisions, stall detection at 2k tokens. Compass keeps watching to confirm the completion rate recovers.",
+    screen: `
+      <div style="padding:20px 6px;">
+      <div class="s-ok" style="font-size:14px;">✓ Guardrail applied to Support</div>
+      <div class="s-panel" style="margin-top:14px;">
+        <div class="h">completion checker</div>
+        <div>{ "max_revisions": 3, "stall_tokens": 2000 }</div>
+        <div style="margin-top:6px; color:var(--green); font-size:12px;">● active — watching next 50 runs</div>
+      </div></div>`
+  },
+  {
+    tag: "Step 5 · The expensive one",
+    title: "Summarizer: $89/month more than it should cost.",
+    narr: "It reads entire 86k-token documents to produce one-page summaries. The token breakdown makes it obvious — input dwarfs output.",
+    screen: `
+      <div><span class="s-metric"><div class="l">avg input</div><div class="v" style="color:var(--amber)">86k</div></span>
+      <span class="s-metric"><div class="l">avg output</div><div class="v">1.0k</div></span>
+      <span class="s-metric"><div class="l">cost / run</div><div class="v">$0.44</div></span>
+      <span class="s-metric"><div class="l">vs. peers</div><div class="v" style="color:var(--red)">19×</div></span></div>
+      <div style="margin-top:14px; color:var(--muted)">token breakdown</div>
+      <div class="tok-bar"><div class="tok-in" style="width:96%"></div><div class="tok-out" style="width:4%"></div></div>
+      <div style="font-size:11.5px; color:var(--muted)"><span style="color:var(--amber)">■</span> input 98.9% &nbsp; <span style="color:var(--green)">■</span> output 1.1%</div>
+      <div class="s-rec"><div class="t">▸ recommendation · trim_context · HIGH</div>
+      <div style="margin-top:8px; font-size:13px;">Provide structured input (abstract + key fields) instead of full documents — <b style="color:var(--accent)">est. savings $89/mo</b>.</div>
+      <span class="s-btn">Apply</span></div>`
+  },
+  {
+    tag: "Step 6 · Clone Studio",
+    title: "Drafter is your best performer. Clone what works.",
+    narr: "Drafter's structured-input prompt beats Coder's 22k-token wall of context by 33% on quality. Copy the structure, keep Coder's domain.",
+    screen: `
+      <div class="s-cols">
+        <div class="s-panel"><div class="h">source · Drafter · quality 0.94</div>
+          <div class="diff-add">+ ## Input (structured — never raw threads)</div>
+          <div class="diff-add">+ ## Rules: subject &lt; 8 words, body &lt; 120 words</div>
+          <div class="diff-add">+ ## Output (strict)</div></div>
+        <div class="s-panel"><div class="h">target · Coder · quality 0.71</div>
+          <div class="diff-del">- [~22k tokens of pasted handbook/context]</div>
+          <div class="diff-del">- "Think very carefully and at great length..."</div>
+          <div class="diff-del">- "Re-read the guidelines twice."</div></div>
+      </div>
+      <div style="margin-top:14px;"><span class="s-btn">Copy prompt structure →</span>
+      <span class="s-btn" style="background:transparent; color:var(--text); border:1px solid #333;">Fork as new agent</span></div>`
+  },
+  {
+    tag: "Step 7 · The loop closes",
+    title: "Now you're running Coder v2 alongside Coder.",
+    narr: "Lineage is tracked, scores keep updating, and next Monday the dashboard tells you if the clone won. This is what your Monday morning looks like with Compass.",
+    screen: `
+      <div style="padding:14px 6px;">
+      <div class="s-panel"><div class="h">version lineage</div>
+        <div>Coder · v1 ─→ <span style="color:var(--accent)">v2 (cloned from Drafter)</span> <span style="color:var(--green)">● live</span></div></div>
+      <div class="s-panel" style="margin-top:12px;"><div class="h">fleet impact · projected</div>
+        <div>monthly spend &nbsp; $248 → <b class="s-ok">$153</b></div>
+        <div>fleet health &nbsp;&nbsp; 71 → <b class="s-ok">83</b></div>
+        <div>critical agents 1 → <b class="s-ok">0</b></div></div>
+      <div style="margin-top:16px; color:var(--muted); font-size:12.5px;">Want this on your fleet? <a href="#access" onclick="closeTour()">Request early access →</a></div></div>`
+  },
+];
+
+let step = 0;
+const $ = id => document.getElementById(id);
+
+function renderStep() {
+  const s = STEPS[step];
+  $("tour-tag").textContent = s.tag;
+  $("tour-title").textContent = s.title;
+  $("tour-narr").textContent = s.narr;
+  $("tour-screen").innerHTML = s.screen;
+  $("tour-back").style.visibility = step === 0 ? "hidden" : "visible";
+  $("tour-next").textContent = step === STEPS.length - 1 ? "Finish" : "Next →";
+  $("tour-dots").innerHTML = STEPS.map((_, i) =>
+    `<i class="${i === step ? 'on' : ''}"></i>`).join("");
+}
+function openTour() { step = 0; renderStep(); $("tour").classList.add("open"); }
+function closeTour() { $("tour").classList.remove("open"); }
+function tourStep(d) {
+  if (step + d >= STEPS.length) { closeTour(); return; }
+  step = Math.max(0, step + d);
+  renderStep();
+}
+document.addEventListener("keydown", e => {
+  if (!$("tour").classList.contains("open")) return;
+  if (e.key === "Escape") closeTour();
+  if (e.key === "ArrowRight") tourStep(1);
+  if (e.key === "ArrowLeft") tourStep(-1);
+});
+$("tour").addEventListener("click", e => { if (e.target === $("tour")) closeTour(); });
+
+// ---------- email capture (client-side only; wire to a form backend later) ----------
+function captureEmail(e) {
+  e.preventDefault();
+  document.querySelector(".email-form").style.display = "none";
+  $("form-ok").style.display = "block";
+  return false;
+}
+</script>
+</body>
+</html>

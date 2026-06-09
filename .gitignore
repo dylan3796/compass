@@ -2,3 +2,5 @@ node_modules/
 compass-report.html
 *.tgz
 .DS_Store
+compass/data/compass.db
+__pycache__/
