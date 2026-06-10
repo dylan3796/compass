@@ -4,3 +4,4 @@ compass-report.html
 .DS_Store
 compass/data/compass.db
 __pycache__/
+.playwright-mcp/
