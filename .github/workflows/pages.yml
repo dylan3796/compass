@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - claude/compass-agent-dashboard-tg2363
     paths:
       - "compass/landing/**"
       - ".github/workflows/pages.yml"
