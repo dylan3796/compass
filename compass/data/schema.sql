@@ -8,7 +8,14 @@ CREATE TABLE IF NOT EXISTS Agent (
   program TEXT,                 -- pipeline/workflow it belongs to
   status TEXT NOT NULL,         -- 'healthy', 'needs_attention', 'critical'
   created_at TIMESTAMP,
-  last_run TIMESTAMP
+  last_run TIMESTAMP,
+  -- Value assurance: what this agent was promised to cost/deliver when specced
+  projected_cost_usd_mo REAL,   -- from the Opportunity Map spec (NULL = never projected)
+  projected_value_usd_mo REAL,
+  projection_source TEXT,       -- which spec/plan the projection came from
+  -- Value measurement: how delivered value is estimated (NULL = not estimable)
+  unit_value_usd REAL,          -- value per completed run
+  value_basis TEXT              -- the assumption behind unit_value, in plain words
 );
 
 CREATE TABLE IF NOT EXISTS AgentRun (

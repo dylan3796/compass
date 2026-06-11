@@ -333,7 +333,7 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
       <table class="fleet-table">
         <tr><th>Agent</th><th>Cost / run</th><th>Top recommendation</th><th>Health</th></tr>
         <tr><td><span class="dot dot-r"></span>Support</td><td>$0.027</td><td class="rec-cell"><b>Add guardrail</b> — completes 34% of tasks, stuck in revision loops</td><td style="color:var(--red)">49</td></tr>
-        <tr><td><span class="dot dot-a"></span>Summarizer</td><td>$0.44</td><td class="rec-cell"><b>Trim context</b> — reads 86k tokens to write 1k · save $89/mo</td><td style="color:var(--amber)">58</td></tr>
+        <tr><td><span class="dot dot-a"></span>Summarizer</td><td>$0.44</td><td class="rec-cell"><b>Right-size model</b> — Opus on a Haiku-grade task · save $80/mo</td><td style="color:var(--amber)">58</td></tr>
         <tr><td><span class="dot dot-a"></span>Coder</td><td>$0.12</td><td class="rec-cell"><b>Clone best performer</b> — Drafter's prompt structure outperforms by 33%</td><td style="color:var(--amber)">63</td></tr>
         <tr><td><span class="dot dot-a"></span>Outbound</td><td>$0.021</td><td class="rec-cell"><b>Regression</b> — quality fell 40% after a prompt change 3 weeks ago</td><td style="color:var(--amber)">67</td></tr>
         <tr><td><span class="dot dot-g"></span>Drafter</td><td>$0.016</td><td class="rec-cell">Fleet's best prompt — clone source</td><td style="color:var(--green)">92</td></tr>
@@ -563,8 +563,8 @@ const STEPS = [
   },
   {
     tag: "Step 5 · The expensive one",
-    title: "Summarizer: $89/month more than it should cost.",
-    narr: "It reads entire 86k-token documents to produce one-page summaries. The token breakdown makes it obvious — input dwarfs output.",
+    title: "Summarizer: running a frontier model on a fast-model task.",
+    narr: "It reads entire 86k-token documents on an Opus-tier model to produce one-page summaries. The token breakdown makes it obvious — and the fix is one config line.",
     screen: `
       <div><span class="s-metric"><div class="l">avg input</div><div class="v" style="color:var(--amber)">86k</div></span>
       <span class="s-metric"><div class="l">avg output</div><div class="v">1.0k</div></span>
@@ -573,8 +573,9 @@ const STEPS = [
       <div style="margin-top:14px; color:var(--muted)">token breakdown</div>
       <div class="tok-bar"><div class="tok-in" style="width:96%"></div><div class="tok-out" style="width:4%"></div></div>
       <div style="font-size:11.5px; color:var(--muted)"><span style="color:var(--amber)">■</span> input 98.9% &nbsp; <span style="color:var(--green)">■</span> output 1.1%</div>
-      <div class="s-rec"><div class="t">▸ recommendation · trim_context · HIGH</div>
-      <div style="margin-top:8px; font-size:13px;">Provide structured input (abstract + key fields) instead of full documents — <b style="color:var(--accent)">est. savings $89/mo</b>.</div>
+      <div class="s-rec"><div class="t">▸ recommendation · right_size_model · HIGH</div>
+      <div style="margin-top:8px; font-size:13px;">Summarizer runs Opus 4.8 — Haiku 4.5 scores within ~3% on doc summarization at ~1/5th the cost. <b style="color:var(--accent)">Est. savings $80/mo.</b></div>
+      <div style="margin-top:6px; color:var(--muted); font-size:12px;">Also pending: trim_context — structured input instead of full documents (+$18/mo after right-sizing; the two never double-count).</div>
       <span class="s-btn">Apply</span></div>`
   },
   {

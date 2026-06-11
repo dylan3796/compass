@@ -1,6 +1,6 @@
 """Rules-based recommendation engine.
 
-Six detectors run over the last 30 days of AgentRun data. Re-running is
+Seven detectors run over the last 30 days of AgentRun data. Re-running is
 idempotent: pending recommendations are regenerated; applied/dismissed
 ones are preserved and not re-raised for the same agent+type.
 """
@@ -11,7 +11,9 @@ import uuid
 from datetime import datetime, timedelta
 
 from core.agent_scorer import score_agents
-from core.cost_calculator import estimate_trimmed_savings
+from core.cost_calculator import (TASK_CLASS_FLOOR, cheaper_adequate_model,
+                                  cost_per_run, estimate_right_size_savings,
+                                  estimate_trimmed_savings, model_label)
 
 WINDOW_DAYS = 30
 TRIM_TARGET_INPUT = 4000          # structured-input baseline for bloated agents
@@ -21,6 +23,8 @@ CLONE_BOTTOM_FRAC = 0.40
 GUARDRAIL_COMPLETION = 0.60
 RATE_LIMIT_RUNS_PER_HOUR = 8
 CORR_THRESHOLD = -0.35
+RIGHT_SIZE_MIN_RUNS = 30          # don't right-size on thin evidence
+RIGHT_SIZE_QUALITY_STD_MAX = 0.10 # only when observed quality is stable
 
 
 def _monthly(conn, agent_id, since):
@@ -85,23 +89,66 @@ def generate_recommendations(conn: sqlite3.Connection) -> list[dict]:
 
     median_in = statistics.median(s["avg_in"] for s in active.values())
 
-    # 1. trim_context — input far above peers, dominated by context not output
+    # 1. right_size_model — over-provisioned model for the task class.
+    # The most quantifiable rec there is: same tokens, cheaper model, math.
+    right_sized = {}  # aid -> target model, so trim_context prices after the switch
+    for aid, s in active.items():
+        a = agents[aid]
+        target = cheaper_adequate_model(a["model"], a["type"])
+        if not target or s["runs"] < RIGHT_SIZE_MIN_RUNS:
+            continue
+        _, q_std = _input_quality_corr(conn, aid, since)
+        if q_std > RIGHT_SIZE_QUALITY_STD_MAX:
+            continue  # unstable quality — don't recommend a downgrade on noise
+        runs_mo, _ = _monthly(conn, aid, since)
+        savings = estimate_right_size_savings(
+            a["model"], target, s["avg_in"], s["avg_out"], runs_mo)
+        if savings < 1:
+            continue
+        right_sized[aid] = target
+        cur_cost = cost_per_run(a["model"], s["avg_in"], s["avg_out"])
+        new_cost = cost_per_run(target, s["avg_in"], s["avg_out"])
+        cost_ratio = cur_cost / max(new_cost, 1e-9)
+        delta = TASK_CLASS_FLOOR[a["type"]]["delta_pct"]
+        add(aid, "right_size_model",
+            "high" if savings > 50 else ("medium" if savings > 5 else "low"),
+            f"{a['name']} runs {model_label(a['model'])} — {model_label(target)} scores "
+            f"within ~{delta}% on {a['type'].replace('_', ' ')} at ~1/{cost_ratio:.0f}th "
+            f"the cost. Est. savings ${savings:,.0f}/mo.",
+            f"Task-class benchmarks put {model_label(target)} within ~{delta}% of "
+            f"{model_label(a['model'])} on {a['type'].replace('_', ' ')} (directional — "
+            f"verify on a 50-run sample before switching). Savings assume the current "
+            f"profile: {s['avg_in']:,.0f} in / {s['avg_out']:,.0f} out tokens, "
+            f"~{runs_mo:,.0f} runs/mo. Observed quality is stable (σ={q_std:.2f}). "
+            f"Any context-trimming rec on this agent is priced after this switch, so "
+            f"the two don't double-count.",
+            savings)
+
+    # 2. trim_context — input far above peers, dominated by context not output
     for aid, s in active.items():
         ratio = s["avg_in"] / max(1.0, s["avg_out"])
         if s["avg_in"] > 2 * median_in and ratio >= TRIM_RATIO_FLOOR:
             a = agents[aid]
             runs_mo, _ = _monthly(conn, aid, since)
+            # If a right-size rec is pending, price trimming on the target model —
+            # otherwise the two recs would together claim more than the agent spends.
+            price_model = right_sized.get(aid, a["model"])
             savings = estimate_trimmed_savings(
-                a["model"], s["avg_in"], s["avg_out"], TRIM_TARGET_INPUT, runs_mo)
+                price_model, s["avg_in"], s["avg_out"], TRIM_TARGET_INPUT, runs_mo)
+            repriced = ("" if aid not in right_sized else
+                        f" Priced on {model_label(price_model)}, after the pending "
+                        f"right-size rec; on {model_label(a['model'])} alone this is "
+                        f"~${estimate_trimmed_savings(a['model'], s['avg_in'], s['avg_out'], TRIM_TARGET_INPUT, runs_mo):,.0f}/mo.")
             add(aid, "trim_context", "high" if savings > 50 else "medium",
                 f"{a['name']} reads ~{s['avg_in']/1000:.0f}k input tokens per run to produce "
                 f"~{s['avg_out']/1000:.1f}k — provide structured input instead of full documents.",
                 f"Avg input tokens ({s['avg_in']:,.0f}) is {s['avg_in']/median_in:.1f}x the peer "
                 f"median ({median_in:,.0f}) with an input/output ratio of {ratio:.0f}:1. "
-                f"Savings assume trimming to ~{TRIM_TARGET_INPUT:,} structured input tokens.",
+                f"Savings assume trimming to ~{TRIM_TARGET_INPUT:,} structured input tokens."
+                + repriced,
                 savings)
 
-    # 2. prompt_regression — quality dropped >20% across two 2-week windows
+    # 3. prompt_regression — quality dropped >20% across two 2-week windows
     regressed = set()
     for aid in active:
         recent, prior = _quality_windows(conn, aid, now)
@@ -121,7 +168,7 @@ def generate_recommendations(conn: sqlite3.Connection) -> list[dict]:
                 "20% flags a regression. Correlate with the version history timeline.",
                 None)
 
-    # 3. clone_best_performer — bottom-40% quality not already explained above
+    # 4. clone_best_performer — bottom-40% quality not already explained above
     by_quality = sorted(active, key=lambda a: active[a]["quality_avg"] or 0)
     bottom = set(by_quality[:max(1, int(len(by_quality) * CLONE_BOTTOM_FRAC))])
     best = by_quality[-1]
@@ -140,7 +187,7 @@ def generate_recommendations(conn: sqlite3.Connection) -> list[dict]:
             f"transfer well across task types.",
             cost_mo * 0.2)
 
-    # 4. add_guardrail — completion rate below 60%
+    # 5. add_guardrail — completion rate below 60%
     for aid, s in active.items():
         if (s["completion_rate"] or 0) < GUARDRAIL_COMPLETION:
             a = agents[aid]
@@ -154,7 +201,7 @@ def generate_recommendations(conn: sqlite3.Connection) -> list[dict]:
                 f"~${wasted:.0f}/mo is spent on runs that never complete.",
                 wasted)
 
-    # 5. rate_limit — bursts with no clear trigger
+    # 6. rate_limit — bursts with no clear trigger
     for aid in active:
         peak = _max_runs_per_hour(conn, aid, since)
         guarded = conn.execute(
@@ -169,7 +216,7 @@ def generate_recommendations(conn: sqlite3.Connection) -> list[dict]:
                 f"trigger volume (threshold {RATE_LIMIT_RUNS_PER_HOUR}/hour).",
                 None)
 
-    # 6. restructure_input — quality varies with input length
+    # 7. restructure_input — quality varies with input length
     for aid in active:
         corr, q_std = _input_quality_corr(conn, aid, since)
         if corr < CORR_THRESHOLD and q_std > 0.08:
