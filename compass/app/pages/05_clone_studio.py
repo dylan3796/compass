@@ -10,7 +10,8 @@ import common
 from theme import badge, fmt_money
 
 st.markdown("## ⑂ Clone Studio")
-st.markdown('<span class="muted mono">Copy what works. Fork what might.</span>',
+st.markdown('<span class="muted mono">Take the prompt from an agent that\'s doing well '
+            'and apply it to one that\'s struggling.</span>',
             unsafe_allow_html=True)
 st.markdown("")
 
@@ -48,6 +49,7 @@ def metric_block(col, a, s, version):
         f'<div style="display:flex; justify-content:space-between;">'
         f'<span class="mono" style="font-size:16px; font-weight:600;">{a["name"]}</span>'
         f'{badge(a["status"])}</div>'
+        f'<div class="muted" style="font-size:12.5px; margin-top:2px;">{a["purpose"] or ""}</div>'
         f'<div class="mono muted" style="font-size:12px;">{a["model"]} · '
         f'{version["label"] if version is not None else "no versions"}</div>'
         f'<div style="display:flex; gap:20px; margin-top:10px;" class="mono">'
