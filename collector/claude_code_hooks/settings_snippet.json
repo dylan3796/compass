@@ -1,0 +1,15 @@
+{
+  "//": "Merge the 'hooks' block into ~/.claude/settings.json (user-level, all projects) or .claude/settings.json (one project). Copy capture_run.py to ~/.claude/hooks/ first.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/hooks/capture_run.py"
+          }
+        ]
+      }
+    ]
+  }
+}
