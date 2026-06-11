@@ -4,6 +4,13 @@
 > output vs. cost, surfaces underperformers, and gives you a one-click path
 > to fix them.
 
+**Status: pitch asset, not the product.** Everything in this directory is
+demo material on engineered dummy data — useful for investor calls and for
+prototyping engine ideas, but product effort goes into the CLI at the repo
+root until the CLI has organic users. Engine ideas graduate by being ported
+into `src/` against real `~/.claude/` data (the recommender made this jump
+in `src/recommend/`); they don't ship from here.
+
 Two deliverables live here:
 
 | Piece | Path | Audience |

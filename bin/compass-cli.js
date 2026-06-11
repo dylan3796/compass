@@ -7,6 +7,7 @@ import { scan } from '../src/scan/index.js';
 import { classify } from '../src/classify/index.js';
 import { attribute } from '../src/attribute/index.js';
 import { price } from '../src/pricing/index.js';
+import { recommend } from '../src/recommend/index.js';
 import { render } from '../src/render/index.js';
 
 const args = process.argv.slice(2);
@@ -39,7 +40,7 @@ async function main() {
 
   const agents = classifierResult.agents.map(agent => {
     const outcomes = attributorResult.byAgent[agent.id] || {
-      commits: 0, pushes: 0, filesChanged: 0, testsPassed: 0, mcpActions: {}, sessions: [],
+      commits: 0, pushes: 0, prsOpened: 0, prsMerged: 0, filesChanged: 0, testsPassed: 0, mcpActions: {}, sessions: [],
     };
     const cost = pricerResult.byAgent[agent.id] || { totalUsd: 0, sessions: {} };
     return { ...agent, outcomes, cost };
@@ -50,8 +51,11 @@ async function main() {
     const mcpTotal = Object.values(o.mcpActions || {}).reduce(
       (s, tools) => s + Object.values(tools).reduce((a, b) => a + b, 0), 0
     );
-    return sum + o.commits + o.pushes + o.filesChanged + o.testsPassed + mcpTotal;
+    return sum + o.commits + o.pushes + (o.prsOpened || 0) + (o.prsMerged || 0) + o.filesChanged + o.testsPassed + mcpTotal;
   }, 0);
+
+  process.stderr.write('Generating recommendations...\n');
+  const recommendations = recommend(agents, scanResult.sessions);
 
   const reportData = {
     generatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
@@ -63,6 +67,7 @@ async function main() {
     },
     agents,
     pricing: pricerResult,
+    recommendations,
   };
 
   process.stderr.write('Rendering report...\n');

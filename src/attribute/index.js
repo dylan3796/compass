@@ -2,13 +2,21 @@ import { createReadStream, existsSync } from 'node:fs';
 import { createInterface } from 'node:readline';
 
 const GIT_COMMIT_RE = /git\s+commit/;
-const GIT_PUSH_RE = /git\s+push|gh\s+pr\s+create/;
+const GIT_PUSH_RE = /git\s+push/;
+const PR_OPEN_RE = /gh\s+pr\s+create/;
+const PR_MERGE_RE = /gh\s+pr\s+merge/;
 const TEST_PASS_RE = /(\d+)\s+(tests?\s+)?pass(ed|ing)?|All\s+\d+\s+tests?\s+passed|✓|PASSED|ok\s+\d+/i;
+
+// GitHub MCP tools that represent the same PR outcomes as the gh CLI
+const MCP_PR_OPEN_TOOLS = new Set(['create_pull_request']);
+const MCP_PR_MERGE_TOOLS = new Set(['merge_pull_request']);
 
 function extractOutcomesFromBash(command, resultText) {
   const outcomes = [];
   if (GIT_COMMIT_RE.test(command)) outcomes.push('committed');
   if (GIT_PUSH_RE.test(command)) outcomes.push('pushed');
+  if (PR_OPEN_RE.test(command)) outcomes.push('opened PR');
+  if (PR_MERGE_RE.test(command)) outcomes.push('merged PR');
   if (resultText && TEST_PASS_RE.test(resultText)) outcomes.push('tests passed');
   return outcomes;
 }
@@ -23,13 +31,15 @@ function parseMcpToolName(name) {
 
 async function attributeTranscript(transcriptPath) {
   if (!existsSync(transcriptPath)) {
-    return { commits: 0, pushes: 0, filesChanged: new Set(), testsPassed: 0, mcpActions: {}, outcomes: [], selfSummary: null, completion: 'interrupted' };
+    return { commits: 0, pushes: 0, prsOpened: 0, prsMerged: 0, filesChanged: new Set(), testsPassed: 0, mcpActions: {}, outcomes: [], selfSummary: null, completion: 'interrupted' };
   }
 
   const rl = createInterface({ input: createReadStream(transcriptPath), crlfDelay: Infinity });
 
   let commits = 0;
   let pushes = 0;
+  let prsOpened = 0;
+  let prsMerged = 0;
   const filesChanged = new Set();
   let testsPassed = 0;
   const mcpActions = {};
@@ -81,6 +91,15 @@ async function attributeTranscript(transcriptPath) {
         if (mcpParsed) {
           if (!mcpActions[mcpParsed.server]) mcpActions[mcpParsed.server] = {};
           mcpActions[mcpParsed.server][mcpParsed.tool] = (mcpActions[mcpParsed.server][mcpParsed.tool] || 0) + 1;
+
+          if (MCP_PR_OPEN_TOOLS.has(mcpParsed.tool)) {
+            prsOpened++;
+            if (!outcomes.includes('opened PR')) outcomes.push('opened PR');
+          }
+          if (MCP_PR_MERGE_TOOLS.has(mcpParsed.tool)) {
+            prsMerged++;
+            if (!outcomes.includes('merged PR')) outcomes.push('merged PR');
+          }
         }
       }
     }
@@ -99,6 +118,8 @@ async function attributeTranscript(transcriptPath) {
           for (const o of bashOutcomes) {
             if (o === 'committed') commits++;
             if (o === 'pushed') pushes++;
+            if (o === 'opened PR') prsOpened++;
+            if (o === 'merged PR') prsMerged++;
             if (o === 'tests passed') testsPassed++;
             if (!outcomes.includes(o)) outcomes.push(o);
           }
@@ -118,6 +139,8 @@ async function attributeTranscript(transcriptPath) {
   return {
     commits,
     pushes,
+    prsOpened,
+    prsMerged,
     filesChanged,
     testsPassed,
     mcpActions,
@@ -141,6 +164,8 @@ export async function attribute(scanResult) {
     const projSessions = sessionsByProject[proj.id] || [];
     let totalCommits = 0;
     let totalPushes = 0;
+    let totalPrsOpened = 0;
+    let totalPrsMerged = 0;
     const allFilesChanged = new Set();
     let totalTestsPassed = 0;
     const mergedMcp = {};
@@ -151,6 +176,8 @@ export async function attribute(scanResult) {
 
       totalCommits += result.commits;
       totalPushes += result.pushes;
+      totalPrsOpened += result.prsOpened;
+      totalPrsMerged += result.prsMerged;
       for (const f of result.filesChanged) allFilesChanged.add(f);
       totalTestsPassed += result.testsPassed;
 
@@ -173,6 +200,8 @@ export async function attribute(scanResult) {
       const result = await attributeTranscript(sub.path);
       totalCommits += result.commits;
       totalPushes += result.pushes;
+      totalPrsOpened += result.prsOpened;
+      totalPrsMerged += result.prsMerged;
       for (const f of result.filesChanged) allFilesChanged.add(f);
       totalTestsPassed += result.testsPassed;
       for (const [server, tools] of Object.entries(result.mcpActions)) {
@@ -186,6 +215,8 @@ export async function attribute(scanResult) {
     byAgent[proj.id] = {
       commits: totalCommits,
       pushes: totalPushes,
+      prsOpened: totalPrsOpened,
+      prsMerged: totalPrsMerged,
       filesChanged: allFilesChanged.size,
       testsPassed: totalTestsPassed,
       mcpActions: mergedMcp,

@@ -83,6 +83,8 @@ function renderOutcomeStats(outcomes) {
   const items = [];
   if (outcomes.commits > 0) items.push(`<span class="stat-n">${outcomes.commits}</span> commits`);
   if (outcomes.pushes > 0) items.push(`<span class="stat-n">${outcomes.pushes}</span> pushes`);
+  if (outcomes.prsOpened > 0) items.push(`<span class="stat-n">${outcomes.prsOpened}</span> PRs opened`);
+  if (outcomes.prsMerged > 0) items.push(`<span class="stat-n">${outcomes.prsMerged}</span> PRs merged`);
   if (outcomes.filesChanged > 0) items.push(`<span class="stat-n">${outcomes.filesChanged}</span> files`);
   if (outcomes.testsPassed > 0) items.push(`<span class="stat-n">${outcomes.testsPassed}</span> tests`);
   for (const [server, tools] of Object.entries(outcomes.mcpActions || {})) {
@@ -111,15 +113,15 @@ function renderSessionChips(sessions) {
 
 function renderAgentRow(agent, i, totalAgents) {
   const cost = agent.cost ? fmtUsd(agent.cost.totalUsd) : '$0';
-  const cpo = agent.outcomes && agent.outcomes.commits + agent.outcomes.pushes + agent.outcomes.filesChanged > 0
-    ? fmtUsd(agent.cost.totalUsd / (agent.outcomes.commits + agent.outcomes.pushes + agent.outcomes.filesChanged + agent.outcomes.testsPassed || 1))
-    : '—';
+  const directOutcomes = agent.outcomes
+    ? agent.outcomes.commits + agent.outcomes.pushes + (agent.outcomes.prsOpened || 0)
+      + (agent.outcomes.prsMerged || 0) + agent.outcomes.filesChanged + agent.outcomes.testsPassed
+    : 0;
+  const cpo = directOutcomes > 0 ? fmtUsd(agent.cost.totalUsd / directOutcomes) : '—';
   const lastUsed = timeAgo(agent.lastUsed);
   const borderBottom = i === totalAgents - 1 ? 'none' : '1px solid var(--border-soft)';
-  const totalOutcomes = agent.outcomes
-    ? agent.outcomes.commits + agent.outcomes.pushes + agent.outcomes.filesChanged + agent.outcomes.testsPassed
-      + Object.values(agent.outcomes.mcpActions || {}).reduce((s, tools) => s + Object.values(tools).reduce((a, b) => a + b, 0), 0)
-    : 0;
+  const totalOutcomes = directOutcomes
+    + Object.values(agent.outcomes?.mcpActions || {}).reduce((s, tools) => s + Object.values(tools).reduce((a, b) => a + b, 0), 0);
 
   return `
   <div class="agent-row row-hover" style="border-bottom:${borderBottom}" data-spend="${agent.cost?.totalUsd || 0}" data-outcomes="${totalOutcomes}" data-sessions="${agent.sessionCount}" data-name="${esc(agent.name)}">
@@ -182,8 +184,23 @@ function renderSpendByModel(pricing) {
   }).join('');
 }
 
+function renderRecommendations(recs) {
+  if (!recs || recs.length === 0) {
+    return `<div class="rec-empty">No recommendations — no agent crossed the context, completion, efficiency, or burst thresholds.</div>`;
+  }
+  return recs.map(r => `
+    <div class="rec-row">
+      <span class="sev-chip ${r.severity === 'high' ? 'sev-high' : 'sev-med'}">${esc(r.severity)}</span>
+      <div class="rec-body">
+        <div class="rec-desc">${esc(r.description)}</div>
+        <div class="rec-detail">${esc(r.detail)}</div>
+      </div>
+      <div class="rec-savings tabular">${r.estimatedSavingsUsd ? '~' + fmtUsd(r.estimatedSavingsUsd) : ''}</div>
+    </div>`).join('');
+}
+
 export function render(reportData) {
-  const { totals, agents, pricing } = reportData;
+  const { totals, agents, pricing, recommendations } = reportData;
 
   const totalMcpActions = agents.reduce((sum, a) => {
     return sum + Object.values(a.outcomes?.mcpActions || {}).reduce(
@@ -192,9 +209,12 @@ export function render(reportData) {
   }, 0);
   const totalCommits = agents.reduce((s, a) => s + (a.outcomes?.commits || 0), 0);
   const totalPushes = agents.reduce((s, a) => s + (a.outcomes?.pushes || 0), 0);
+  const totalPrsOpened = agents.reduce((s, a) => s + (a.outcomes?.prsOpened || 0), 0);
+  const totalPrsMerged = agents.reduce((s, a) => s + (a.outcomes?.prsMerged || 0), 0);
   const totalFiles = agents.reduce((s, a) => s + (a.outcomes?.filesChanged || 0), 0);
   const totalTests = agents.reduce((s, a) => s + (a.outcomes?.testsPassed || 0), 0);
   const avgCpo = totals.outcomes > 0 ? totals.usd / totals.outcomes : 0;
+  const costPerMergedPr = totalPrsMerged > 0 ? totals.usd / totalPrsMerged : null;
 
   const agentRows = agents.map((a, i) => renderAgentRow(a, i, agents.length)).join('\n');
 
@@ -571,6 +591,51 @@ export function render(reportData) {
     margin-top: 6px;
   }
 
+  /* Recommendations */
+  .rec-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .rec-row {
+    display: grid;
+    grid-template-columns: 70px 1fr 110px;
+    gap: 16px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-soft);
+    align-items: start;
+  }
+  .rec-row:last-child { border-bottom: none; }
+  .sev-chip {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-align: center;
+    margin-top: 2px;
+  }
+  .sev-high { background: var(--rust-soft); color: var(--rust); }
+  .sev-med { background: var(--blue-soft); color: var(--blue); }
+  .rec-desc { font-size: 13px; color: var(--ink); line-height: 1.45; }
+  .rec-detail { font-size: 11px; color: var(--muted); line-height: 1.5; margin-top: 4px; }
+  .rec-savings {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--green);
+    text-align: right;
+    font-weight: 500;
+  }
+  .rec-empty {
+    padding: 20px 24px;
+    font-size: 12px;
+    color: var(--muted-soft);
+    font-style: italic;
+  }
+
   /* Footer */
   .footer {
     margin-top: 40px;
@@ -622,7 +687,7 @@ export function render(reportData) {
     <div class="stat-cell">
       <div class="label">Avg per outcome</div>
       <div class="stat-val">${fmtUsd(avgCpo)}</div>
-      <div class="stat-sub">commits + pushes + files + tests</div>
+      <div class="stat-sub">commits + pushes + PRs + files + tests</div>
     </div>
     <div class="stat-cell">
       <div class="label">Active agents</div>
@@ -643,9 +708,14 @@ export function render(reportData) {
       <div class="outcome-card-sub">git commit calls detected</div>
     </div>
     <div class="outcome-card">
-      <div class="label">Pushes / PRs</div>
+      <div class="label">Pushes</div>
       <div class="outcome-card-val">${totalPushes}</div>
-      <div class="outcome-card-sub">git push + gh pr create</div>
+      <div class="outcome-card-sub">git push calls detected</div>
+    </div>
+    <div class="outcome-card">
+      <div class="label">PRs merged</div>
+      <div class="outcome-card-val">${totalPrsMerged}</div>
+      <div class="outcome-card-sub">${totalPrsOpened} opened${costPerMergedPr ? ' · ' + fmtUsd(costPerMergedPr) + ' / merged PR' : ''}</div>
     </div>
     <div class="outcome-card">
       <div class="label">Files changed</div>
@@ -663,6 +733,17 @@ export function render(reportData) {
       <div class="outcome-card-sub">across all MCP servers</div>
     </div>
   </div>
+
+  ${recommendations ? `
+  <div class="section-head">
+    <div>
+      <h2 class="section-title">Recommendations <em>· where to point the shovel</em></h2>
+      <div class="section-sub">Rule-based detectors over the scanned transcripts: context bloat, incomplete sessions, outcome efficiency, session bursts. Savings are estimates at API rates.</div>
+    </div>
+  </div>
+  <div class="rec-section">
+    ${renderRecommendations(recommendations)}
+  </div>` : ''}
 
   <div class="section-head">
     <div>

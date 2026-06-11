@@ -15,9 +15,10 @@ How to use:
 |-------------|------------------|---------------|-------------|-------------|
 | scanner     | `src/scan/`      | done          | —           | 2026-05-23  |
 | classifier  | `src/classify/`  | done          | scanner     | 2026-05-23  |
-| attributor  | `src/attribute/` | done          | scanner     | 2026-05-23  |
-| pricer      | `src/pricing/`   | done          | classifier  | 2026-05-23  |
-| renderer    | `src/render/`    | done          | —           | 2026-05-23  |
+| attributor  | `src/attribute/` | done          | scanner     | 2026-06-11  |
+| pricer      | `src/pricing/`   | done          | classifier  | 2026-06-11  |
+| recommender | `src/recommend/` | done          | all above   | 2026-06-11  |
+| renderer    | `src/render/`    | done          | —           | 2026-06-11  |
 
 Status values: `not started` · `in progress` · `done` · `blocked` · `needs review`
 
@@ -80,7 +81,9 @@ type ClassifierOutput = {
 type AttributorOutput = {
   byAgent: Record<string, {  // keyed by agent id
     commits: number;
-    pushes: number;
+    pushes: number;            // git push only (PRs counted separately)
+    prsOpened: number;         // gh pr create + GitHub MCP create_pull_request
+    prsMerged: number;         // gh pr merge + GitHub MCP merge_pull_request
     filesChanged: number;
     testsPassed: number;
     mcpActions: Record<string, Record<string, number>>;  // {server: {tool: count}}
@@ -103,6 +106,19 @@ type PricerOutput = {
 };
 ```
 
+### recommender → `data/recommendations.json`
+```ts
+type RecommenderOutput = Array<{
+  agentId: string;
+  agentName: string;
+  type: "trim_context" | "add_guardrail" | "clone_best_performer" | "loop_burst";
+  severity: "high" | "medium";
+  description: string;          // one-line action for the report
+  detail: string;               // the evidence behind it
+  estimatedSavingsUsd: number | null;
+}>;  // sorted by severity, then savings desc
+```
+
 ### renderer input (assembled by lead) → final report
 ```ts
 type ReportData = {
@@ -113,6 +129,7 @@ type ReportData = {
     { outcomes: AttributorOutput["byAgent"][string] } &
     { cost: PricerOutput["byAgent"][string] }
   >;
+  recommendations: RecommenderOutput;
 };
 ```
 
@@ -129,6 +146,10 @@ When you make a non-obvious technical decision, append it here so others can fol
 - [2026-05-23, attributor] Walk both top-level `.jsonl` and nested `subagents/` transcripts.
 - [2026-05-23, renderer] Fonts as system fallback stack (Instrument Serif → Palatino → Georgia; Geist → SF Pro; JetBrains Mono → SF Mono) since external requests not allowed.
 - [2026-05-23, pricer] MCP tool name parsing uses `lastIndexOf('__')` to handle multi-word server names like `claude_ai_Linear`.
+- [2026-06-11, attributor] PRs split out of pushes: `prsOpened`/`prsMerged` count `gh pr create`/`gh pr merge` plus the GitHub MCP `create_pull_request`/`merge_pull_request` tools (remote sessions ship PRs via MCP, not the gh CLI). `pushes` is `git push` only now.
+- [2026-06-11, recommender] Ported 4 of the 6 Streamlit-demo detectors to real `~/.claude/` data: trim_context (context per session vs fleet median), add_guardrail (clean-stop rate), clone_best_performer (outcomes per dollar vs fleet best), loop_burst (sessions/hour from sessions-index timestamps). prompt_regression and restructure_input need an output-quality score transcripts don't carry — blocked until an outcome-quality signal exists.
+- [2026-06-11, recommender] Quality proxy is outcomes-per-dollar, fleet-relative with a 5-session minimum, so small fleets and new agents don't get flagged on noise.
+- [2026-06-11, lead] Product focus: `compass/` (landing + Streamlit) is quarantined as pitch material on dummy data. All product effort goes into the CLI until it has organic users; engine ideas graduate by being ported into `src/` against real data.
 
 ---
 
@@ -159,6 +180,7 @@ Write a one-liner when you mark your section `done`.
 - **classifier → pricer, renderer**: done — `classify()` returns `{ agents: [...] }`
 - **attributor → renderer**: done — `attribute()` returns `{ byAgent: {...} }`
 - **pricer → renderer**: done — `price()` returns `{ byAgent, byModel, totalUsd }`
+- **recommender → renderer**: done — `recommend(agents, sessions)` returns sorted rec array
 - **renderer → lead**: done — `render()` returns self-contained HTML string
 
 ---

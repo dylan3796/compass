@@ -18,6 +18,19 @@ function priceForModel(model) {
   return DEFAULT_PRICE;
 }
 
+// Cost of the context side only (input + cache write + cache read), used by
+// the recommender to estimate savings from trimming context volume.
+export function contextCostUsd(perModel) {
+  let total = 0;
+  for (const [model, data] of Object.entries(perModel || {})) {
+    const pricing = priceForModel(model);
+    total += (data.input / 1_000_000) * pricing.input_per_mtok;
+    total += (data.cacheWrite / 1_000_000) * pricing.input_per_mtok * 1.25;
+    total += (data.cacheRead / 1_000_000) * pricing.input_per_mtok * 0.10;
+  }
+  return total;
+}
+
 export function price(classifierResult) {
   const byAgent = {};
   const byModel = {};
