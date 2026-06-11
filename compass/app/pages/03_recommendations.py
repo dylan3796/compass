@@ -58,7 +58,7 @@ for _, r in view.iterrows():
             f'<div class="rec-line" style="margin-top:8px;">{r["description"]}</div>{why}</div>',
             unsafe_allow_html=True)
         col2.markdown(
-            f'<div class="mono accent" style="padding-top:12px; font-size:15px; text-align:right;">'
+            f'<div class="mono accent rec-savings">'
             f'{fmt_money(r["estimated_savings_usd"]) + "/mo" if r["estimated_savings_usd"] else "—"}</div>',
             unsafe_allow_html=True)
         with col3:

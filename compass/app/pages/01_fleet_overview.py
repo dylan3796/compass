@@ -131,14 +131,14 @@ for i, r in enumerate(rows):
                     if r["rec"] is not None else "")
         st.markdown(
             f'<div class="compass-card">'
-            f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+            f'<div class="card-head">'
             f'<div><span class="mono" style="font-size:17px; font-weight:600;">'
             f'{TYPE_ICON.get(a["type"], "•")} {a["name"]}</span>'
-            f'<span class="muted" style="font-size:12px;"> · {a["model"]}</span></div>'
+            f'<span class="muted wrap-anywhere" style="font-size:12px;"> · {a["model"]}</span></div>'
             f'<div>{badge(a["status"])}{nb}</div></div>'
             f'{purpose}'
             f'{vital(s.get("health") or 0, a["status"])}'
-            f'<div style="display:flex; gap:24px; margin-top:10px;" class="mono">'
+            f'<div class="metric-row mono" style="margin-top:10px;">'
             f'<span style="font-size:13px;">cost/30d <b>{fmt_money(r["cost"])}</b>{trend}</span>'
             f'<span style="font-size:13px;">health <b>{health_txt}</b></span>'
             f'<span style="font-size:13px;">quality <b>{q_txt}</b></span>'

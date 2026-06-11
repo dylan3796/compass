@@ -54,7 +54,7 @@ for _, a in agents.iterrows():
              else '<span class="badge badge-critical">UNGUARDED</span>')
     st.markdown(
         f'<div class="compass-card" style="margin-bottom:4px;">'
-        f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+        f'<div class="card-head">'
         f'<span class="mono" style="font-size:15px; font-weight:600;">{a["name"]}</span>'
         f'<div>{state} {badge(a["status"])}</div></div>'
         f'<div class="purpose">{a["purpose"] or ""}</div>'
@@ -75,7 +75,7 @@ for _, a in agents.iterrows():
             trig = (f'last triggered {g["last_triggered"][:10]} — {g["last_triggered_note"]}'
                     if isinstance(g["last_triggered"], str) else "never triggered")
             c2.markdown(
-                f'<span class="mono" style="font-size:12px;">{g["config"]}</span><br>'
+                f'<span class="mono wrap-anywhere" style="font-size:12px;">{g["config"]}</span><br>'
                 f'<span class="evidence">{trig}</span>',
                 unsafe_allow_html=True)
             active = c3.toggle("on", value=bool(g["active"]), key=f"t_{g['id']}")

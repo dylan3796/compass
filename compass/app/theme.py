@@ -47,6 +47,17 @@ section[data-testid="stSidebar"] { background-color: #111111; border-right: 1px 
 }
 .compass-card:hover { border-color: #3a3a3a; }
 
+/* Card header row: name + badges. Wraps instead of overflowing on narrow viewports. */
+.card-head { display: flex; justify-content: space-between; align-items: center;
+             flex-wrap: wrap; gap: 8px; }
+/* Inline metric strip inside cards. Wraps on narrow viewports. */
+.metric-row { display: flex; gap: 20px; flex-wrap: wrap; row-gap: 6px; }
+/* Long unbreakable strings (JSON configs, model ids, version chains). */
+.wrap-anywhere { overflow-wrap: anywhere; word-break: break-word; }
+/* Savings figure on the recommendations page: right-aligned beside the
+   description on desktop, left-aligned when Streamlit stacks the columns. */
+.rec-savings { padding-top: 12px; font-size: 15px; text-align: right; }
+
 .badge {
   font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; font-weight: 600;
   letter-spacing: 0.08em; padding: 3px 9px; border-radius: 4px; white-space: nowrap;
@@ -86,6 +97,19 @@ section[data-testid="stSidebar"] { background-color: #111111; border-right: 1px 
 hr { border-color: #232323; }
 div[data-testid="stMetric"] { background: #141414; border: 1px solid #232323;
   border-radius: 8px; padding: 12px 16px; }
+
+/* Small screens: tighter cards, smaller display type, no wasted margins. */
+@media (max-width: 640px) {
+  .compass-card { padding: 12px 14px; margin-bottom: 10px; }
+  .metric-value { font-size: 22px; }
+  h1 { font-size: 26px !important; }
+  h2 { font-size: 22px !important; }
+  h3 { font-size: 17px !important; }
+  hr { margin: 12px 0; }
+  div[data-testid="stMetric"] { padding: 10px 12px; }
+  .metric-row { gap: 14px; }
+  .rec-savings { text-align: left; padding-top: 4px; }
+}
 </style>
 """
 

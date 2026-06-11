@@ -34,10 +34,10 @@ if agent["last_run"]:
 nb = " " + new_badge() if new else ""
 explained = common.explanation(sel)
 st.markdown(
-    f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+    f'<div class="card-head">'
     f'<h2 style="margin:0;">{TYPE_ICON.get(agent["type"], "•")} {agent["name"]}</h2>'
     f'<div>{badge(agent["status"])}{nb}</div></div>'
-    f'<span class="muted mono" style="font-size:13px;">'
+    f'<span class="muted mono wrap-anywhere" style="font-size:13px;">'
     f'{agent["model"]} · {agent["program"]} · last run {last}</span>'
     f'<div class="prose" style="font-size:14px; margin-top:8px;">{explained["purpose"]}</div>',
     unsafe_allow_html=True)
@@ -179,7 +179,7 @@ if not hist.empty:
                            format_func=lambda i: str(hist.set_index("id").loc[i, "run_at"]))
         run = hist.set_index("id").loc[rid]
         st.markdown(
-            f'<div class="compass-card mono" style="font-size:13px;">'
+            f'<div class="compass-card mono wrap-anywhere" style="font-size:13px;">'
             f'<b>input</b> · {run["input_tokens"]:,} tokens<br>'
             f'<span class="muted">[input payload preview — {fmt_tokens(run["input_tokens"])} tokens'
             f'{", truncated: full document context attached" if run["input_tokens"] > 20000 else ""}]</span><br><br>'

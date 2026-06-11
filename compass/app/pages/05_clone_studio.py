@@ -46,13 +46,13 @@ def metric_block(col, a, s, version):
     lat_txt = f"{s['avg_latency'] / 1000:.1f}s" if s.get("avg_latency") else "—"
     col.markdown(
         f'<div class="compass-card">'
-        f'<div style="display:flex; justify-content:space-between;">'
+        f'<div class="card-head">'
         f'<span class="mono" style="font-size:16px; font-weight:600;">{a["name"]}</span>'
         f'{badge(a["status"])}</div>'
         f'<div class="purpose">{a["purpose"] or ""}</div>'
-        f'<div class="mono muted" style="font-size:12px; margin-top:4px;">{a["model"]} · '
+        f'<div class="mono muted wrap-anywhere" style="font-size:12px; margin-top:4px;">{a["model"]} · '
         f'{version["label"] if version is not None else "no versions"}</div>'
-        f'<div style="display:flex; gap:20px; margin-top:10px;" class="mono">'
+        f'<div class="metric-row mono" style="margin-top:10px;">'
         f'<span style="font-size:13px;">quality <b>{q_txt}</b></span>'
         f'<span style="font-size:13px;">completion <b>{comp_txt}</b></span>'
         f'<span style="font-size:13px;">cost/run <b>{fmt_money(s.get("avg_cost"))}</b></span>'
@@ -122,5 +122,5 @@ for aid in ids:
     st.markdown(
         f'<div class="compass-card" style="margin-bottom:6px;">'
         f'<span class="mono" style="font-weight:600;">{names[aid]}</span> '
-        f'<span class="muted mono" style="font-size:12px;">· '
+        f'<span class="muted mono wrap-anywhere" style="font-size:12px;">· '
         f'{" → ".join(parts)}</span></div>', unsafe_allow_html=True)
