@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS Agent (
   type TEXT NOT NULL,           -- 'research', 'email_drafting', 'classification', ...
   model TEXT NOT NULL,          -- 'claude-sonnet-4-6', 'gpt-4o', ...
   program TEXT,                 -- pipeline/workflow it belongs to
+  purpose TEXT,                 -- plain-English: what this agent does and for whom
+  task_noun TEXT,               -- what one run produces, e.g. 'document summary'
   status TEXT NOT NULL,         -- 'healthy', 'needs_attention', 'critical'
   created_at TIMESTAMP,
   last_run TIMESTAMP

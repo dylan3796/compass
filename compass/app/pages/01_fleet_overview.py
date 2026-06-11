@@ -6,7 +6,7 @@ import pandas as pd
 import streamlit as st
 
 import common
-from theme import TYPE_ICON, badge, fmt_money, new_badge, vital
+from theme import TYPE_ICON, badge, fmt_money, new_badge, verdict_line, vital
 
 st.markdown("## 🧭 Fleet Overview")
 st.markdown('<span class="muted mono">Veritas AI — 8 agents · live demo data</span>',
@@ -17,6 +17,7 @@ agents = common.agents_df()
 runs = common.runs_df(days=60)
 recs = common.recs_df("pending")
 new = common.new_flags()
+explained = common.explanations()
 
 # ---- fleet health header -------------------------------------------------
 counts = {"healthy": 0, "needs_attention": 0, "critical": 0}
@@ -54,6 +55,25 @@ c4.markdown(
     unsafe_allow_html=True)
 
 st.markdown("---")
+
+# ---- plain-English readout --------------------------------------------------
+# What an ops person would say out loud if asked "how are the agents doing?"
+problems = [(aid, e) for aid, e in explained.items() if e["direction"] in ("bad", "warn")]
+problems.sort(key=lambda p: (p[1]["direction"] != "bad",))
+wins = [(aid, e) for aid, e in explained.items() if e["direction"] == "good"]
+if problems:
+    name_of = agents.set_index("id")["name"]
+    lines = ""
+    for aid, e in problems[:4]:
+        text = f'<b>{name_of[aid]}</b> — {e["verdict"]}'
+        lines += f'<div style="margin-top:8px;">{verdict_line(e["direction"], text)}</div>'
+    st.markdown(
+        f'<div class="compass-card"><div class="metric-label">In plain English</div>'
+        f'{lines}'
+        f'<div class="muted" style="font-size:12px; margin-top:10px;">'
+        f'{len(wins)} of {len(explained)} agents are doing what they\'re supposed to. '
+        f'Open an agent for the observed runs behind each statement.</div></div>',
+        unsafe_allow_html=True)
 
 # ---- controls --------------------------------------------------------------
 fc1, fc2, _ = st.columns([1, 1, 2])
@@ -100,23 +120,29 @@ for i, r in enumerate(rows):
         q_txt = f"{s['quality_avg']:.2f}" if s.get("quality_avg") else "—"
         comp_txt = f"{100 * s['completion_rate']:.0f}%" if s.get("completion_rate") is not None else "—"
         health_txt = s.get("health") if s.get("health") is not None else "—"
-        rec_line = (f'<div class="rec-line" style="margin-top:8px;">'
-                    f'<span class="accent">▸</span> {r["rec"]["description"]}</div>'
-                    if r["rec"] is not None else
-                    '<div class="rec-line muted" style="margin-top:8px;">No pending recommendations</div>')
+        e = explained.get(a["id"], {})
+        purpose = (f'<div class="muted" style="font-size:12.5px; margin-top:4px;">'
+                   f'{e.get("purpose", "")}</div>') if e.get("purpose") else ""
+        verdict = (f'<div style="margin-top:10px;">'
+                   f'{verdict_line(e["direction"], e["verdict"])}</div>') if e.get("verdict") else ""
+        rec_line = (f'<div class="rec-line" style="margin-top:6px;">'
+                    f'<span class="accent">▸</span> <span class="muted">Suggested fix:</span> '
+                    f'{r["rec"]["description"]}</div>'
+                    if r["rec"] is not None else "")
         st.markdown(
             f'<div class="compass-card">'
             f'<div style="display:flex; justify-content:space-between; align-items:center;">'
             f'<div><span class="mono" style="font-size:17px; font-weight:600;">'
             f'{TYPE_ICON.get(a["type"], "•")} {a["name"]}</span>'
-            f'<span class="muted" style="font-size:12px;"> · {a["type"].replace("_", " ")} · {a["model"]}</span></div>'
+            f'<span class="muted" style="font-size:12px;"> · {a["model"]}</span></div>'
             f'<div>{badge(a["status"])}{nb}</div></div>'
+            f'{purpose}'
             f'{vital(s.get("health") or 0, a["status"])}'
             f'<div style="display:flex; gap:24px; margin-top:10px;" class="mono">'
             f'<span style="font-size:13px;">cost/30d <b>{fmt_money(r["cost"])}</b>{trend}</span>'
             f'<span style="font-size:13px;">health <b>{health_txt}</b></span>'
             f'<span style="font-size:13px;">quality <b>{q_txt}</b></span>'
-            f'<span style="font-size:13px;">completion <b>{comp_txt}</b></span>'
-            f'</div>{rec_line}</div>', unsafe_allow_html=True)
+            f'<span style="font-size:13px;">finished <b>{comp_txt}</b></span>'
+            f'</div>{verdict}{rec_line}</div>', unsafe_allow_html=True)
         if st.button("View →", key=f"view_{a['id']}", use_container_width=True):
             common.goto_agent(a["id"])

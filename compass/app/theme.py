@@ -100,6 +100,17 @@ def sev_badge(sev: str) -> str:
     return f'<span class="badge badge-sev-{sev}">{sev.upper()}</span>'
 
 
+VERDICT_ICON = {"bad": "✗", "warn": "⚠", "good": "✓", "none": "·"}
+VERDICT_COLOR = {"bad": COLORS["critical"], "warn": COLORS["needs_attention"],
+                 "good": COLORS["healthy"], "none": COLORS["muted"]}
+
+
+def verdict_line(direction: str, text: str, size=13) -> str:
+    return (f'<div style="font-size:{size}px; color:#C9C9C9; line-height:1.45;">'
+            f'<span style="color:{VERDICT_COLOR.get(direction, COLORS["muted"])};">'
+            f'{VERDICT_ICON.get(direction, "·")}</span> {text}</div>')
+
+
 def vital(health: float, status: str) -> str:
     color = COLORS.get(status, COLORS["muted"])
     pct = max(4, min(100, health or 0))

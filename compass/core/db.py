@@ -33,9 +33,11 @@ def _seed(conn: sqlite3.Connection):
     data = json.loads(JSON_PATH.read_text())
 
     conn.executemany(
-        "INSERT INTO Agent (id, name, type, model, program, status, created_at, last_run) "
-        "VALUES (:id, :name, :type, :model, :program, :status, :created_at, :last_run)",
-        data["agents"])
+        "INSERT INTO Agent (id, name, type, model, program, purpose, task_noun, "
+        "status, created_at, last_run) "
+        "VALUES (:id, :name, :type, :model, :program, :purpose, :task_noun, "
+        ":status, :created_at, :last_run)",
+        [{"purpose": None, "task_noun": None, **a} for a in data["agents"]])
     conn.executemany(
         "INSERT INTO AgentRun (id, agent_id, run_at, input_tokens, output_tokens, "
         "total_cost_usd, latency_ms, task_completed, output_quality_score, notes) "

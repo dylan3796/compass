@@ -15,6 +15,7 @@ import streamlit as st  # noqa: E402
 
 from core import db  # noqa: E402
 from core.agent_scorer import is_new_agent, score_agents  # noqa: E402
+from core.explainer import explain_agent, explain_fleet  # noqa: E402
 from core.recommender import refresh_recommendations  # noqa: E402
 
 
@@ -59,6 +60,14 @@ def scores():
 def new_flags():
     return {a: is_new_agent(conn(), a) for a in
             [r["id"] for r in conn().execute("SELECT id FROM Agent").fetchall()]}
+
+
+def explanation(agent_id: str, days: int = 30) -> dict:
+    return explain_agent(conn(), agent_id, days)
+
+
+def explanations(days: int = 30) -> dict:
+    return explain_fleet(conn(), days)
 
 
 def set_rec_status(rec_id: str, status: str):

@@ -9,7 +9,8 @@ import plotly.graph_objects as go
 import streamlit as st
 
 import common
-from theme import COLORS, TYPE_ICON, badge, fmt_money, fmt_tokens, new_badge, plotly_layout, sev_badge
+from theme import (COLORS, TYPE_ICON, badge, fmt_money, fmt_tokens, new_badge,
+                   plotly_layout, sev_badge, verdict_line)
 
 agents = common.agents_df()
 ids = list(agents["id"])
@@ -31,14 +32,29 @@ if agent["last_run"]:
     last = f"{mins:.0f} min ago" if mins < 90 else (
         f"{mins/60:.0f}h ago" if mins < 48 * 60 else f"{mins/1440:.0f}d ago")
 nb = " " + new_badge() if new else ""
+explained = common.explanation(sel)
 st.markdown(
     f'<div style="display:flex; justify-content:space-between; align-items:center;">'
     f'<h2 style="margin:0;">{TYPE_ICON.get(agent["type"], "•")} {agent["name"]}</h2>'
     f'<div>{badge(agent["status"])}{nb}</div></div>'
-    f'<span class="muted mono" style="font-size:13px;">{agent["type"].replace("_", " ")} · '
-    f'{agent["model"]} · {agent["program"]} · last run {last}</span>',
+    f'<span class="muted mono" style="font-size:13px;">'
+    f'{agent["model"]} · {agent["program"]} · last run {last}</span>'
+    f'<div style="font-size:14px; color:#C9C9C9; margin-top:6px;">{explained["purpose"]}</div>',
     unsafe_allow_html=True)
 st.markdown("")
+
+# ---- what's happening, in plain English --------------------------------------
+st.markdown("#### What's happening")
+for f in explained["findings"]:
+    observed = ""
+    if f["observed"]:
+        items = "".join(f'<li style="margin-top:3px;">{o}</li>' for o in f["observed"])
+        observed = (f'<div class="muted mono" style="font-size:11px; letter-spacing:0.08em; '
+                    f'margin-top:10px;">OBSERVED</div>'
+                    f'<ul class="mono" style="font-size:12.5px; color:#A8A8A8; '
+                    f'margin:4px 0 0 0; padding-left:18px;">{items}</ul>')
+    st.markdown(f'<div class="compass-card">{verdict_line(f["direction"], f["headline"], size=14)}'
+                f'{observed}</div>', unsafe_allow_html=True)
 
 # ---- metrics row (with window picker) ---------------------------------------
 window = st.radio("Window", [7, 30, 60, 90], index=1, horizontal=True,
@@ -46,12 +62,21 @@ window = st.radio("Window", [7, 30, 60, 90], index=1, horizontal=True,
 runs = common.runs_df(sel, days=window)
 all_runs = common.runs_df(sel, days=90)
 
+task = explained["task_noun"]
+n_runs, n_done = len(runs), int(runs["task_completed"].sum()) if len(runs) else 0
 m1, m2, m3, m4, m5 = st.columns(5)
-m1.metric("Total runs", f"{len(runs):,}")
-m2.metric("Avg cost / run", fmt_money(runs["total_cost_usd"].mean()) if len(runs) else "—")
-m3.metric("Avg latency", f"{runs['latency_ms'].mean()/1000:.1f}s" if len(runs) else "—")
-m4.metric("Completion rate", f"{100*runs['task_completed'].mean():.0f}%" if len(runs) else "—")
-m5.metric("Quality score", f"{runs['output_quality_score'].mean():.2f}" if len(runs) else "—")
+m1.metric("Total runs", f"{n_runs:,}",
+          help=f"One run = one {task} attempted.")
+m2.metric("Avg cost / run", fmt_money(runs["total_cost_usd"].mean()) if n_runs else "—",
+          help=f"What one {task} costs, on average.")
+m3.metric("Avg latency", f"{runs['latency_ms'].mean()/1000:.1f}s" if n_runs else "—",
+          help=f"How long one {task} takes.")
+m4.metric("Tasks finished", f"{100*runs['task_completed'].mean():.0f}%" if n_runs else "—",
+          help=f"Finished {n_done:,} of {n_runs:,} {task}s in this window. "
+               "The rest were started, paid for, and never delivered.")
+m5.metric("Quality score", f"{runs['output_quality_score'].mean():.2f}" if n_runs else "—",
+          help=f"How good each delivered {task} was, rated 0–1 by review checks. "
+               "Below ~0.7 usually means a human had to redo it.")
 
 st.markdown("---")
 left, right = st.columns([3, 2])
