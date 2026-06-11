@@ -10,7 +10,7 @@ import streamlit as st
 
 import common
 from theme import (COLORS, TYPE_ICON, badge, fmt_money, fmt_tokens, new_badge,
-                   plotly_layout, sev_badge, verdict_line)
+                   plotly_layout, rec_label, sev_badge, verdict_line)
 
 agents = common.agents_df()
 ids = list(agents["id"])
@@ -147,7 +147,7 @@ with right:
     for _, r in recs.iterrows():
         st.markdown(
             f'<div class="compass-card">{sev_badge(r["severity"])} '
-            f'<span class="mono muted" style="font-size:11px;">{r["type"]}</span>'
+            f'<span class="mono muted" style="font-size:11px;">{rec_label(r["type"])}</span>'
             f'<div class="rec-line" style="margin-top:8px;">{r["description"]}</div>'
             f'<div class="mono accent" style="font-size:13px; margin-top:6px;">'
             f'{"est. savings " + fmt_money(r["estimated_savings_usd"]) + "/mo" if r["estimated_savings_usd"] else ""}'

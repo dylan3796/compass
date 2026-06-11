@@ -104,6 +104,19 @@ VERDICT_ICON = {"bad": "✗", "warn": "⚠", "good": "✓", "none": "·"}
 VERDICT_COLOR = {"bad": COLORS["critical"], "warn": COLORS["needs_attention"],
                  "good": COLORS["healthy"], "none": COLORS["muted"]}
 
+REC_TYPE_LABEL = {
+    "trim_context": "Stop paying to re-read documents",
+    "prompt_regression": "Review a bad prompt change",
+    "clone_best_performer": "Copy what the best agent does",
+    "add_guardrail": "Stop paying for unfinished work",
+    "rate_limit": "Cap runaway retries",
+    "restructure_input": "Standardize the input format",
+}
+
+
+def rec_label(rtype: str) -> str:
+    return REC_TYPE_LABEL.get(rtype, rtype.replace("_", " "))
+
 
 def verdict_line(direction: str, text: str, size=13) -> str:
     return (f'<div style="font-size:{size}px; color:#C9C9C9; line-height:1.45;">'
