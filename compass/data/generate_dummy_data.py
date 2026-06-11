@@ -155,6 +155,33 @@ AGENTS = [
          lat=(6000, 1000), q=(0.92, 0.02), comp=0.97, start_day=75),
 ]
 
+# Value assurance: per-run value estimates and (where an agent was specced
+# against a projection) the promised numbers Compass measures against.
+# Story beats: Drafter beats its projection, Support badly misses it
+# (completion 37% vs the ~85% the spec assumed), Summarizer blows through
+# its projected cost on an over-provisioned model. Scout/Coder have no
+# honest unit-value model -> NULL, shown as "—" everywhere.
+VALUE_MODEL = {
+    "ag_drafter": dict(
+        unit_value_usd=20.0, value_basis="drafted email ≈ 30 min of SDR time @ $40/hr",
+        projected_cost_usd_mo=1.00, projected_value_usd_mo=800.0,
+        projection_source="Opportunity Map — Email Drafter spec (Nov 2025)"),
+    "ag_support": dict(
+        unit_value_usd=24.0, value_basis="deflected ticket @ ~$24 loaded handling cost",
+        projected_cost_usd_mo=6.00, projected_value_usd_mo=4000.0,
+        projection_source="Opportunity Map — Support Triage spec (Jan 2026)"),
+    "ag_summarizer": dict(
+        unit_value_usd=2.20, value_basis="summary ≈ 3 min of reader skim time @ $45/hr",
+        projected_cost_usd_mo=30.00, projected_value_usd_mo=500.0,
+        projection_source="Knowledge Base program plan (Q4 2025)"),
+    "ag_classifier": dict(
+        unit_value_usd=3.00, value_basis="4 min of manual triage @ $45/hr"),
+    "ag_outbound": dict(
+        unit_value_usd=8.00, value_basis="cold email ≈ 12 min of SDR time @ $40/hr"),
+    "ag_analyst": dict(
+        unit_value_usd=15.50, value_basis="analysis answer ≈ 20 min of analyst time @ $46/hr"),
+}
+
 REGRESSION_DAY = DAYS - 21          # Outbound prompt change, 3 weeks ago
 SUPPORT_LOOP_DAYS = {30, 55, 78}    # days with a runaway loop burst
 SUMMARIZER_SPIKE_DAYS = {38, 71}    # 150k-token monster docs (cost anomalies)
@@ -290,10 +317,16 @@ def main():
     agents = []
     for a in AGENTS:
         created = now - timedelta(days=(DAYS - a["start_day"]) + (0 if a["start_day"] else 90))
+        value = VALUE_MODEL.get(a["id"], {})
         agents.append(dict(
             id=a["id"], name=a["name"], type=a["type"], model=a["model"],
             program=a["program"], status="healthy",  # recomputed by agent_scorer at load
             created_at=created.isoformat(), last_run=last_run.get(a["id"]),
+            projected_cost_usd_mo=value.get("projected_cost_usd_mo"),
+            projected_value_usd_mo=value.get("projected_value_usd_mo"),
+            projection_source=value.get("projection_source"),
+            unit_value_usd=value.get("unit_value_usd"),
+            value_basis=value.get("value_basis"),
         ))
 
     data = dict(

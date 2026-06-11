@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Compass — Know which AI agents are working</title>
-<meta name="description" content="Compass monitors your AI agent fleet — surfaces what's broken, what to fix, and what to clone.">
+<meta name="description" content="Compass is the management layer for your AI workforce — know what your agents cost, what they deliver, and what to build next.">
 <meta name="theme-color" content="#0A0A0A">
 <meta property="og:title" content="Compass — Know which AI agents are working">
-<meta property="og:description" content="Compass monitors your AI agent fleet — surfaces what's broken, what to fix, and what to clone.">
+<meta property="og:description" content="Compass is the management layer for your AI workforce — know what your agents cost, what they deliver, and what to build next.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230A0A0A' stroke='%23818CF8' stroke-width='2.5'/%3E%3Cpath d='M21.5 10.5 L18 18 L10.5 21.5 L14 14 Z' fill='%23818CF8'/%3E%3C/svg%3E">
 <style>
 /* Self-hosted fonts (latin subsets) — no external requests */
@@ -169,6 +169,7 @@ h2 { font-size: 30px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 
   background: var(--bg); color: var(--text); border: 1px solid #333; border-radius: 6px; min-width: 200px; }
 .email-form input:focus, .email-form select:focus { outline: none; border-color: var(--accent); }
 .form-ok { display: none; margin-top: 18px; font-family: var(--mono); color: var(--green); font-size: 14px; }
+.form-err { display: none; margin-top: 18px; font-family: var(--mono); color: var(--red); font-size: 13px; }
 
 footer { border-top: 1px solid var(--border); padding: 36px 0; font-size: 13px; color: var(--muted); }
 footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
@@ -241,14 +242,14 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
   <div class="container hero-grid">
     <div>
       <h1>You're spending real money on AI agents. Do you know which ones are working?</h1>
-      <p class="subhead">Compass monitors your agent fleet — surfaces what's broken, what to fix, and what to clone.</p>
+      <p class="subhead">Know what your agents cost, what they deliver, and what to build next.</p>
       <div class="hero-ctas">
         <button class="btn btn-primary" onclick="openTour()">See how it works →</button>
         <a class="btn btn-ghost" href="#access">Request early access</a>
       </div>
     </div>
     <div class="vitals" aria-label="Agent vitals demo widget">
-      <div class="vitals-head"><span>AGENT VITALS</span><span class="live">LIVE</span></div>
+      <div class="vitals-head"><span>AGENT VITALS</span><span><span class="live">LIVE</span> <span style="color:var(--muted); text-transform:none; letter-spacing:.04em;">(demo)</span></span></div>
       <div class="agent-row"><span class="agent-name">Scout</span><div class="bar"><div class="fill g g1"></div></div><span class="agent-pct pct-g">90</span></div>
       <div class="agent-row"><span class="agent-name">Drafter</span><div class="bar"><div class="fill g g2"></div></div><span class="agent-pct pct-g">92</span></div>
       <div class="agent-row"><span class="agent-name">Classifier</span><div class="bar"><div class="fill g g3"></div></div><span class="agent-pct pct-g">84</span></div>
@@ -294,7 +295,7 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
       <div class="card" style="background: var(--bg);">
         <span class="num">STEP 1</span>
         <h3>Connect your agents</h3>
-        <p>Log files, an API wrapper, or a thin SDK. Compass captures inputs, outputs, latency, token cost, and completion signals.</p>
+        <p>Native support for Claude Code and the Claude Agent SDK — instrument in minutes, not sprints. Other frameworks connect via log files or an API wrapper. Compass captures inputs, outputs, latency, token cost, and completion signals.</p>
       </div>
       <div class="card" style="background: var(--bg);">
         <span class="num">STEP 2</span>
@@ -332,7 +333,7 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
       <table class="fleet-table">
         <tr><th>Agent</th><th>Cost / run</th><th>Top recommendation</th><th>Health</th></tr>
         <tr><td><span class="dot dot-r"></span>Support</td><td>$0.027</td><td class="rec-cell"><b>Add guardrail</b> — completes 34% of tasks, stuck in revision loops</td><td style="color:var(--red)">49</td></tr>
-        <tr><td><span class="dot dot-a"></span>Summarizer</td><td>$0.44</td><td class="rec-cell"><b>Trim context</b> — reads 86k tokens to write 1k · save $89/mo</td><td style="color:var(--amber)">58</td></tr>
+        <tr><td><span class="dot dot-a"></span>Summarizer</td><td>$0.44</td><td class="rec-cell"><b>Right-size model</b> — Opus on a Haiku-grade task · save $80/mo</td><td style="color:var(--amber)">58</td></tr>
         <tr><td><span class="dot dot-a"></span>Coder</td><td>$0.12</td><td class="rec-cell"><b>Clone best performer</b> — Drafter's prompt structure outperforms by 33%</td><td style="color:var(--amber)">63</td></tr>
         <tr><td><span class="dot dot-a"></span>Outbound</td><td>$0.021</td><td class="rec-cell"><b>Regression</b> — quality fell 40% after a prompt change 3 weeks ago</td><td style="color:var(--amber)">67</td></tr>
         <tr><td><span class="dot dot-g"></span>Drafter</td><td>$0.016</td><td class="rec-cell">Fleet's best prompt — clone source</td><td style="color:var(--green)">92</td></tr>
@@ -378,6 +379,66 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
   </div>
 </section>
 
+<!-- ============ AGENT P&L ============ -->
+<section id="pnl">
+  <div class="container">
+    <div class="kicker">The Agent P&amp;L</div>
+    <h2>Every agent is an employee. This is the payroll report.</h2>
+    <p class="lede">Once a week, Compass turns your fleet into a P&amp;L — what each agent cost, what it delivered, and whether it's keeping the promise it was hired on.</p>
+    <div class="fleet-mock">
+      <div class="fleet-head">
+        <span style="color: var(--muted); font-size:11.5px; padding-top:5px;">WEEKLY AGENT P&amp;L · VERITAS AI · JUN 1–7</span>
+        <span style="margin-left:auto; color: var(--muted); font-size:11.5px; padding-top:5px;">
+          cost <b style="color:var(--text)">$26.97</b> · value delivered <b style="color:var(--green)">$1,167</b></span>
+      </div>
+      <table class="fleet-table">
+        <tr><th>Agent</th><th>Runs</th><th>Cost</th><th>Value delivered</th><th>vs. plan</th><th>Trend</th></tr>
+        <tr><td><span class="dot dot-g"></span>Drafter</td><td>14</td><td>$0.22</td><td>$272</td><td style="color:var(--green)">147% of plan</td><td style="color:var(--green)">▲</td></tr>
+        <tr><td><span class="dot dot-r"></span>Support</td><td>44</td><td>$1.22</td><td>$485</td><td style="color:var(--red)">49% of plan</td><td style="color:var(--red)">▼</td></tr>
+        <tr><td><span class="dot dot-a"></span>Summarizer</td><td>49</td><td>$22.10</td><td>$104</td><td style="color:var(--amber)">cost 3× plan</td><td style="color:var(--amber)">▼</td></tr>
+        <tr><td><span class="dot dot-g"></span>Analyst</td><td>14</td><td>$0.84</td><td>$210</td><td class="rec-cell">—</td><td style="color:var(--green)">▲</td></tr>
+        <tr><td><span class="dot dot-g"></span>Classifier</td><td>35</td><td>$0.01</td><td>$96</td><td class="rec-cell">—</td><td class="rec-cell">·</td></tr>
+        <tr><td><span class="dot dot-g"></span>Scout</td><td>21</td><td>$0.06</td><td class="rec-cell">—</td><td class="rec-cell">—</td><td class="rec-cell">·</td></tr>
+        <tr><td><span class="dot dot-a"></span>Coder</td><td>21</td><td>$2.52</td><td class="rec-cell">—</td><td class="rec-cell">—</td><td style="color:var(--amber)">▼</td></tr>
+      </table>
+      <div style="margin-top:14px; font-size:12px; color:var(--muted); border-top:1px solid var(--border); padding-top:12px;">
+        ▸ Support was hired on a projection of <b style="color:var(--text)">$4,000/mo</b> in ticket deflection. It's delivering
+        <b style="color:var(--red)">$2,100</b> — Compass shows why, and what to fix. Agents without a measurable value model show
+        "—" instead of a made-up number.
+      </div>
+    </div>
+    <p style="margin-top:18px; font-family:var(--mono); font-size:13px; color:var(--muted); text-align:center;">The report your CFO forwards.</p>
+  </div>
+</section>
+
+<!-- ============ TWO DOORS ============ -->
+<section id="paths" style="background: var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="kicker">Where are you?</div>
+    <h2>Two ways in. Same loop.</h2>
+    <div class="grid-2">
+      <div class="card" style="background: var(--bg); display:flex; flex-direction:column;">
+        <span class="num">DOOR 1 · COMPASS FLEET</span>
+        <h3>"I'm running agents and don't trust the numbers."</h3>
+        <p>Monitoring, health scores, dollar-ranked recommendations, and the weekly Agent P&amp;L —
+        every agent justified or flagged, every Monday.</p>
+        <div class="ex">Fleet of 8 → 1 critical, $94.82/mo recoverable, ranked by impact</div>
+        <div style="margin-top:auto; padding-top:20px;"><a class="btn btn-primary" href="#access">Request early access →</a></div>
+      </div>
+      <div class="card" style="background: var(--bg); display:flex; flex-direction:column;">
+        <span class="num">DOOR 2 · COMPASS DISCOVERY</span>
+        <h3>"I know we need agents. I don't know which ones."</h3>
+        <p>The Agent Fleet Audit and the Agent Opportunity Map: every agent you run (including the ones
+        nobody tracks), what each costs, what to fix — and the five agents you should build next, ranked
+        by projected ROI with a spec for each.</p>
+        <div class="ex">Audit → Fix List + Build List + 90-day roadmap · from $2,500</div>
+        <div style="margin-top:auto; padding-top:20px;"><a class="btn btn-primary" href="#access" onclick="requestAudit()">Request an audit →</a></div>
+      </div>
+    </div>
+    <p style="margin-top:24px; text-align:center; color:var(--muted); font-size:14px;">Most teams are somewhere in between. Start where you are.</p>
+  </div>
+</section>
+
 <!-- ============ INVESTOR FRAME ============ -->
 <section class="investor">
   <div class="container">
@@ -387,6 +448,11 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
       Most teams are flying blind on what their agents actually cost and deliver.
       <em>Compass is the operating layer that changes that.</em>
     </blockquote>
+    <p style="margin-top:22px; font-family:var(--mono); font-size:13px; color:var(--muted); max-width:720px;">
+      MIT's Project NANDA put a number on it in 2025: ~95% of enterprise GenAI pilots show no measurable
+      P&amp;L impact <span style="color:#555;">("The GenAI Divide: State of AI in Business 2025")</span>.
+      The gap isn't models — it's accountability for what agents actually deliver.
+    </p>
   </div>
 </section>
 
@@ -396,7 +462,7 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
     <div class="cta-box">
       <div class="kicker">Early access</div>
       <h2>Every token spent, justified.</h2>
-      <p class="lede" style="margin: 0 auto;">We're onboarding a small group of teams running 5+ agents in production.</p>
+      <p class="lede" style="margin: 0 auto;">We work with teams at every stage — whether you're running 20 agents or still figuring out your first one.</p>
       <form class="email-form" onsubmit="return captureEmail(event)">
         <input type="email" id="ea-email" placeholder="you@company.com" required>
         <select id="ea-role" required>
@@ -405,9 +471,14 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
           <option>AI lead</option>
           <option>Platform team</option>
         </select>
-        <button class="btn btn-primary" type="submit">Request access</button>
+        <select id="ea-interest" required>
+          <option value="Early access" selected>Early access</option>
+          <option value="Fleet Audit">Fleet Audit</option>
+        </select>
+        <button class="btn btn-primary" type="submit" id="ea-submit">Request access</button>
       </form>
       <div class="form-ok" id="form-ok">✓ Got it — we'll be in touch.</div>
+      <div class="form-err" id="form-err">Couldn't send — email us at <a href="mailto:dylan@compass.dev">dylan@compass.dev</a> instead.</div>
       <p style="margin-top:22px; font-size:14px;"><a href="mailto:dylan@compass.dev">Or talk to us directly →</a></p>
     </div>
   </div>
@@ -492,8 +563,8 @@ const STEPS = [
   },
   {
     tag: "Step 5 · The expensive one",
-    title: "Summarizer: $89/month more than it should cost.",
-    narr: "It reads entire 86k-token documents to produce one-page summaries. The token breakdown makes it obvious — input dwarfs output.",
+    title: "Summarizer: running a frontier model on a fast-model task.",
+    narr: "It reads entire 86k-token documents on an Opus-tier model to produce one-page summaries. The token breakdown makes it obvious — and the fix is one config line.",
     screen: `
       <div><span class="s-metric"><div class="l">avg input</div><div class="v" style="color:var(--amber)">86k</div></span>
       <span class="s-metric"><div class="l">avg output</div><div class="v">1.0k</div></span>
@@ -502,8 +573,9 @@ const STEPS = [
       <div style="margin-top:14px; color:var(--muted)">token breakdown</div>
       <div class="tok-bar"><div class="tok-in" style="width:96%"></div><div class="tok-out" style="width:4%"></div></div>
       <div style="font-size:11.5px; color:var(--muted)"><span style="color:var(--amber)">■</span> input 98.9% &nbsp; <span style="color:var(--green)">■</span> output 1.1%</div>
-      <div class="s-rec"><div class="t">▸ recommendation · trim_context · HIGH</div>
-      <div style="margin-top:8px; font-size:13px;">Provide structured input (abstract + key fields) instead of full documents — <b style="color:var(--accent)">est. savings $89/mo</b>.</div>
+      <div class="s-rec"><div class="t">▸ recommendation · right_size_model · HIGH</div>
+      <div style="margin-top:8px; font-size:13px;">Summarizer runs Opus 4.8 — Haiku 4.5 scores within ~3% on doc summarization at ~1/5th the cost. <b style="color:var(--accent)">Est. savings $80/mo.</b></div>
+      <div style="margin-top:6px; color:var(--muted); font-size:12px;">Also pending: trim_context — structured input instead of full documents (+$18/mo after right-sizing; the two never double-count).</div>
       <span class="s-btn">Apply</span></div>`
   },
   {
@@ -569,12 +641,41 @@ document.addEventListener("keydown", e => {
 });
 $("tour").addEventListener("click", e => { if (e.target === $("tour")) closeTour(); });
 
-// ---------- email capture (client-side only; wire to a form backend later) ----------
-function captureEmail(e) {
+// ---------- email capture (FormSubmit relay; requires one-time activation by the recipient) ----------
+const FORM_ENDPOINT = "https://formsubmit.co/ajax/dylanmr96@gmail.com";
+
+async function captureEmail(e) {
   e.preventDefault();
-  document.querySelector(".email-form").style.display = "none";
-  $("form-ok").style.display = "block";
+  const btn = $("ea-submit");
+  btn.disabled = true;
+  btn.textContent = "Sending…";
+  $("form-err").style.display = "none";
+  try {
+    const res = await fetch(FORM_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({
+        email: $("ea-email").value,
+        role: $("ea-role").value,
+        interest: $("ea-interest").value,
+        _subject: "Compass — " + $("ea-interest").value + " request",
+      }),
+    });
+    if (!res.ok) throw new Error("relay rejected");
+    document.querySelector(".email-form").style.display = "none";
+    $("form-ok").style.display = "block";
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = "Request access";
+    $("form-err").style.display = "block";
+  }
   return false;
+}
+
+// Door 2 CTA: pre-select the Fleet Audit interest before scrolling to the form
+function requestAudit() {
+  const sel = $("ea-interest");
+  if (sel) sel.value = "Fleet Audit";
 }
 </script>
 </body>

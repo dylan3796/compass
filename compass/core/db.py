@@ -17,12 +17,43 @@ def get_conn() -> sqlite3.Connection:
     conn.row_factory = sqlite3.Row
     if fresh:
         _seed(conn)
+    else:
+        _migrate(conn)
     return conn
+
+
+# Columns added after the v1 schema; existing compass.db files get them via
+# ALTER TABLE (values stay NULL until the demo data is regenerated).
+AGENT_V2_COLUMNS = {
+    "projected_cost_usd_mo": "REAL",
+    "projected_value_usd_mo": "REAL",
+    "projection_source": "TEXT",
+    "unit_value_usd": "REAL",
+    "value_basis": "TEXT",
+}
+
+
+def _migrate(conn: sqlite3.Connection):
+    existing = {r["name"] for r in conn.execute("PRAGMA table_info(Agent)").fetchall()}
+    for col, sqltype in AGENT_V2_COLUMNS.items():
+        if col not in existing:
+            conn.execute(f"ALTER TABLE Agent ADD COLUMN {col} {sqltype}")
+    conn.commit()
 
 
 def reset_db():
     if DB_PATH.exists():
         DB_PATH.unlink()
+
+
+# Older dummy_agents.json files may predate the value-assurance fields
+AGENT_DEFAULTS = {
+    "projected_cost_usd_mo": None,
+    "projected_value_usd_mo": None,
+    "projection_source": None,
+    "unit_value_usd": None,
+    "value_basis": None,
+}
 
 
 def _seed(conn: sqlite3.Connection):
@@ -33,9 +64,13 @@ def _seed(conn: sqlite3.Connection):
     data = json.loads(JSON_PATH.read_text())
 
     conn.executemany(
-        "INSERT INTO Agent (id, name, type, model, program, status, created_at, last_run) "
-        "VALUES (:id, :name, :type, :model, :program, :status, :created_at, :last_run)",
-        data["agents"])
+        "INSERT INTO Agent (id, name, type, model, program, status, created_at, last_run, "
+        "projected_cost_usd_mo, projected_value_usd_mo, projection_source, "
+        "unit_value_usd, value_basis) "
+        "VALUES (:id, :name, :type, :model, :program, :status, :created_at, :last_run, "
+        ":projected_cost_usd_mo, :projected_value_usd_mo, :projection_source, "
+        ":unit_value_usd, :value_basis)",
+        [{**AGENT_DEFAULTS, **a} for a in data["agents"]])
     conn.executemany(
         "INSERT INTO AgentRun (id, agent_id, run_at, input_tokens, output_tokens, "
         "total_cost_usd, latency_ms, task_completed, output_quality_score, notes) "

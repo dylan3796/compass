@@ -1,0 +1,112 @@
+{
+  "company": "Veritas AI",
+  "assessed_at": "2026-06",
+  "interviewed": ["Customer Success lead", "Sales Pipeline lead", "Revenue Ops lead", "Legal counsel (part-time)"],
+  "candidates": [
+    {
+      "id": "opp_meeting_recap",
+      "name": "Meeting Recap",
+      "team": "Customer Success",
+      "workflow": "After every customer call, the CSM writes a recap and next steps into the CRM by hand. Transcripts already exist; nobody reads them.",
+      "volume_per_month": 320,
+      "minutes_per_item": 12,
+      "hourly_cost_usd": 45,
+      "error_tolerance": "high",
+      "data_availability": "clean",
+      "integration_complexity": "low",
+      "model_recommendation": "claude-sonnet-4-6",
+      "tokens_per_run": {"input": 12000, "output": 600},
+      "runs_per_month": 320,
+      "trigger": "event — call recording processed",
+      "inputs": "Call transcript (exists today), account ID, attendee list",
+      "outputs": "Structured recap — summary, action items, risk flags, next-step date — posted as a CRM activity",
+      "guardrails": [
+        "Output validator: recap must match the CRM activity schema",
+        "Escalation: action items mentioning contract, refund, or legal terms route to a human first"
+      ],
+      "success_metric": "% of calls with a CRM recap within 1 hour (target 95%; today ~40% within 3 days)",
+      "value_basis": "320 calls/mo x 12 min x $45/hr loaded CSM cost",
+      "cost_basis": "320 runs x ~12k in / 0.6k out on Sonnet",
+      "build_vs_buy": "CRM vendors sell call-summary add-ons (~$30/seat/mo, ~$1,500/mo at this seat count) that summarize but don't follow the team's recap schema or escalate. Build: the prompt is one page and the transcript pipeline already exists."
+    },
+    {
+      "id": "opp_rfp_drafter",
+      "name": "RFP Response Drafter",
+      "team": "Sales Pipeline",
+      "workflow": "Each inbound RFP gets a first-draft response assembled by an AE from past responses, the security doc, and product sheets — 90 minutes of copy-paste archaeology per RFP.",
+      "volume_per_month": 40,
+      "minutes_per_item": 90,
+      "hourly_cost_usd": 60,
+      "error_tolerance": "medium",
+      "data_availability": "partial",
+      "integration_complexity": "medium",
+      "model_recommendation": "claude-sonnet-4-6",
+      "tokens_per_run": {"input": 32000, "output": 3000},
+      "runs_per_month": 320,
+      "trigger": "human request — AE submits the RFP, agent drafts section by section (~8 sections per RFP)",
+      "inputs": "RFP document, response library (needs consolidating — see data readiness), product/security fact sheets",
+      "outputs": "Per-section first drafts with citations into the response library; AE reviews and finalizes",
+      "guardrails": [
+        "Output validator: every claim must cite a response-library source — uncited claims are blocked",
+        "Completion checker: max 2 revision passes per section",
+        "Escalation: pricing and legal sections always route to a human"
+      ],
+      "success_metric": "AE time per RFP (target: 90 min -> 25 min review)",
+      "value_basis": "40 RFPs/mo x 90 min x $60/hr loaded AE cost",
+      "cost_basis": "~8 section-runs per RFP x 40 RFPs x ~32k in / 3k out on Sonnet",
+      "build_vs_buy": "RFP-automation vendors exist (Loopio-class, ~$15-20k/yr) and are good at the library workflow; weak at company-voice drafting. Buy the library if RFP volume doubles; build the drafter either way — it rides on the same response library."
+    },
+    {
+      "id": "opp_churn_digest",
+      "name": "Churn-Signal Digest",
+      "team": "Revenue Ops",
+      "workflow": "Once a week an analyst assembles a churn-risk digest by eyeballing product usage dashboards, support ticket tone, and invoice status across ~600 accounts.",
+      "volume_per_month": 4,
+      "minutes_per_item": 240,
+      "hourly_cost_usd": 42.5,
+      "error_tolerance": "high",
+      "data_availability": "scattered",
+      "integration_complexity": "medium",
+      "model_recommendation": "claude-opus-4-8",
+      "tokens_per_run": {"input": 20000, "output": 2000},
+      "runs_per_month": 60,
+      "trigger": "schedule — daily account-batch scans, weekly digest assembly",
+      "inputs": "Usage metrics export, support ticket summaries, billing status (three systems, no joined view today)",
+      "outputs": "Weekly ranked digest: top 15 at-risk accounts with the evidence trail per account",
+      "guardrails": [
+        "Output validator: every flagged account must list its evidence sources",
+        "Rate limit: batch scans capped at trigger volume"
+      ],
+      "success_metric": "Analyst assembly time (4 hrs -> 30 min review) and % of churned accounts that were flagged in a prior digest",
+      "value_basis": "4 digests/mo x 4 hrs x $42.50/hr analyst cost (value rises if flag precision proves out — score that later, not now)",
+      "cost_basis": "60 runs/mo x ~20k in / 2k out on Opus (cross-source reasoning)",
+      "build_vs_buy": "Customer-success platforms (Gainsight-class) do health scores but need the same data plumbing this needs anyway, at ~$30k/yr. Build the digest on the joined data; revisit buying when CS headcount doubles."
+    },
+    {
+      "id": "opp_contract_redline",
+      "name": "Contract Redline Assistant",
+      "team": "Legal (part-time counsel)",
+      "workflow": "Inbound vendor/customer contracts get redlined by outside counsel at $90/hr equivalent; turnaround is the real complaint.",
+      "volume_per_month": 15,
+      "minutes_per_item": 45,
+      "hourly_cost_usd": 90,
+      "error_tolerance": "low",
+      "data_availability": "scattered",
+      "integration_complexity": "high",
+      "model_recommendation": "claude-opus-4-8",
+      "tokens_per_run": {"input": 25000, "output": 3000},
+      "runs_per_month": 45,
+      "trigger": "human request",
+      "inputs": "Contract document, playbook of acceptable positions (does not exist in writing today)",
+      "outputs": "Suggested redlines with rationale, for counsel review",
+      "guardrails": [
+        "Human review mandatory on every output — no agent-finalized language",
+        "Escalation: anything off-playbook goes straight to counsel"
+      ],
+      "success_metric": "Counsel review time per contract",
+      "value_basis": "15 contracts/mo x 45 min x $90/hr",
+      "cost_basis": "45 runs/mo x ~25k in / 3k out on Opus",
+      "build_vs_buy": "Deliberately ranked low: error tolerance is low, the playbook the agent needs doesn't exist in writing, and a wrong redline has real blast radius. Write the playbook first; rescore next quarter."
+    }
+  ]
+}

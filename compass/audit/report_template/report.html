@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Agent Fleet Audit — {{CLIENT_NAME}}</title>
+<!--
+  COMPASS FLEET AUDIT REPORT TEMPLATE
+  ===================================
+  Self-contained HTML, no external requests. Print to PDF via the browser
+  (Cmd/Ctrl+P → Save as PDF) — print CSS is included.
+
+  How to use:
+  1. Replace every {{PLACEHOLDER}} (search for "{{").
+  2. Duplicate the .scorecard block once per agent.
+  3. Duplicate <tr> rows in the inventory / fix list / build list tables as needed.
+  4. Delete sections that don't apply to the tier (Starter tier: cut Build List + Roadmap).
+  The content shipped below is the Veritas AI sample — it doubles as the worked example.
+
+  Placeholders:
+    {{CLIENT_NAME}} {{REPORT_DATE}} {{AUDIT_TIER}} {{PREPARED_BY}}
+    {{SPEND_MO}} — measured monthly fleet spend
+    {{RECOVERABLE_MO}} — sum of Fix List savings (de-duplicated, capped at spend)
+    {{UNREALIZED_MO}} — sum of Build List projected net value
+    {{EXEC_SUMMARY}} — one paragraph, written last
+-->
+<style>
+  :root {
+    --ink: #16181D; --muted: #6B7280; --line: #E5E7EB; --bg: #FFFFFF;
+    --accent: #4F46E5; --green: #047857; --amber: #B45309; --red: #B91C1C;
+    --mono: 'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'Segoe UI', Inter, sans-serif; color: var(--ink);
+         background: var(--bg); line-height: 1.55; font-size: 14px; }
+  .page { max-width: 860px; margin: 0 auto; padding: 48px 40px; }
+  .mono { font-family: var(--mono); }
+
+  header.cover { border-bottom: 3px solid var(--ink); padding-bottom: 28px; margin-bottom: 36px; }
+  .cover .brand { font-family: var(--mono); font-size: 13px; color: var(--accent); letter-spacing: .08em; }
+  .cover h1 { font-size: 30px; letter-spacing: -0.01em; margin: 10px 0 4px; }
+  .cover .meta { color: var(--muted); font-size: 13px; }
+
+  h2 { font-size: 19px; margin: 40px 0 12px; padding-top: 18px; border-top: 1px solid var(--line); }
+  h2 .sec { font-family: var(--mono); color: var(--accent); font-size: 12px; margin-right: 10px; }
+  h3 { font-size: 15px; margin: 18px 0 8px; }
+  p { margin-bottom: 10px; }
+  .note { color: var(--muted); font-size: 12.5px; }
+
+  .bignum-row { display: flex; gap: 14px; margin: 18px 0 6px; }
+  .bignum { flex: 1; border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+  .bignum .l { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em;
+               text-transform: uppercase; color: var(--muted); }
+  .bignum .v { font-size: 26px; font-weight: 700; margin-top: 2px; }
+  .v.green { color: var(--green); } .v.red { color: var(--red); } .v.amber { color: var(--amber); }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 6px; font-size: 13px; }
+  th { text-align: left; font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em;
+       text-transform: uppercase; color: var(--muted); padding: 7px 9px; border-bottom: 2px solid var(--ink); }
+  td { padding: 8px 9px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td.num, th.num { text-align: right; font-family: var(--mono); }
+  .tag { display: inline-block; font-family: var(--mono); font-size: 10.5px; padding: 1px 7px;
+         border-radius: 4px; border: 1px solid; }
+  .tag.g { color: var(--green); border-color: var(--green); }
+  .tag.a { color: var(--amber); border-color: var(--amber); }
+  .tag.r { color: var(--red); border-color: var(--red); }
+  .tag.shadow { color: var(--accent); border-color: var(--accent); }
+
+  .scorecard { border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; margin: 14px 0;
+               page-break-inside: avoid; }
+  .scorecard .head { display: flex; justify-content: space-between; align-items: baseline; }
+  .scorecard .head .nm { font-size: 16px; font-weight: 700; }
+  .scorecard .head .hs { font-family: var(--mono); font-size: 20px; font-weight: 700; }
+  .dims { display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap; }
+  .dim { flex: 1; min-width: 120px; background: #F9FAFB; border-radius: 6px; padding: 8px 10px; }
+  .dim .l { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .dim .v { font-size: 16px; font-weight: 600; }
+
+  .fix { border-left: 3px solid var(--accent); padding: 8px 14px; margin: 12px 0; page-break-inside: avoid; }
+  .fix .t { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: .06em; }
+  .fix .impact { font-family: var(--mono); font-weight: 700; }
+
+  .roadmap td:first-child { font-family: var(--mono); white-space: nowrap; color: var(--accent); }
+
+  footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line);
+           font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; }
+
+  @media print {
+    .page { padding: 0; max-width: none; }
+    h2 { page-break-after: avoid; }
+    a { color: var(--ink); text-decoration: none; }
+    @page { margin: 18mm 16mm; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="cover">
+  <div class="brand">⌖ COMPASS · AGENT FLEET AUDIT</div>
+  <h1>{{CLIENT_NAME}} — Agent Fleet Audit</h1>
+  <div class="meta">{{REPORT_DATE}} · {{AUDIT_TIER}} tier · Prepared by {{PREPARED_BY}} · Confidential</div>
+</header>
+
+<!-- ============ 1. EXECUTIVE SUMMARY ============ -->
+<h2><span class="sec">01</span>Executive summary</h2>
+<div class="bignum-row">
+  <div class="bignum"><div class="l">Fleet spend / mo</div><div class="v">{{SPEND_MO}}</div></div>
+  <div class="bignum"><div class="l">Recoverable / mo</div><div class="v green">{{RECOVERABLE_MO}}</div></div>
+  <div class="bignum"><div class="l">Unrealized value / mo</div><div class="v amber">{{UNREALIZED_MO}}</div></div>
+</div>
+<p class="note">Recoverable = Fix List total, de-duplicated where fixes overlap on the same spend.
+Unrealized = projected net value of the Build List, to be tracked against delivery.</p>
+<p>{{EXEC_SUMMARY}}</p>
+<p><em>Sample (Veritas AI):</em> Veritas runs 9 agents — 8 known, 1 discovered during this audit.
+The fleet costs $248/mo, of which $95/mo is recoverable through model right-sizing and context
+trimming. One agent (Support) was deployed against a $4,000/mo value projection and is delivering
+roughly half of it; the cause is identified and fixable. The larger finding is on the build side:
+three scoped agent opportunities project $6,800/mo in net value — 27× current fleet spend.</p>
+
+<!-- ============ 2. AGENT INVENTORY ============ -->
+<h2><span class="sec">02</span>Agent inventory</h2>
+<p class="note">Every agent found in logs, usage exports, the codebase sweep, and team interviews.
+"Shadow" = not on the platform team's list before this audit. Costs measured over the last 30
+days unless marked <em>est.</em></p>
+<table>
+  <tr><th>Agent</th><th>Owner</th><th>Model</th><th>What it does</th><th class="num">Cost/mo</th><th>Status</th></tr>
+  <tr><td>Summarizer</td><td>Knowledge Base</td><td class="mono">claude-opus-4-8</td><td>Document summaries</td><td class="num">$96.40</td><td><span class="tag a">NEEDS ATTENTION</span></td></tr>
+  <tr><td>Coder</td><td>Internal Tooling</td><td class="mono">claude-sonnet-4-6</td><td>Code generation</td><td class="num">$11.20</td><td><span class="tag a">NEEDS ATTENTION</span></td></tr>
+  <tr><td>Support</td><td>Customer Success</td><td class="mono">gpt-4o</td><td>Ticket replies</td><td class="num">$5.10</td><td><span class="tag r">CRITICAL</span></td></tr>
+  <tr><td>Analyst</td><td>Revenue Ops</td><td class="mono">claude-opus-4-8</td><td>Data Q&amp;A</td><td class="num">$3.60</td><td><span class="tag g">HEALTHY</span></td></tr>
+  <tr><td>Outbound</td><td>Sales Pipeline</td><td class="mono">claude-sonnet-4-6</td><td>Cold outreach</td><td class="num">$1.90</td><td><span class="tag a">NEEDS ATTENTION</span></td></tr>
+  <tr><td>Scout</td><td>Market Intel</td><td class="mono">claude-haiku-4-5</td><td>Research briefs</td><td class="num">$1.50</td><td><span class="tag g">HEALTHY</span></td></tr>
+  <tr><td>Drafter</td><td>Sales Pipeline</td><td class="mono">claude-sonnet-4-6</td><td>Email drafting</td><td class="num">$0.90</td><td><span class="tag g">HEALTHY</span></td></tr>
+  <tr><td>Classifier</td><td>Inbound Ops</td><td class="mono">gpt-4o-mini</td><td>Ticket routing</td><td class="num">$0.05</td><td><span class="tag g">HEALTHY</span></td></tr>
+  <tr><td>Digest-bot <span class="tag shadow">SHADOW</span></td><td>(eng, personal key)</td><td class="mono">gpt-4o</td><td>Slack channel digests</td><td class="num">$28 <em>est.</em></td><td><span class="tag a">UNTRACKED</span></td></tr>
+</table>
+
+<!-- ============ 3. PER-AGENT SCORECARDS ============ -->
+<h2><span class="sec">03</span>Per-agent scorecards</h2>
+<p class="note">Health = completion 35% · quality 30% · cost efficiency 20% · prompt efficiency 15%.
+Completion and cost are measured from logs. Quality is a human-rated sample of 25 outputs per
+agent — directional, not ground truth. Duplicate this card per agent.</p>
+
+<div class="scorecard">
+  <div class="head"><span class="nm">Support</span><span class="hs" style="color:var(--red)">49 / 100</span></div>
+  <div class="dims">
+    <div class="dim"><div class="l">Completion</div><div class="v" style="color:var(--red)">34%</div></div>
+    <div class="dim"><div class="l">Quality (rated)</div><div class="v">0.62</div></div>
+    <div class="dim"><div class="l">Cost / run</div><div class="v">$0.027</div></div>
+    <div class="dim"><div class="l">Input : output</div><div class="v">4.6 : 1</div></div>
+  </div>
+  <p><b>Finding:</b> revision loops — the agent drafts, second-guesses, and revises without a stop
+  condition. Run log shows bursts of 12+ runs/hour. ~$3.40/mo of spend produces nothing, but the
+  real cost is the missed projection: hired against $4,000/mo in ticket deflection, delivering
+  ~$2,100/mo at current completion rates.</p>
+  <p><b>Fix:</b> completion-checker guardrail (max 3 revisions, stall detection) → Fix List #2.</p>
+</div>
+
+<div class="scorecard">
+  <div class="head"><span class="nm">Summarizer</span><span class="hs" style="color:var(--amber)">58 / 100</span></div>
+  <div class="dims">
+    <div class="dim"><div class="l">Completion</div><div class="v">93%</div></div>
+    <div class="dim"><div class="l">Quality (rated)</div><div class="v">0.86</div></div>
+    <div class="dim"><div class="l">Cost / run</div><div class="v" style="color:var(--red)">$0.44</div></div>
+    <div class="dim"><div class="l">Input : output</div><div class="v" style="color:var(--red)">91 : 1</div></div>
+  </div>
+  <p><b>Finding:</b> double over-provisioning. Reads ~86k-token documents end-to-end on an
+  Opus-tier model to produce one-page summaries. 39% of fleet spend for a task a fast-tier model
+  handles within a few rated-quality points.</p>
+  <p><b>Fix:</b> right-size to Haiku tier (Fix List #1) and/or trim context to structured input
+  (Fix List #3). Combined savings cap at current spend — see Fix List notes.</p>
+</div>
+
+<!-- ============ 4. THE FIX LIST ============ -->
+<h2><span class="sec">04</span>The Fix List — ranked by monthly impact</h2>
+
+<div class="fix">
+  <div class="t">#1 · RIGHT_SIZE_MODEL · SUMMARIZER</div>
+  <p>Summarizer runs an Opus-tier model on a summarization task class where a fast-tier model
+  rates within ~3% on the audit sample. <span class="impact">Est. $76/mo</span> at current volume.
+  One-line config change; verify on 50 runs.</p>
+</div>
+<div class="fix">
+  <div class="t">#2 · ADD_GUARDRAIL · SUPPORT</div>
+  <p>Completion-checker guardrail (max 3 revisions, 2k-token stall detection) to break revision
+  loops. Direct waste recovered: <span class="impact">$3.40/mo</span> — but the projection gap it
+  closes is worth <span class="impact">~$1,900/mo</span> in deflection value at projected volume.</p>
+</div>
+<div class="fix">
+  <div class="t">#3 · TRIM_CONTEXT · SUMMARIZER</div>
+  <p>Structured input (abstract + key sections) instead of whole documents.
+  <span class="impact">Est. $89/mo</span> on the current model — <em>overlaps with #1</em>; if both
+  ship, combined savings are capped at Summarizer's $96/mo spend. Counted once in the summary.</p>
+</div>
+<div class="fix">
+  <div class="t">#4 · ONBOARD SHADOW AGENT · DIGEST-BOT</div>
+  <p>Move off the personal API key, onto the platform account with logging. Risk fix, not a cost
+  fix: untracked spend (<span class="impact">~$28/mo est.</span>) and no audit trail.</p>
+</div>
+<div class="fix">
+  <div class="t">#5 · PROMPT_REGRESSION · OUTBOUND</div>
+  <p>Quality fell ~40% after the "punchy rewrite" prompt change three weeks ago. Roll back to the
+  structured v1 prompt; A/B the rewrite properly if the reply-rate hypothesis still matters.</p>
+</div>
+
+<!-- ============ 5. THE BUILD LIST ============ -->
+<h2><span class="sec">05</span>The Build List — agents you should have</h2>
+<p class="note">From the Opportunity Map assessment (interviews with {{N_TEAMS}} team leads,
+scored on ROI, feasibility, data readiness, risk). Full one-page spec per candidate in the
+appendix. Projections become baselines: when these agents ship, Compass tracks delivered value
+against the numbers below.</p>
+<table>
+  <tr><th>#</th><th>Candidate</th><th>Team</th><th class="num">Proj. cost/mo</th><th class="num">Proj. value/mo</th><th>Score</th></tr>
+  <tr><td>1</td><td>Meeting Recap agent</td><td>Customer Success</td><td class="num">$14</td><td class="num">$2,880</td><td class="mono">86</td></tr>
+  <tr><td>2</td><td>RFP Response drafter</td><td>Sales Pipeline</td><td class="num">$45</td><td class="num">$3,600</td><td class="mono">67</td></tr>
+  <tr><td>3</td><td>Churn-signal digest</td><td>Revenue Ops</td><td class="num">$9</td><td class="num">$680</td><td class="mono">53</td></tr>
+</table>
+
+<!-- ============ 6. 90-DAY ROADMAP ============ -->
+<h2><span class="sec">06</span>90-day roadmap</h2>
+<table class="roadmap">
+  <tr><th>When</th><th>What</th><th>Owner</th></tr>
+  <tr><td>Week 1–2</td><td>Quick wins: right-size Summarizer, ship Support guardrail, onboard Digest-bot. Instrument the fleet (collector for Claude agents, log mapping for the rest).</td><td>{{OWNER_1}}</td></tr>
+  <tr><td>Week 3–4</td><td>Roll back Outbound prompt; verify all fixes against baseline (completion, cost, rated quality on 50-run samples).</td><td>{{OWNER_2}}</td></tr>
+  <tr><td>Month 2</td><td>Build #1: Meeting Recap agent against its spec. Weekly Agent P&amp;L review starts — every agent a line item.</td><td>{{OWNER_3}}</td></tr>
+  <tr><td>Month 3</td><td>Build #2: RFP drafter. First promised-vs-delivered review: every projection in this report vs. actuals.</td><td>{{OWNER_4}}</td></tr>
+</table>
+
+<footer>
+  <span>⌖ Compass — the management layer for the AI workforce</span>
+  <span>{{CLIENT_NAME}} · {{REPORT_DATE}} · Confidential</span>
+</footer>
+
+</div>
+</body>
+</html>

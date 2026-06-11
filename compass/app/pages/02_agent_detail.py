@@ -53,6 +53,76 @@ m3.metric("Avg latency", f"{runs['latency_ms'].mean()/1000:.1f}s" if len(runs) e
 m4.metric("Completion rate", f"{100*runs['task_completed'].mean():.0f}%" if len(runs) else "—")
 m5.metric("Quality score", f"{runs['output_quality_score'].mean():.2f}" if len(runs) else "—")
 
+# ---- projection vs. actual (value assurance) --------------------------------
+# Shown only for agents that were specced against a projection. This panel IS
+# the category: the promise the agent was hired on vs. what it delivers.
+def _field(key):
+    v = agent.get(key)
+    return None if v is None or pd.isna(v) else v
+
+
+if _field("projected_value_usd_mo") or _field("projected_cost_usd_mo"):
+    st.markdown("---")
+    st.markdown("#### Projection vs. actual")
+    st.markdown(
+        f'<span class="muted mono" style="font-size:12px;">Projection source: '
+        f'{_field("projection_source") or "—"} · actuals from the last 30 days, '
+        f'monthly run-rate</span>', unsafe_allow_html=True)
+
+    last30 = common.runs_df(sel, days=30)
+    actual_cost_mo = last30["total_cost_usd"].sum()
+    unit = _field("unit_value_usd")
+    delivered_mo = (last30["task_completed"].sum() * unit) if unit else None
+
+    pv1, pv2 = st.columns(2)
+    with pv1:
+        proj_v = _field("projected_value_usd_mo")
+        if proj_v and delivered_mo is not None:
+            pct = 100 * delivered_mo / proj_v
+            color = COLORS["healthy"] if pct >= 100 else (
+                COLORS["needs_attention"] if pct >= 75 else COLORS["critical"])
+            fig = go.Figure()
+            fig.add_bar(y=["promised", "delivered"], x=[proj_v, delivered_mo],
+                        orientation="h", marker_color=[COLORS["muted"], color],
+                        text=[f"${proj_v:,.0f}", f"${delivered_mo:,.0f}"],
+                        textposition="auto")
+            fig.update_layout(title=dict(text="value / mo", font=dict(size=12)),
+                              showlegend=False)
+            st.plotly_chart(plotly_layout(fig, 200), use_container_width=True)
+            verdict = ("beating its projection" if pct > 110 else
+                       "on plan" if pct >= 75 else "badly missing its projection")
+            st.markdown(
+                f'<span class="mono" style="color:{color}; font-size:13px;">'
+                f'{agent["name"]} is delivering {pct:.0f}% of promised value — {verdict}.'
+                f'</span>', unsafe_allow_html=True)
+        else:
+            st.markdown('<span class="muted">No value projection on file.</span>',
+                        unsafe_allow_html=True)
+    with pv2:
+        proj_c = _field("projected_cost_usd_mo")
+        if proj_c:
+            over = actual_cost_mo / proj_c if proj_c else 0
+            ccolor = COLORS["healthy"] if over <= 1.2 else (
+                COLORS["needs_attention"] if over <= 2 else COLORS["critical"])
+            fig = go.Figure()
+            fig.add_bar(y=["projected", "actual"], x=[proj_c, actual_cost_mo],
+                        orientation="h", marker_color=[COLORS["muted"], ccolor],
+                        text=[f"${proj_c:,.0f}", f"${actual_cost_mo:,.0f}"],
+                        textposition="auto")
+            fig.update_layout(title=dict(text="cost / mo", font=dict(size=12)),
+                              showlegend=False)
+            st.plotly_chart(plotly_layout(fig, 200), use_container_width=True)
+            if over > 2:
+                st.markdown(
+                    f'<span class="mono" style="color:{ccolor}; font-size:13px;">'
+                    f'Cost is {over:.1f}x projection — see the right-size / trim '
+                    f'recommendations.</span>', unsafe_allow_html=True)
+    if unit:
+        st.markdown(
+            f'<span class="muted mono" style="font-size:12px;">Delivered value = '
+            f'completed runs × ${unit:,.2f} ({_field("value_basis")})</span>',
+            unsafe_allow_html=True)
+
 st.markdown("---")
 left, right = st.columns([3, 2])
 
