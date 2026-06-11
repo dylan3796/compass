@@ -131,28 +131,51 @@ AGENTS = [
     # id, name, type, model, program, runs/day, in μ/σ, out μ/σ, latency μ/σ, quality μ/σ, completion
     dict(id="ag_scout", name="Scout", type="research", model="claude-haiku-4-5",
          program="Market Intel", rpd=3, inp=(900, 200), out=(420, 100),
-         lat=(1400, 300), q=(0.89, 0.04), comp=0.97, start_day=0),
+         lat=(1400, 300), q=(0.89, 0.04), comp=0.97, start_day=0,
+         purpose="Looks up a company or topic and returns a short research brief "
+                 "with sources for the Market Intel team.",
+         task_noun="research brief"),
     dict(id="ag_drafter", name="Drafter", type="email_drafting", model="claude-sonnet-4-6",
          program="Sales Pipeline", rpd=2, inp=(1500, 300), out=(700, 150),
-         lat=(2600, 500), q=(0.94, 0.025), comp=0.97, start_day=0),
+         lat=(2600, 500), q=(0.94, 0.025), comp=0.97, start_day=0,
+         purpose="Turns a structured sales brief into a ready-to-send email "
+                 "for the Sales Pipeline team.",
+         task_noun="email draft"),
     dict(id="ag_classifier", name="Classifier", type="classification", model="gpt-4o-mini",
          program="Inbound Ops", rpd=5, inp=(450, 80), out=(60, 15),
-         lat=(800, 150), q=(0.91, 0.03), comp=0.985, start_day=0),
+         lat=(800, 150), q=(0.91, 0.03), comp=0.985, start_day=0,
+         purpose="Tags every inbound request as billing, technical, sales, churn-risk "
+                 "or spam so Inbound Ops can route it to the right queue.",
+         task_noun="routing tag"),
     dict(id="ag_summarizer", name="Summarizer", type="doc_summarization", model="claude-opus-4-8",
          program="Knowledge Base", rpd=7, inp=(86000, 9000), out=(950, 200),
-         lat=(9500, 1500), q=(0.86, 0.05), comp=0.93, start_day=0),
+         lat=(9500, 1500), q=(0.86, 0.05), comp=0.93, start_day=0,
+         purpose="Reads long documents — contracts, reports, policies — and writes "
+                 "a short bullet summary for the Knowledge Base.",
+         task_noun="document summary"),
     dict(id="ag_outbound", name="Outbound", type="cold_outreach", model="claude-sonnet-4-6",
          program="Sales Pipeline", rpd=2, inp=(2600, 400), out=(900, 200),
-         lat=(3000, 600), q=(0.87, 0.035), comp=0.95, start_day=0),
+         lat=(3000, 600), q=(0.87, 0.035), comp=0.95, start_day=0,
+         purpose="Writes personalized cold-outreach emails to prospects "
+                 "for the Sales Pipeline team.",
+         task_noun="cold email"),
     dict(id="ag_coder", name="Coder", type="code_generation", model="claude-sonnet-4-6",
          program="Internal Tooling", rpd=3, inp=(24000, 5000), out=(3500, 800),
-         lat=(11000, 2500), q=(0.71, 0.06), comp=0.90, start_day=0),
+         lat=(11000, 2500), q=(0.71, 0.06), comp=0.90, start_day=0,
+         purpose="Writes small code changes and scripts for the Internal Tooling team.",
+         task_noun="code change"),
     dict(id="ag_support", name="Support", type="support_replies", model="gpt-4o",
          program="Customer Success", rpd=6, inp=(6000, 1500), out=(1300, 400),
-         lat=(5200, 1800), q=(0.62, 0.06), comp=0.37, start_day=0),
+         lat=(5200, 1800), q=(0.62, 0.06), comp=0.37, start_day=0,
+         purpose="Drafts replies to customer support tickets for the "
+                 "Customer Success team.",
+         task_noun="ticket reply"),
     dict(id="ag_analyst", name="Analyst", type="data_analysis", model="claude-opus-4-8",
          program="Revenue Ops", rpd=2, inp=(4500, 800), out=(1500, 300),
-         lat=(6000, 1000), q=(0.92, 0.02), comp=0.97, start_day=75),
+         lat=(6000, 1000), q=(0.92, 0.02), comp=0.97, start_day=75,
+         purpose="Answers data questions against an extract — numbers first, "
+                 "method second — for Revenue Ops.",
+         task_noun="analysis answer"),
 ]
 
 REGRESSION_DAY = DAYS - 21          # Outbound prompt change, 3 weeks ago
@@ -292,7 +315,8 @@ def main():
         created = now - timedelta(days=(DAYS - a["start_day"]) + (0 if a["start_day"] else 90))
         agents.append(dict(
             id=a["id"], name=a["name"], type=a["type"], model=a["model"],
-            program=a["program"], status="healthy",  # recomputed by agent_scorer at load
+            program=a["program"], purpose=a["purpose"], task_noun=a["task_noun"],
+            status="healthy",  # recomputed by agent_scorer at load
             created_at=created.isoformat(), last_run=last_run.get(a["id"]),
         ))
 

@@ -47,6 +47,17 @@ section[data-testid="stSidebar"] { background-color: #111111; border-right: 1px 
 }
 .compass-card:hover { border-color: #3a3a3a; }
 
+/* Card header row: name + badges. Wraps instead of overflowing on narrow viewports. */
+.card-head { display: flex; justify-content: space-between; align-items: center;
+             flex-wrap: wrap; gap: 8px; }
+/* Inline metric strip inside cards. Wraps on narrow viewports. */
+.metric-row { display: flex; gap: 20px; flex-wrap: wrap; row-gap: 6px; }
+/* Long unbreakable strings (JSON configs, model ids, version chains). */
+.wrap-anywhere { overflow-wrap: anywhere; word-break: break-word; }
+/* Savings figure on the recommendations page: right-aligned beside the
+   description on desktop, left-aligned when Streamlit stacks the columns. */
+.rec-savings { padding-top: 12px; font-size: 15px; text-align: right; }
+
 .badge {
   font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; font-weight: 600;
   letter-spacing: 0.08em; padding: 3px 9px; border-radius: 4px; white-space: nowrap;
@@ -69,15 +80,36 @@ section[data-testid="stSidebar"] { background-color: #111111; border-right: 1px 
 .metric-label { font-size: 11px; letter-spacing: 0.1em; color: #8A8A8A; text-transform: uppercase;
                 font-family: 'IBM Plex Mono', monospace; }
 .metric-value { font-size: 26px; font-weight: 600; color: #FAFAFA; }
-.metric-sub { font-size: 12px; color: #8A8A8A; }
+.metric-sub { font-size: 12.5px; color: #8A8A8A; }
 .accent { color: #818CF8; }
 .muted { color: #8A8A8A; }
+.muted2 { color: #B0B0B0; }
 .up { color: #EF4444; } .down { color: #10B981; }
 
-.rec-line { font-size: 13px; color: #C9C9C9; }
+/* Reading-length plain-English text. Regular UI font, AA+ contrast. */
+.prose { font-family: 'Inter', sans-serif; font-size: 13.5px; color: #C9C9C9; line-height: 1.5; }
+.purpose { font-family: 'Inter', sans-serif; font-size: 13px; color: #B0B0B0;
+           line-height: 1.45; margin-top: 6px; }
+.page-sub { font-family: 'Inter', sans-serif; font-size: 13.5px; color: #B0B0B0; line-height: 1.5; }
+.evidence { font-family: 'Inter', sans-serif; font-size: 13px; color: #B0B0B0; line-height: 1.5; }
+
+.rec-line { font-size: 13.5px; color: #C9C9C9; line-height: 1.5; }
 hr { border-color: #232323; }
 div[data-testid="stMetric"] { background: #141414; border: 1px solid #232323;
   border-radius: 8px; padding: 12px 16px; }
+
+/* Small screens: tighter cards, smaller display type, no wasted margins. */
+@media (max-width: 640px) {
+  .compass-card { padding: 12px 14px; margin-bottom: 10px; }
+  .metric-value { font-size: 22px; }
+  h1 { font-size: 26px !important; }
+  h2 { font-size: 22px !important; }
+  h3 { font-size: 17px !important; }
+  hr { margin: 12px 0; }
+  div[data-testid="stMetric"] { padding: 10px 12px; }
+  .metric-row { gap: 14px; }
+  .rec-savings { text-align: left; padding-top: 4px; }
+}
 </style>
 """
 
@@ -98,6 +130,30 @@ def new_badge() -> str:
 
 def sev_badge(sev: str) -> str:
     return f'<span class="badge badge-sev-{sev}">{sev.upper()}</span>'
+
+
+VERDICT_ICON = {"bad": "✗", "warn": "⚠", "good": "✓", "none": "·"}
+VERDICT_COLOR = {"bad": COLORS["critical"], "warn": COLORS["needs_attention"],
+                 "good": COLORS["healthy"], "none": COLORS["muted"]}
+
+REC_TYPE_LABEL = {
+    "trim_context": "Stop paying to re-read documents",
+    "prompt_regression": "Review a bad prompt change",
+    "clone_best_performer": "Copy what the best agent does",
+    "add_guardrail": "Stop paying for unfinished work",
+    "rate_limit": "Cap runaway retries",
+    "restructure_input": "Standardize the input format",
+}
+
+
+def rec_label(rtype: str) -> str:
+    return REC_TYPE_LABEL.get(rtype, rtype.replace("_", " "))
+
+
+def verdict_line(direction: str, text: str, size=13.5) -> str:
+    return (f'<div style="font-size:{size}px; color:#C9C9C9; line-height:1.45;">'
+            f'<span style="color:{VERDICT_COLOR.get(direction, COLORS["muted"])};">'
+            f'{VERDICT_ICON.get(direction, "·")}</span> {text}</div>')
 
 
 def vital(health: float, status: str) -> str:
