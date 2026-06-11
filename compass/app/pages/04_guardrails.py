@@ -11,7 +11,7 @@ import common
 from theme import COLORS, badge
 
 st.markdown("## ⛨ Guardrails")
-st.markdown('<span class="muted mono">Every agent should have guardrails. Most don\'t.</span>',
+st.markdown('<span class="page-sub">Every agent should have guardrails. Most don\'t.</span>',
             unsafe_allow_html=True)
 st.markdown("")
 
@@ -41,9 +41,10 @@ unguarded = [a["name"] for _, a in agents.iterrows()
 if unguarded:
     st.markdown(
         f'<div class="compass-card" style="border-color:{COLORS["critical"]};">'
-        f'<span class="mono" style="color:{COLORS["critical"]};">⚠ {len(unguarded)} agents have '
-        f'no active guardrails</span> <span class="mono">— nothing stops a runaway retry loop or '
-        f'unfinished work from costing money: {", ".join(unguarded)}</span></div>',
+        f'<div class="prose"><span style="color:{COLORS["critical"]}; font-weight:600;">'
+        f'⚠ {len(unguarded)} agents have no active guardrails</span> — nothing stops a '
+        f'runaway retry loop or unfinished work from costing money: '
+        f'{", ".join(unguarded)}</div></div>',
         unsafe_allow_html=True)
 
 for _, a in agents.iterrows():
@@ -56,7 +57,7 @@ for _, a in agents.iterrows():
         f'<div style="display:flex; justify-content:space-between; align-items:center;">'
         f'<span class="mono" style="font-size:15px; font-weight:600;">{a["name"]}</span>'
         f'<div>{state} {badge(a["status"])}</div></div>'
-        f'<div class="muted" style="font-size:12.5px; margin-top:4px;">{a["purpose"] or ""}</div>'
+        f'<div class="purpose">{a["purpose"] or ""}</div>'
         f'</div>',
         unsafe_allow_html=True)
 
@@ -69,13 +70,13 @@ for _, a in agents.iterrows():
             what = GUARDRAIL_TYPES.get(g["type"], ("", g["type"].replace("_", " "), {}))[1]
             c1.markdown(
                 f'<span class="mono" style="font-weight:600;">{g["name"]}</span><br>'
-                f'<span class="muted" style="font-size:11.5px;">{what}</span>',
+                f'<span class="evidence">{what}</span>',
                 unsafe_allow_html=True)
             trig = (f'last triggered {g["last_triggered"][:10]} — {g["last_triggered_note"]}'
                     if isinstance(g["last_triggered"], str) else "never triggered")
             c2.markdown(
                 f'<span class="mono" style="font-size:12px;">{g["config"]}</span><br>'
-                f'<span class="muted" style="font-size:12px;">{trig}</span>',
+                f'<span class="evidence">{trig}</span>',
                 unsafe_allow_html=True)
             active = c3.toggle("on", value=bool(g["active"]), key=f"t_{g['id']}")
             if active != bool(g["active"]):
@@ -86,7 +87,7 @@ for _, a in agents.iterrows():
         gtype = st.selectbox("Type", list(GUARDRAIL_TYPES),
                              format_func=lambda t: GUARDRAIL_TYPES[t][0],
                              key=f"sel_{a['id']}")
-        st.markdown(f'<span class="muted" style="font-size:12px;">'
+        st.markdown(f'<span class="evidence">'
                     f'{GUARDRAIL_TYPES[gtype][1]}</span>', unsafe_allow_html=True)
         cfg = st.text_area("Config (JSON)", json.dumps(GUARDRAIL_TYPES[gtype][2]),
                            key=f"cfg_{a['id']}", height=68)

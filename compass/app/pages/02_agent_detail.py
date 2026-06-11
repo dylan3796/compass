@@ -39,7 +39,7 @@ st.markdown(
     f'<div>{badge(agent["status"])}{nb}</div></div>'
     f'<span class="muted mono" style="font-size:13px;">'
     f'{agent["model"]} · {agent["program"]} · last run {last}</span>'
-    f'<div style="font-size:14px; color:#C9C9C9; margin-top:6px;">{explained["purpose"]}</div>',
+    f'<div class="prose" style="font-size:14px; margin-top:8px;">{explained["purpose"]}</div>',
     unsafe_allow_html=True)
 st.markdown("")
 
@@ -48,11 +48,11 @@ st.markdown("#### What's happening")
 for f in explained["findings"]:
     observed = ""
     if f["observed"]:
-        items = "".join(f'<li style="margin-top:3px;">{o}</li>' for o in f["observed"])
+        items = "".join(f'<li style="margin-top:4px;">{o}</li>' for o in f["observed"])
         observed = (f'<div class="muted mono" style="font-size:11px; letter-spacing:0.08em; '
-                    f'margin-top:10px;">OBSERVED</div>'
-                    f'<ul class="mono" style="font-size:12.5px; color:#A8A8A8; '
-                    f'margin:4px 0 0 0; padding-left:18px;">{items}</ul>')
+                    f'margin-top:12px;">OBSERVED</div>'
+                    f'<ul class="evidence" style="margin:6px 0 0 0; '
+                    f'padding-left:18px;">{items}</ul>')
     st.markdown(f'<div class="compass-card">{verdict_line(f["direction"], f["headline"], size=14)}'
                 f'{observed}</div>', unsafe_allow_html=True)
 
@@ -135,7 +135,7 @@ with right:
         st.plotly_chart(plotly_layout(fig, 260), use_container_width=True)
         if ti > 10 * to:
             st.markdown(
-                f'<span class="mono" style="color:{COLORS["needs_attention"]}; font-size:12px;">'
+                f'<span class="prose" style="color:{COLORS["needs_attention"]};">'
                 f'⚠ Input tokens are {ti/to:.0f}x output — this agent is paying for '
                 f'context it may not need.</span>', unsafe_allow_html=True)
 
@@ -147,7 +147,7 @@ with right:
     for _, r in recs.iterrows():
         st.markdown(
             f'<div class="compass-card">{sev_badge(r["severity"])} '
-            f'<span class="mono muted" style="font-size:11px;">{rec_label(r["type"])}</span>'
+            f'<span class="muted2" style="font-size:12px;">{rec_label(r["type"])}</span>'
             f'<div class="rec-line" style="margin-top:8px;">{r["description"]}</div>'
             f'<div class="mono accent" style="font-size:13px; margin-top:6px;">'
             f'{"est. savings " + fmt_money(r["estimated_savings_usd"]) + "/mo" if r["estimated_savings_usd"] else ""}'

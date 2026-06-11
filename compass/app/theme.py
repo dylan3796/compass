@@ -69,12 +69,20 @@ section[data-testid="stSidebar"] { background-color: #111111; border-right: 1px 
 .metric-label { font-size: 11px; letter-spacing: 0.1em; color: #8A8A8A; text-transform: uppercase;
                 font-family: 'IBM Plex Mono', monospace; }
 .metric-value { font-size: 26px; font-weight: 600; color: #FAFAFA; }
-.metric-sub { font-size: 12px; color: #8A8A8A; }
+.metric-sub { font-size: 12.5px; color: #8A8A8A; }
 .accent { color: #818CF8; }
 .muted { color: #8A8A8A; }
+.muted2 { color: #B0B0B0; }
 .up { color: #EF4444; } .down { color: #10B981; }
 
-.rec-line { font-size: 13px; color: #C9C9C9; }
+/* Reading-length plain-English text. Regular UI font, AA+ contrast. */
+.prose { font-family: 'Inter', sans-serif; font-size: 13.5px; color: #C9C9C9; line-height: 1.5; }
+.purpose { font-family: 'Inter', sans-serif; font-size: 13px; color: #B0B0B0;
+           line-height: 1.45; margin-top: 6px; }
+.page-sub { font-family: 'Inter', sans-serif; font-size: 13.5px; color: #B0B0B0; line-height: 1.5; }
+.evidence { font-family: 'Inter', sans-serif; font-size: 13px; color: #B0B0B0; line-height: 1.5; }
+
+.rec-line { font-size: 13.5px; color: #C9C9C9; line-height: 1.5; }
 hr { border-color: #232323; }
 div[data-testid="stMetric"] { background: #141414; border: 1px solid #232323;
   border-radius: 8px; padding: 12px 16px; }
@@ -118,7 +126,7 @@ def rec_label(rtype: str) -> str:
     return REC_TYPE_LABEL.get(rtype, rtype.replace("_", " "))
 
 
-def verdict_line(direction: str, text: str, size=13) -> str:
+def verdict_line(direction: str, text: str, size=13.5) -> str:
     return (f'<div style="font-size:{size}px; color:#C9C9C9; line-height:1.45;">'
             f'<span style="color:{VERDICT_COLOR.get(direction, COLORS["muted"])};">'
             f'{VERDICT_ICON.get(direction, "·")}</span> {text}</div>')

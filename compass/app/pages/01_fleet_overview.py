@@ -9,7 +9,7 @@ import common
 from theme import TYPE_ICON, badge, fmt_money, new_badge, verdict_line, vital
 
 st.markdown("## 🧭 Fleet Overview")
-st.markdown('<span class="muted mono">Veritas AI — 8 agents · live demo data</span>',
+st.markdown('<span class="page-sub">Veritas AI — 8 agents · live demo data</span>',
             unsafe_allow_html=True)
 
 scores = common.scores()
@@ -70,7 +70,7 @@ if problems:
     st.markdown(
         f'<div class="compass-card"><div class="metric-label">In plain English</div>'
         f'{lines}'
-        f'<div class="muted" style="font-size:12px; margin-top:10px;">'
+        f'<div class="prose muted2" style="margin-top:12px;">'
         f'{len(wins)} of {len(explained)} agents are doing what they\'re supposed to. '
         f'Open an agent for the observed runs behind each statement.</div></div>',
         unsafe_allow_html=True)
@@ -121,11 +121,11 @@ for i, r in enumerate(rows):
         comp_txt = f"{100 * s['completion_rate']:.0f}%" if s.get("completion_rate") is not None else "—"
         health_txt = s.get("health") if s.get("health") is not None else "—"
         e = explained.get(a["id"], {})
-        purpose = (f'<div class="muted" style="font-size:12.5px; margin-top:4px;">'
+        purpose = (f'<div class="purpose">'
                    f'{e.get("purpose", "")}</div>') if e.get("purpose") else ""
-        verdict = (f'<div style="margin-top:10px;">'
+        verdict = (f'<div style="margin-top:12px;">'
                    f'{verdict_line(e["direction"], e["verdict"])}</div>') if e.get("verdict") else ""
-        rec_line = (f'<div class="rec-line" style="margin-top:6px;">'
+        rec_line = (f'<div class="rec-line" style="margin-top:8px;">'
                     f'<span class="accent">▸</span> <span class="muted">Suggested fix:</span> '
                     f'{r["rec"]["description"]}</div>'
                     if r["rec"] is not None else "")

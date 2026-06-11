@@ -8,7 +8,7 @@ import common
 from theme import fmt_money, rec_label, sev_badge, verdict_line
 
 st.markdown("## ▸ Recommendations")
-st.markdown('<span class="muted mono">Triage inbox — highest ROI first</span>',
+st.markdown('<span class="page-sub">Triage inbox — highest ROI first</span>',
             unsafe_allow_html=True)
 st.markdown("")
 
@@ -48,14 +48,14 @@ for _, r in view.iterrows():
     with box:
         col1, col2, col3 = st.columns([6, 2, 2])
         e = explained.get(r["agent_id"])
-        why = (f'<div style="margin-top:6px;">'
-               f'{verdict_line(e["direction"], "<i>What we observed:</i> " + e["verdict"], size=12)}'
+        why = (f'<div style="margin-top:8px;">'
+               f'{verdict_line(e["direction"], "<i>What we observed:</i> " + e["verdict"], size=13)}'
                f'</div>') if e and e["direction"] in ("bad", "warn") else ""
         col1.markdown(
-            f'<div style="padding-top:4px;">{sev_badge(r["severity"])} '
+            f'<div style="padding-top:4px; padding-right:16px;">{sev_badge(r["severity"])} '
             f'<span class="mono" style="font-weight:600;">{r["agent_name"]}</span> '
-            f'<span class="mono muted" style="font-size:11px;">{rec_label(r["type"])}</span>'
-            f'<div class="rec-line" style="margin-top:6px;">{r["description"]}</div>{why}</div>',
+            f'<span class="muted2" style="font-size:12px;">{rec_label(r["type"])}</span>'
+            f'<div class="rec-line" style="margin-top:8px;">{r["description"]}</div>{why}</div>',
             unsafe_allow_html=True)
         col2.markdown(
             f'<div class="mono accent" style="padding-top:12px; font-size:15px; text-align:right;">'
@@ -80,6 +80,7 @@ if not resolved.empty:
     with st.expander(f"Resolved ({len(resolved)})"):
         for _, r in resolved.iterrows():
             st.markdown(
-                f'<span class="mono muted" style="font-size:13px;">'
-                f'[{r["status"].upper()}] {r["agent_name"]} · {rec_label(r["type"])} — {r["description"]}</span>',
+                f'<span class="muted2" style="font-size:13px; line-height:1.5;">'
+                f'<span class="mono">[{r["status"].upper()}]</span> '
+                f'{r["agent_name"]} · {rec_label(r["type"])} — {r["description"]}</span>',
                 unsafe_allow_html=True)
