@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Compass — Know which AI agents are working</title>
-<meta name="description" content="Compass is the management layer for your AI workforce — know what your agents cost, what they deliver, and what to build next.">
+<title>Compass — The independent record of what your AI agents deliver</title>
+<meta name="description" content="Every AI agent was hired on a promise. Compass benchmarks agents against the outcomes they were hired to deliver — cost, value vs. plan, and what to build next.">
 <meta name="theme-color" content="#0A0A0A">
-<meta property="og:title" content="Compass — Know which AI agents are working">
-<meta property="og:description" content="Compass is the management layer for your AI workforce — know what your agents cost, what they deliver, and what to build next.">
+<meta property="og:title" content="Compass — The independent record of what your AI agents deliver">
+<meta property="og:description" content="Every AI agent was hired on a promise. Compass benchmarks agents against the outcomes they were hired to deliver — cost, value vs. plan, and what to build next.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230A0A0A' stroke='%23818CF8' stroke-width='2.5'/%3E%3Cpath d='M21.5 10.5 L18 18 L10.5 21.5 L14 14 Z' fill='%23818CF8'/%3E%3C/svg%3E">
 <style>
 /* Self-hosted fonts (latin subsets) — no external requests */
@@ -230,6 +230,7 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
     <div class="logo">⌖ compass<span>_</span></div>
     <div class="links">
       <a href="#problem">Problem</a>
+      <a href="#pnl">Agent P&amp;L</a>
       <a href="#how">How it works</a>
       <a href="#recommendations">Recommendations</a>
       <a href="#access" class="btn btn-ghost" style="padding:8px 16px;">Request early access</a>
@@ -241,21 +242,21 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
 <header class="hero">
   <div class="container hero-grid">
     <div>
-      <h1>You're spending real money on AI agents. Do you know which ones are working?</h1>
-      <p class="subhead">Know what your agents cost, what they deliver, and what to build next.</p>
+      <h1>Every AI agent was hired on a promise. Compass checks whether it's keeping it.</h1>
+      <p class="subhead">The independent record of what your agents cost, what they deliver against the plan they were hired on, and what to build next.</p>
       <div class="hero-ctas">
         <button class="btn btn-primary" onclick="openTour()">See how it works →</button>
         <a class="btn btn-ghost" href="#access">Request early access</a>
       </div>
     </div>
-    <div class="vitals" aria-label="Agent vitals demo widget">
-      <div class="vitals-head"><span>AGENT VITALS</span><span><span class="live">LIVE</span> <span style="color:var(--muted); text-transform:none; letter-spacing:.04em;">(demo)</span></span></div>
-      <div class="agent-row"><span class="agent-name">Scout</span><div class="bar"><div class="fill g g1"></div></div><span class="agent-pct pct-g">90</span></div>
-      <div class="agent-row"><span class="agent-name">Drafter</span><div class="bar"><div class="fill g g2"></div></div><span class="agent-pct pct-g">92</span></div>
-      <div class="agent-row"><span class="agent-name">Classifier</span><div class="bar"><div class="fill g g3"></div></div><span class="agent-pct pct-g">84</span></div>
-      <div class="agent-row"><span class="agent-name">Summarizer</span><div class="bar"><div class="fill a a1"></div></div><span class="agent-pct pct-a">58</span></div>
-      <div class="agent-row"><span class="agent-name">Support</span><div class="bar"><div class="fill r r1"></div></div><span class="agent-pct pct-r">49</span></div>
-      <div class="vitals-foot">▸ Support is completing <b>34%</b> of tasks — guardrail recommended</div>
+    <div class="vitals" aria-label="Agent P&amp;L demo widget">
+      <div class="vitals-head"><span>WEEKLY AGENT P&amp;L · VS. PLAN</span><span><span class="live">LIVE</span> <span style="color:var(--muted); text-transform:none; letter-spacing:.04em;">(demo)</span></span></div>
+      <div class="agent-row"><span class="agent-name">Drafter</span><div class="bar"><div class="fill g g1" style="width:100%"></div></div><span class="agent-pct pct-g">147%</span></div>
+      <div class="agent-row"><span class="agent-name">Analyst</span><div class="bar"><div class="fill g g2" style="width:78%"></div></div><span class="agent-pct pct-g">104%</span></div>
+      <div class="agent-row"><span class="agent-name">Summarizer</span><div class="bar"><div class="fill a a1" style="width:33%"></div></div><span class="agent-pct pct-a">3× cost</span></div>
+      <div class="agent-row"><span class="agent-name">Support</span><div class="bar"><div class="fill r r1" style="width:49%"></div></div><span class="agent-pct pct-r">49%</span></div>
+      <div class="agent-row"><span class="agent-name">Scout</span><div class="bar"><div class="fill" style="width:12%; background:#333;"></div></div><span class="agent-pct" style="color:var(--muted)">—</span></div>
+      <div class="vitals-foot">▸ Support was hired on <b style="color:var(--text)">$4,000/mo</b> of ticket deflection — it's delivering <b>$2,100</b></div>
     </div>
   </div>
 </header>
@@ -285,43 +286,84 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
   </div>
 </section>
 
+<!-- ============ AGENT P&L ============ -->
+<section id="pnl" style="background: var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="kicker">The Agent P&amp;L</div>
+    <h2>Every agent is an employee. This is the payroll report.</h2>
+    <p class="lede">Once a week, Compass turns your fleet into a P&amp;L — what each agent cost, what it delivered, and whether it's keeping the promise it was hired on. The part nobody else does.</p>
+    <div class="fleet-mock" style="background: var(--bg);">
+      <div class="fleet-head">
+        <span style="color: var(--muted); font-size:11.5px; padding-top:5px;">WEEKLY AGENT P&amp;L · VERITAS AI · JUN 1–7</span>
+        <span style="margin-left:auto; color: var(--muted); font-size:11.5px; padding-top:5px;">
+          cost <b style="color:var(--text)">$26.97</b> · value delivered <b style="color:var(--green)">$1,167</b></span>
+      </div>
+      <table class="fleet-table">
+        <tr><th>Agent</th><th>Runs</th><th>Cost</th><th>Value delivered</th><th>vs. plan</th><th>Trend</th></tr>
+        <tr><td><span class="dot dot-g"></span>Drafter</td><td>14</td><td>$0.22</td><td>$272</td><td style="color:var(--green)">147% of plan</td><td style="color:var(--green)">▲</td></tr>
+        <tr><td><span class="dot dot-r"></span>Support</td><td>44</td><td>$1.22</td><td>$485</td><td style="color:var(--red)">49% of plan</td><td style="color:var(--red)">▼</td></tr>
+        <tr><td><span class="dot dot-a"></span>Summarizer</td><td>49</td><td>$22.10</td><td>$104</td><td style="color:var(--amber)">cost 3× plan</td><td style="color:var(--amber)">▼</td></tr>
+        <tr><td><span class="dot dot-g"></span>Analyst</td><td>14</td><td>$0.84</td><td>$210</td><td class="rec-cell">—</td><td style="color:var(--green)">▲</td></tr>
+        <tr><td><span class="dot dot-g"></span>Classifier</td><td>35</td><td>$0.01</td><td>$96</td><td class="rec-cell">—</td><td class="rec-cell">·</td></tr>
+        <tr><td><span class="dot dot-g"></span>Scout</td><td>21</td><td>$0.06</td><td class="rec-cell">—</td><td class="rec-cell">—</td><td class="rec-cell">·</td></tr>
+        <tr><td><span class="dot dot-a"></span>Coder</td><td>21</td><td>$2.52</td><td class="rec-cell">—</td><td class="rec-cell">—</td><td style="color:var(--amber)">▼</td></tr>
+      </table>
+      <div style="margin-top:14px; font-size:12px; color:var(--muted); border-top:1px solid var(--border); padding-top:12px;">
+        ▸ Support was hired on a projection of <b style="color:var(--text)">$4,000/mo</b> in ticket deflection. It's delivering
+        <b style="color:var(--red)">$2,100</b> — Compass shows why, and what to fix.
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top:24px; grid-template-columns: 1fr 1fr; align-items: stretch;">
+      <div class="card" style="background: var(--bg);">
+        <span class="num">NO VALUE MODEL, NO NUMBER</span>
+        <h3>We don't invent ROI.</h3>
+        <p>Scout and Coder show "—" because nobody has written an honest value model for them yet. A dash you can trust beats a dollar figure you can't — and it tells you exactly where to look next.</p>
+      </div>
+      <div class="card" style="background: var(--bg); display:flex; flex-direction:column; justify-content:center; text-align:center;">
+        <p style="font-family:var(--mono); font-size:14px; color:var(--text);">The report your CFO forwards.</p>
+        <p style="margin-top:8px;">Delivered every Monday. Every agent a line item.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ HOW IT WORKS ============ -->
-<section id="how" style="background: var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+<section id="how">
   <div class="container">
     <div class="kicker">How it works</div>
     <h2>Observe → Evaluate → Recommend → Act.</h2>
-    <p class="lede">The agent health loop. Connect once, then every token your fleet spends gets justified — or flagged.</p>
+    <p class="lede">The agent accountability loop. Connect once, then every dollar your fleet spends gets justified — or flagged.</p>
     <div class="grid-4">
-      <div class="card" style="background: var(--bg);">
+      <div class="card">
         <span class="num">STEP 1</span>
         <h3>Connect your agents</h3>
         <p>Native support for Claude Code and the Claude Agent SDK — instrument in minutes, not sprints. Other frameworks connect via log files or an API wrapper. Compass captures inputs, outputs, latency, token cost, and completion signals.</p>
       </div>
-      <div class="card" style="background: var(--bg);">
+      <div class="card">
         <span class="num">STEP 2</span>
         <h3>Compass scores each agent</h3>
-        <p>Cost efficiency, output quality, task completion rate, prompt efficiency — one health score per agent, every day.</p>
+        <p>Cost efficiency, output quality, task completion rate, delivery vs. projection — one health score per agent, every day.</p>
       </div>
-      <div class="card" style="background: var(--bg);">
+      <div class="card">
         <span class="num">STEP 3</span>
         <h3>Recommendations surface</h3>
-        <p>"Agent 4 is reading 40k tokens when it needs 400." Specific, ranked by dollars saved — not generic dashboards.</p>
+        <p>"Support's completion failures are costing $1.9k/mo of its projection." Specific, ranked by dollars — not generic dashboards.</p>
       </div>
-      <div class="card" style="background: var(--bg);">
+      <div class="card">
         <span class="num">STEP 4</span>
         <h3>One click to act</h3>
-        <p>Fix the prompt, clone the winner, or add a guardrail. Then watch the score move.</p>
+        <p>Fix the prompt, clone the winner, or add a guardrail. Then watch the value line — held, or dipped.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ============ FLEET VIEW ============ -->
-<section id="fleet">
+<section id="fleet" style="background: var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
   <div class="container">
     <div class="kicker">The fleet view</div>
     <h2>Monday morning clarity on every agent in your stack.</h2>
-    <div class="fleet-mock">
+    <div class="fleet-mock" style="background: var(--bg);">
       <div class="fleet-head">
         <span class="chip chip-g">4 HEALTHY</span>
         <span class="chip chip-a">3 NEEDS ATTENTION</span>
@@ -346,78 +388,72 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
 </section>
 
 <!-- ============ RECOMMENDATION TYPES ============ -->
-<section id="recommendations" style="background: var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+<section id="recommendations">
   <div class="container">
     <div class="kicker">Recommendations</div>
     <h2>Not another dashboard. A to-do list ranked in dollars.</h2>
+    <p class="lede">Outcome signals first — the recommendations no spend cap or model router can make for you.</p>
     <div class="grid-2">
-      <div class="card" style="background: var(--bg);">
-        <span class="num">TRIM CONTEXT</span>
-        <h3>Stop paying for context the agent doesn't need.</h3>
-        <p>Fires when an agent's input tokens run far above peers doing similar work.</p>
-        <div class="ex">Summarizer reads full 86k-token documents when it only needs the abstract — est. savings $89/mo</div>
-      </div>
-      <div class="card" style="background: var(--bg);">
-        <span class="num">CLONE BEST PERFORMER</span>
-        <h3>Your best prompt is an asset. Reuse it.</h3>
-        <p>Fires when one agent's structure measurably beats another's on the same class of task.</p>
-        <div class="ex">Drafter's prompt structure outperforms Coder by 33% on quality — clone it in one click</div>
-      </div>
-      <div class="card" style="background: var(--bg);">
+      <div class="card">
         <span class="num">ADD GUARDRAIL</span>
         <h3>Catch the agent that's stuck in a loop.</h3>
         <p>Fires when completion rates collapse or run frequency spikes with no trigger.</p>
         <div class="ex">Support fails to complete 66% of tasks — add a completion-checker guardrail</div>
       </div>
-      <div class="card" style="background: var(--bg);">
+      <div class="card">
         <span class="num">DETECT REGRESSION</span>
-        <h3>Know the day a prompt change hurts you.</h3>
-        <p>Fires when quality drops against its own rolling baseline — correlated with version history.</p>
+        <h3>Know the day a change hurts you.</h3>
+        <p>Fires when quality drops against the agent's own rolling baseline — correlated with prompt edits, model switches, and version history.</p>
         <div class="ex">Outbound quality dropped 40% after the prompt change on day 69 — review v2</div>
       </div>
+      <div class="card">
+        <span class="num">CLONE BEST PERFORMER</span>
+        <h3>Your best prompt is an asset. Reuse it.</h3>
+        <p>Fires when one agent's structure measurably beats another's on the same class of task.</p>
+        <div class="ex">Drafter's prompt structure outperforms Coder by 33% on quality — clone it in one click</div>
+      </div>
+      <div class="card">
+        <span class="num">RIGHT-SIZE &amp; TRIM</span>
+        <h3>For fleets without a smart gateway — most of you.</h3>
+        <p>No platform routing your models or capping your context? Compass finds the overpaying agents and prices the fix.</p>
+        <div class="ex">Summarizer runs a frontier model on full 86k-token documents — Opus→Haiku + trim, est. savings $98/mo</div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ============ AGENT P&L ============ -->
-<section id="pnl">
+<!-- ============ VS. YOUR PLATFORM ============ -->
+<section id="vs-platform" style="background: var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
   <div class="container">
-    <div class="kicker">The Agent P&amp;L</div>
-    <h2>Every agent is an employee. This is the payroll report.</h2>
-    <p class="lede">Once a week, Compass turns your fleet into a P&amp;L — what each agent cost, what it delivered, and whether it's keeping the promise it was hired on.</p>
-    <div class="fleet-mock">
-      <div class="fleet-head">
-        <span style="color: var(--muted); font-size:11.5px; padding-top:5px;">WEEKLY AGENT P&amp;L · VERITAS AI · JUN 1–7</span>
-        <span style="margin-left:auto; color: var(--muted); font-size:11.5px; padding-top:5px;">
-          cost <b style="color:var(--text)">$26.97</b> · value delivered <b style="color:var(--green)">$1,167</b></span>
+    <div class="kicker">Vs. your platform</div>
+    <h2>Not another optimizer.</h2>
+    <p class="lede">Gateways and agent platforms keep getting better at making agents cheaper and faster. None of them measure whether the output was worth it — and an optimizer can't audit itself.</p>
+    <div class="grid-3">
+      <div class="card" style="background: var(--bg);">
+        <span class="num">YOUR GATEWAY</span>
+        <h3>Caps spend.</h3>
+        <p>Budgets, per-user limits, model routing, auto-downgrades when the meter runs hot. Every decision happens <i>before and during</i> the run — based on a prediction that quality holds.</p>
       </div>
-      <table class="fleet-table">
-        <tr><th>Agent</th><th>Runs</th><th>Cost</th><th>Value delivered</th><th>vs. plan</th><th>Trend</th></tr>
-        <tr><td><span class="dot dot-g"></span>Drafter</td><td>14</td><td>$0.22</td><td>$272</td><td style="color:var(--green)">147% of plan</td><td style="color:var(--green)">▲</td></tr>
-        <tr><td><span class="dot dot-r"></span>Support</td><td>44</td><td>$1.22</td><td>$485</td><td style="color:var(--red)">49% of plan</td><td style="color:var(--red)">▼</td></tr>
-        <tr><td><span class="dot dot-a"></span>Summarizer</td><td>49</td><td>$22.10</td><td>$104</td><td style="color:var(--amber)">cost 3× plan</td><td style="color:var(--amber)">▼</td></tr>
-        <tr><td><span class="dot dot-g"></span>Analyst</td><td>14</td><td>$0.84</td><td>$210</td><td class="rec-cell">—</td><td style="color:var(--green)">▲</td></tr>
-        <tr><td><span class="dot dot-g"></span>Classifier</td><td>35</td><td>$0.01</td><td>$96</td><td class="rec-cell">—</td><td class="rec-cell">·</td></tr>
-        <tr><td><span class="dot dot-g"></span>Scout</td><td>21</td><td>$0.06</td><td class="rec-cell">—</td><td class="rec-cell">—</td><td class="rec-cell">·</td></tr>
-        <tr><td><span class="dot dot-a"></span>Coder</td><td>21</td><td>$2.52</td><td class="rec-cell">—</td><td class="rec-cell">—</td><td style="color:var(--amber)">▼</td></tr>
-      </table>
-      <div style="margin-top:14px; font-size:12px; color:var(--muted); border-top:1px solid var(--border); padding-top:12px;">
-        ▸ Support was hired on a projection of <b style="color:var(--text)">$4,000/mo</b> in ticket deflection. It's delivering
-        <b style="color:var(--red)">$2,100</b> — Compass shows why, and what to fix. Agents without a measurable value model show
-        "—" instead of a made-up number.
+      <div class="card" style="background: var(--bg);">
+        <span class="num">YOUR PLATFORM</span>
+        <h3>Tunes against proxies.</h3>
+        <p>Auto-optimized prompts, synthetic benchmarks, LLM judges. The agent gets better at pleasing the judge — nobody checks the judge against the business.</p>
+      </div>
+      <div class="card" style="background: var(--bg);">
+        <span class="num">COMPASS</span>
+        <h3>Verifies it delivered.</h3>
+        <p>The independent ledger after the run: every model switch, prompt tune, and config change measured against the dollars the agent was hired to deliver. Held — or dipped.</p>
       </div>
     </div>
-    <p style="margin-top:18px; font-family:var(--mono); font-size:13px; color:var(--muted); text-align:center;">The report your CFO forwards.</p>
   </div>
 </section>
-
 <!-- ============ TWO DOORS ============ -->
-<section id="paths" style="background: var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+<section id="paths">
   <div class="container">
     <div class="kicker">Where are you?</div>
     <h2>Two ways in. Same loop.</h2>
     <div class="grid-2">
-      <div class="card" style="background: var(--bg); display:flex; flex-direction:column;">
+      <div class="card" style="display:flex; flex-direction:column;">
         <span class="num">DOOR 1 · COMPASS FLEET</span>
         <h3>"I'm running agents and don't trust the numbers."</h3>
         <p>Monitoring, health scores, dollar-ranked recommendations, and the weekly Agent P&amp;L —
@@ -425,7 +461,7 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
         <div class="ex">Fleet of 8 → 1 critical, $94.82/mo recoverable, ranked by impact</div>
         <div style="margin-top:auto; padding-top:20px;"><a class="btn btn-primary" href="#access">Request early access →</a></div>
       </div>
-      <div class="card" style="background: var(--bg); display:flex; flex-direction:column;">
+      <div class="card" style="display:flex; flex-direction:column;">
         <span class="num">DOOR 2 · COMPASS DISCOVERY</span>
         <h3>"I know we need agents. I don't know which ones."</h3>
         <p>The Agent Fleet Audit and the Agent Opportunity Map: every agent you run (including the ones
@@ -468,8 +504,10 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
         <select id="ea-role" required>
           <option value="" disabled selected>Your role</option>
           <option>Founder</option>
+          <option>CTO / VP Engineering</option>
           <option>AI lead</option>
           <option>Platform team</option>
+          <option>Finance / CFO</option>
         </select>
         <select id="ea-interest" required>
           <option value="Early access" selected>Early access</option>
@@ -486,7 +524,7 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
 
 <footer>
   <div class="container">
-    <span class="mono">⌖ compass_ — agent ROI observability</span>
+    <span class="mono">⌖ compass_ — the independent record of what your agents deliver</span>
     <span>© 2026 Compass. <a href="#" onclick="openTour(); return false;">Product walkthrough</a></span>
   </div>
 </footer>
