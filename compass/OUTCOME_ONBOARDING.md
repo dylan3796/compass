@@ -16,6 +16,11 @@ in under 30 minutes, and exactly what they specify vs. what Compass supplies.
    - `—` — no honest value model yet; no number is invented
 4. **Every accepted default is a recorded assumption.** Shown on the P&L,
    editable later, versioned.
+5. **Three views on every line: level, delta, post-change.** Level vs. plan
+   (accountability), week-over-week delta (direction), and delta since the
+   last change — prompt edit, model switch, guardrail (verification). A line
+   that only shows level hides both the trend and whether the last
+   intervention worked.
 
 ## The flow
 
