@@ -93,6 +93,39 @@ regression / loop detection.
 agent, two business numbers per agent (unit assumption + plan), and approval
 of the proposed binding. ~10 minutes per agent.
 
+## Ingestion tiers (what "connect your agent" actually captures)
+
+MCP alone is not a telemetry channel — an MCP server only sees calls made to
+it (no system prompt, no other tools' traffic, no token counts). Step 1
+therefore has three real mechanisms, with capability degrading by tier:
+
+| Tier | Mechanism | Captures | Enables |
+|---|---|---|---|
+| Hooks (Claude Code plugin, built) | Stop-hook collector | Runs, cost, transcripts, CLAUDE.md / instructions, slash commands, subagents, tool calls | Everything, incl. instruction-file versioning |
+| Gateway / proxy (adapter, planned) | LLM request proxy (LiteLLM-style) | Every request: full system prompt as sent, tokens, model | Cost + prompt content for any framework; per-run prompt hashing → automatic change detection |
+| Pure MCP | Agent-invoked reporting only | Only what the agent chooses to call | Weakest; use MCP for outcome systems (step 2), not agent telemetry (step 1) |
+
+Recommendations degrade gracefully: cost/right-size works at every tier;
+prompt regression and clone-best-performer require hooks or gateway.
+
+## Step 2 v1: named connectors × outcome templates
+
+Do not build "query any MCP server." V1 scope:
+
+- **Two systems** (Salesforce, Zendesk), **~3 templates each** (records
+  maintained, tickets deflected, tasks created). Each template = a
+  parameterized query against that system's known MCP tools + identity
+  filter + quality check.
+- **Discovery prefills** template parameters from the agent's observed
+  writes; customer confirms identity + two numbers.
+- **Baseline backfill:** systems of record carry timestamps
+  (`LastModifiedDate`), so the pre-agent baseline is computed retroactively
+  at connect time — variance numbers on day one, no waiting period.
+- **Off-template fallback:** an LLM explores the connected system's MCP
+  tools and *drafts* the outcome definition; the customer approves it.
+  Every approved draft is generalized into the template library — the
+  library compounds with each customer.
+
 ## Fleet-level insights (cross-agent)
 
 Identity-per-agent makes the fleet legible as a graph: agent ↔ objects touched
