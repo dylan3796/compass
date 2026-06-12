@@ -310,7 +310,8 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
       </table>
       <div style="margin-top:14px; font-size:12px; color:var(--muted); border-top:1px solid var(--border); padding-top:12px;">
         ▸ Support was hired on a projection of <b style="color:var(--text)">$4,000/mo</b> in ticket deflection. It's delivering
-        <b style="color:var(--red)">$2,100</b> — Compass shows why, and what to fix.
+        <b style="color:var(--red)">$2,100</b> — Compass shows why, and what to fix. Value delivered is read from your
+        systems of record (here: the help desk) via MCP — never from agent self-reports.
       </div>
     </div>
     <div class="grid-2" style="margin-top:24px; grid-template-columns: 1fr 1fr; align-items: stretch;">
@@ -331,23 +332,23 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
 <section id="how">
   <div class="container">
     <div class="kicker">How it works</div>
-    <h2>Observe → Evaluate → Recommend → Act.</h2>
-    <p class="lede">The agent accountability loop. Connect once, then every dollar your fleet spends gets justified — or flagged.</p>
+    <h2>Connect → Define → Reconcile → Act.</h2>
+    <p class="lede">Two MCP connections and an outcome definition. Then every Monday, every agent reports against the plan it was hired on.</p>
     <div class="grid-4">
       <div class="card">
         <span class="num">STEP 1</span>
-        <h3>Connect your agents</h3>
-        <p>Native support for Claude Code and the Claude Agent SDK — instrument in minutes, not sprints. Other frameworks connect via log files or an API wrapper. Compass captures inputs, outputs, latency, token cost, and completion signals.</p>
+        <h3>Connect your agent via MCP</h3>
+        <p>One config line. Claude Code, Codex, custom SDK agents — any harness that speaks MCP. Compass captures runs, token cost, latency, and completion signals.</p>
       </div>
       <div class="card">
         <span class="num">STEP 2</span>
-        <h3>Compass scores each agent</h3>
-        <p>Cost efficiency, output quality, task completion rate, delivery vs. projection — one health score per agent, every day.</p>
+        <h3>Define the outcome in your systems</h3>
+        <p>Point Compass at where the outcome already lives — Zendesk, Salesforce, HubSpot, Stripe — via the MCP connectors you already have. Pick a template (ticket deflection, pipeline created), set the unit value and the projection. Read-only, aggregates only.</p>
       </div>
       <div class="card">
         <span class="num">STEP 3</span>
-        <h3>Recommendations surface</h3>
-        <p>"Support's completion failures are costing $1.9k/mo of its projection." Specific, ranked by dollars — not generic dashboards.</p>
+        <h3>Compass reconciles weekly</h3>
+        <p>Delivered value is read from your system of record and compared against the plan. 147% or 49% — measured where your business keeps score, not self-reported by the agent.</p>
       </div>
       <div class="card">
         <span class="num">STEP 4</span>
@@ -442,7 +443,7 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
       <div class="card" style="background: var(--bg);">
         <span class="num">COMPASS</span>
         <h3>Verifies it delivered.</h3>
-        <p>The independent ledger after the run: every model switch, prompt tune, and config change measured against the dollars the agent was hired to deliver. Held — or dipped.</p>
+        <p>The independent ledger after the run: every model switch, prompt tune, and config change measured against the dollars the agent was hired to deliver. Outcomes are read from your CRM, helpdesk, and billing via MCP — not from the agent's own logs. Held — or dipped.</p>
       </div>
     </div>
   </div>
