@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compass — Outcome setup, live walkthrough</title>
+<meta name="description" content="Watch Compass meet an agent: read its properties from telemetry, bind it to the system where its outcome lives, set the economics, and put it on the weekly Agent P&L.">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23FFFFFF' stroke='%234338CA' stroke-width='2.5'/%3E%3Cpath d='M21.5 10.5 L18 18 L10.5 21.5 L14 14 Z' fill='%234338CA'/%3E%3C/svg%3E">
+<style>
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 400 800; font-display: swap;
+  src: url(fonts/inter-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 400; font-display: swap;
+  src: url(fonts/ibm-plex-mono-400-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 500; font-display: swap;
+  src: url(fonts/ibm-plex-mono-500-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 600; font-display: swap;
+  src: url(fonts/ibm-plex-mono-600-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+:root {
+  --bg: #FFFFFF;
+  --canvas: #F6F7F9;
+  --surface: #FFFFFF;
+  --surface2: #F1F2F6;
+  --border: #E5E7EB;
+  --border-soft: #EEF0F3;
+  --ink: #0C0E1A;
+  --ink2: #161A2C;
+  --text: #111827;
+  --muted: #6B7280;
+  --faint: #9CA3AF;
+  --green: #047857;
+  --green-bg: rgba(4,120,87,.08);
+  --amber: #B45309;
+  --amber-bg: rgba(180,83,9,.08);
+  --red: #DC2626;
+  --accent: #4338CA;
+  --accent-2: #7C3AED;
+  --accent-bg: rgba(67,56,202,.07);
+  --grad: linear-gradient(135deg, #4338CA, #7C3AED);
+  --mono: 'IBM Plex Mono', 'SF Mono', Menlo, monospace;
+  --sans: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+  --shadow-lg: 0 1px 2px rgba(12,14,26,.06), 0 12px 32px rgba(12,14,26,.10), 0 40px 90px rgba(67,56,202,.10);
+  --shadow-md: 0 1px 2px rgba(12,14,26,.05), 0 8px 24px rgba(12,14,26,.07);
+  --shadow-sm: 0 1px 2px rgba(12,14,26,.06);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.55;
+  -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); text-decoration: none; }
+.mono { font-family: var(--mono); }
+.container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+
+/* ---------- nav ---------- */
+nav { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,.85);
+  backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-soft); }
+nav .container { display: flex; justify-content: space-between; align-items: center; height: 58px; }
+.logo { font-family: var(--mono); font-weight: 600; font-size: 16px; color: var(--text); letter-spacing: .02em; }
+.logo span { color: var(--accent); }
+.nav-tag { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-bg); border: 1px solid rgba(67,56,202,.18);
+  padding: 4px 10px; border-radius: 99px; margin-left: 12px; }
+nav .right { display: flex; align-items: center; gap: 18px; font-size: 13.5px; }
+nav .right a { color: var(--muted); } nav .right a:hover { color: var(--text); }
+.btn { display: inline-flex; align-items: center; gap: 8px; font-family: var(--sans); font-size: 14px;
+  font-weight: 600; padding: 11px 20px; border-radius: 8px; cursor: pointer; border: 1px solid transparent;
+  transition: all .18s ease; user-select: none; }
+.btn-primary { background: var(--ink); color: #FFF; box-shadow: 0 1px 2px rgba(12,14,26,.2); }
+.btn-primary:hover { background: #1E2238; transform: translateY(-1px); }
+.btn-accent { background: var(--grad); color: #FFF; box-shadow: 0 4px 14px rgba(67,56,202,.32); }
+.btn-accent:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(67,56,202,.40); }
+.btn-ghost { background: transparent; color: var(--text); border-color: #D6D9DF; }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+.btn-sm { padding: 8px 14px; font-size: 13px; border-radius: 7px; }
+.btn[disabled] { opacity: .45; pointer-events: none; }
+
+/* ---------- hero ---------- */
+.hero { padding: 84px 0 40px; text-align: center; position: relative; overflow: hidden; }
+.hero::before { content: ""; position: absolute; inset: -40% -20% auto; height: 130%; z-index: -1;
+  background:
+    radial-gradient(46% 60% at 28% 22%, rgba(67,56,202,.10), transparent 70%),
+    radial-gradient(40% 56% at 74% 14%, rgba(124,58,237,.09), transparent 70%),
+    radial-gradient(30% 40% at 55% 60%, rgba(4,120,87,.05), transparent 70%); }
+.kicker { font-family: var(--mono); font-size: 11.5px; letter-spacing: .2em; color: var(--accent);
+  text-transform: uppercase; margin-bottom: 16px; }
+h1 { font-size: 46px; line-height: 1.12; font-weight: 800; letter-spacing: -0.025em; max-width: 780px; margin: 0 auto; }
+h1 em { font-style: normal; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero .sub { margin: 20px auto 0; font-size: 17.5px; color: var(--muted); max-width: 600px; }
+.hero .meta { margin-top: 26px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.meta .pill { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--border);
+  background: var(--surface); border-radius: 99px; padding: 6px 14px; box-shadow: var(--shadow-sm); }
+.meta .pill b { color: var(--text); font-weight: 600; }
+
+/* ---------- product frame ---------- */
+.stage { padding: 36px 0 30px; }
+.frame { border-radius: 16px; overflow: hidden; border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg); background: var(--canvas); }
+.chrome { display: flex; align-items: center; gap: 8px; background: var(--ink); padding: 12px 16px; }
+.chrome i { width: 11px; height: 11px; border-radius: 50%; display: inline-block; opacity: .9; }
+.chrome i:nth-child(1) { background: #FF5F57; } .chrome i:nth-child(2) { background: #FEBC2E; }
+.chrome i:nth-child(3) { background: #28C840; }
+.chrome .url { margin: 0 auto; font-family: var(--mono); font-size: 11.5px; color: #8B90A8;
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.08); padding: 5px 18px; border-radius: 7px; }
+.chrome .url b { color: #C9CCE0; font-weight: 500; }
+.app { display: grid; grid-template-columns: 216px 1fr; min-height: 660px; }
+
+/* sidebar */
+.side { background: var(--ink); color: #B8BCD4; padding: 22px 14px 18px; display: flex; flex-direction: column; }
+.side .logo { color: #FFF; font-size: 15px; padding: 0 10px 18px; }
+.side .group { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+  color: #5A5F7E; padding: 14px 10px 6px; }
+.snav { display: flex; flex-direction: column; gap: 2px; }
+.snav a { display: flex; align-items: center; gap: 10px; color: #A6ABC8; font-size: 13.5px;
+  padding: 8px 10px; border-radius: 8px; transition: background .15s, color .15s; }
+.snav a:hover { background: rgba(255,255,255,.05); color: #E7E9F4; }
+.snav a.on { background: rgba(124,99,255,.16); color: #FFF; }
+.snav a.on .ic { color: #A99CFF; }
+.snav .ic { width: 16px; text-align: center; font-size: 13px; color: #6C7194; }
+.snav .badge { margin-left: auto; font-family: var(--mono); font-size: 10px; color: #0C0E1A;
+  background: linear-gradient(135deg,#A5F3D0,#6EE7B7); border-radius: 99px; padding: 1px 7px; font-weight: 600; }
+.side .ws { margin-top: auto; border-top: 1px solid rgba(255,255,255,.08); padding: 14px 10px 0;
+  display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: #C7CBE2; }
+.ws .avatar { width: 26px; height: 26px; border-radius: 8px; background: var(--grad);
+  display: flex; align-items: center; justify-content: center; color: #FFF; font-weight: 700; font-size: 12px; }
+.ws .sub { font-size: 10.5px; color: #6C7194; }
+
+/* canvas + stepper */
+.canvas { padding: 26px 30px 34px; background:
+  radial-gradient(60% 40% at 80% 0%, rgba(67,56,202,.045), transparent 70%), var(--canvas);
+  min-width: 0; }
+.crumb { font-family: var(--mono); font-size: 11px; color: var(--faint); letter-spacing: .1em;
+  text-transform: uppercase; margin-bottom: 18px; }
+.crumb b { color: var(--muted); font-weight: 500; }
+.steps { display: flex; align-items: center; gap: 0; margin-bottom: 26px; flex-wrap: wrap; row-gap: 10px; }
+.step { display: flex; align-items: center; gap: 9px; cursor: default; }
+.step .n { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid #D2D5DE; color: var(--faint);
+  display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11.5px;
+  font-weight: 600; background: var(--surface); transition: all .25s; flex: none; }
+.step .t { font-size: 12.5px; font-weight: 600; color: var(--faint); transition: color .25s; white-space: nowrap; }
+.step.on .n { background: var(--grad); border-color: transparent; color: #FFF; box-shadow: 0 3px 10px rgba(67,56,202,.35); }
+.step.on .t { color: var(--text); }
+.step.done { cursor: pointer; }
+.step.done .n { background: var(--green-bg); border-color: rgba(4,120,87,.35); color: var(--green); }
+.step.done .t { color: var(--muted); }
+.step-sep { flex: 1; height: 1.5px; min-width: 18px; background: #DDE0E7; margin: 0 10px; border-radius: 2px; position: relative; overflow: hidden; }
+.step-sep.fill::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(4,120,87,.5), rgba(4,120,87,.5)); }
+
+/* panels */
+.panel { display: none; }
+.panel.on { display: block; animation: rise .45s cubic-bezier(.22,.9,.3,1) both; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.panel h2 { font-size: 23px; font-weight: 750; letter-spacing: -0.015em; }
+.panel .lede { color: var(--muted); font-size: 14.5px; margin-top: 6px; max-width: 640px; }
+.panel .foot { display: flex; align-items: center; gap: 16px; margin-top: 24px; }
+.foot .hint { font-size: 12.5px; color: var(--faint); }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  box-shadow: var(--shadow-md); }
+.reveal { opacity: 0; transform: translateY(10px); transition: opacity .5s ease, transform .5s cubic-bezier(.22,.9,.3,1); }
+.reveal.in { opacity: 1; transform: none; }
+
+/* step 1 — connect */
+.connect-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px; margin-top: 22px; align-items: start; }
+.tabs { display: flex; gap: 4px; background: var(--surface2); border-radius: 9px; padding: 4px; width: max-content; margin-bottom: 14px; }
+.tab { font-size: 12.5px; font-weight: 600; color: var(--muted); padding: 6px 14px; border-radius: 7px; cursor: pointer; transition: all .15s; }
+.tab.on { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+.code { background: var(--ink2); color: #D7DAEC; border-radius: 12px; padding: 18px 18px 16px;
+  font-family: var(--mono); font-size: 12.5px; line-height: 1.75; position: relative; overflow-x: auto;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), var(--shadow-md); }
+.code .cm { color: #6C7194; } .code .k { color: #9DA8FF; } .code .s { color: #7EE0B8; }
+.copy { position: absolute; top: 12px; right: 12px; font-family: var(--sans); font-size: 11.5px; font-weight: 600;
+  color: #C9CCE0; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
+  border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+.copy:hover { background: rgba(255,255,255,.14); }
+.feed { padding: 18px; }
+.feed .fh { display: flex; justify-content: space-between; align-items: center; font-family: var(--mono);
+  font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); margin-bottom: 6px; }
+.feed .fh .live { color: var(--green); }
+.live::before { content: "●"; margin-right: 6px; animation: blink 1.6s infinite; }
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+.run-line { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px; align-items: center;
+  font-family: var(--mono); font-size: 12px; padding: 9px 2px; border-bottom: 1px solid var(--border-soft);
+  opacity: 0; transform: translateX(-8px); transition: all .4s ease; }
+.run-line.in { opacity: 1; transform: none; }
+.run-line .t { color: var(--faint); } .run-line .c { text-align: right; color: var(--muted); }
+.run-line b { font-weight: 500; color: var(--text); }
+.run-line .ok { color: var(--green); }
+.toast { margin-top: 14px; display: flex; align-items: center; gap: 12px; background: var(--accent-bg);
+  border: 1px solid rgba(67,56,202,.22); border-radius: 10px; padding: 12px 14px;
+  opacity: 0; transform: translateY(8px) scale(.98); transition: all .45s cubic-bezier(.22,.9,.3,1); }
+.toast.in { opacity: 1; transform: none; }
+.toast .dot { width: 30px; height: 30px; border-radius: 9px; background: var(--grad); color: #FFF;
+  display: flex; align-items: center; justify-content: center; font-size: 14px; flex: none;
+  box-shadow: 0 4px 12px rgba(67,56,202,.35); }
+.toast .tt { font-size: 13px; font-weight: 650; }
+.toast .ts { font-size: 12px; color: var(--muted); }
+
+/* step 2 — the read */
+.read-grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 18px; margin-top: 22px; align-items: start; }
+.agent-head { display: flex; align-items: center; gap: 14px; padding: 20px 22px 16px; border-bottom: 1px solid var(--border-soft); }
+.agent-avatar { width: 46px; height: 46px; border-radius: 13px; background: var(--grad); color: #FFF;
+  display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 6px 16px rgba(67,56,202,.30); flex: none; }
+.agent-head .nm { font-family: var(--mono); font-size: 15.5px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 10px;
+  font-weight: 600; letter-spacing: .08em; padding: 3px 9px; border-radius: 99px; }
+.chip-new { color: var(--accent); background: var(--accent-bg); border: 1px solid rgba(67,56,202,.25); }
+.chip-ok { color: var(--green); background: var(--green-bg); border: 1px solid rgba(4,120,87,.25); }
+.chip-md { color: var(--amber); background: var(--amber-bg); border: 1px solid rgba(180,83,9,.25); }
+.chip-mu { color: var(--muted); background: var(--surface2); border: 1px solid var(--border); }
+.agent-head .plain { font-size: 13px; color: var(--muted); margin-top: 3px; }
+.agent-head .plain b { color: var(--text); font-weight: 600; }
+.scanline { height: 3px; background: var(--surface2); overflow: hidden; }
+.scanline i { display: block; height: 100%; width: 0%; background: var(--grad); transition: width .6s ease; }
+.props { display: grid; grid-template-columns: 1fr 1fr; }
+.prop { padding: 15px 22px; border-bottom: 1px solid var(--border-soft); }
+.prop:nth-child(odd) { border-right: 1px solid var(--border-soft); }
+.prop .l { font-family: var(--mono); font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: var(--faint); margin-bottom: 5px; }
+.prop .v { font-size: 14px; font-weight: 600; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.prop .v .mono { font-size: 13px; }
+.prop .d { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+.spark { display: inline-flex; align-items: flex-end; gap: 2px; height: 22px; }
+.spark i { width: 5px; border-radius: 2px 2px 0 0; background: linear-gradient(180deg,#7C7AF0,#4338CA);
+  transform: scaleY(0); transform-origin: bottom; transition: transform .5s cubic-bezier(.22,.9,.3,1); }
+.props-wide { padding: 15px 22px; border-bottom: 1px solid var(--border-soft); }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.tool { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11.5px;
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; }
+.tool .freq { color: var(--accent); font-weight: 600; }
+.tool .sys { color: var(--muted); }
+.classify { padding: 16px 22px; }
+.classify .match { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.classify .tname { font-size: 14.5px; font-weight: 700; }
+.classify .tname .mono { font-size: 11.5px; color: var(--muted); font-weight: 500; }
+.matchbar { height: 7px; border-radius: 4px; background: var(--surface2); margin-top: 10px; overflow: hidden; }
+.matchbar i { display: block; height: 100%; width: 0%; border-radius: 4px; background: var(--grad); transition: width 1s cubic-bezier(.22,.9,.3,1); }
+.classify .why { font-size: 11.5px; color: var(--muted); margin-top: 8px; }
+.pct { font-family: var(--mono); font-weight: 600; color: var(--accent); font-size: 15px; }
+.raw-toggle { font-family: var(--mono); font-size: 11.5px; color: var(--muted); cursor: pointer;
+  padding: 12px 22px; border-top: 1px solid var(--border-soft); display: block; user-select: none; }
+.raw-toggle:hover { color: var(--accent); }
+.raw { display: none; margin: 0 16px 16px; }
+.raw.open { display: block; }
+.side-note { padding: 18px 20px; }
+.side-note .h { font-family: var(--mono); font-size: 10.5px; letter-spacing: .15em; text-transform: uppercase; color: var(--faint); margin-bottom: 10px; }
+.side-note p { font-size: 13px; color: var(--muted); }
+.side-note p + p { margin-top: 10px; }
+.side-note b { color: var(--text); font-weight: 600; }
+.kv { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; padding: 7px 0; border-bottom: 1px solid var(--border-soft); }
+.kv:last-child { border-bottom: 0; }
+.kv .k { color: var(--muted); } .kv .v { font-weight: 600; font-family: var(--mono); font-size: 12px; }
+
+/* step 3 — bind */
+.bind-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 18px; margin-top: 22px; align-items: start; }
+.bind-row { display: flex; align-items: flex-start; gap: 14px; padding: 17px 22px; border-bottom: 1px solid var(--border-soft); }
+.bind-row:last-child { border-bottom: 0; }
+.bind-ic { width: 36px; height: 36px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center; font-size: 16px; flex: none; }
+.bind-row .bt { font-size: 13.5px; font-weight: 650; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.bind-row .bs { font-size: 12.5px; color: var(--muted); margin-top: 3px; max-width: 460px; }
+.bind-row .bs b { color: var(--text); font-weight: 600; }
+.bind-act { margin-left: auto; flex: none; padding-top: 2px; }
+.state-btn { font-size: 12px; font-weight: 600; border-radius: 7px; padding: 7px 13px; cursor: pointer;
+  border: 1px solid #D6D9DF; background: var(--surface); transition: all .18s; font-family: var(--sans); }
+.state-btn:hover { border-color: var(--accent); color: var(--accent); }
+.state-btn.done { background: var(--green-bg); border-color: rgba(4,120,87,.3); color: var(--green); cursor: default; }
+.editable { font-family: var(--mono); font-size: 11px; color: var(--accent); background: var(--accent-bg);
+  border: 1px dashed rgba(67,56,202,.35); border-radius: 6px; padding: 3px 8px; }
+.guard-note { margin: 16px 22px 20px; background: var(--surface2); border-radius: 10px; padding: 13px 15px;
+  font-size: 12.5px; color: var(--muted); border: 1px solid var(--border-soft); }
+.guard-note b { color: var(--text); }
+
+/* step 4 — economics */
+.econ-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px; margin-top: 22px; align-items: start; }
+.q { padding: 18px 22px; border-bottom: 1px solid var(--border-soft); }
+.q:last-child { border-bottom: 0; }
+.q .ql { font-size: 14px; font-weight: 650; }
+.q .qs { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.q .row { display: flex; align-items: center; gap: 16px; margin-top: 14px; }
+input[type=range] { flex: 1; accent-color: var(--accent); height: 4px; cursor: pointer; }
+.bigval { font-family: var(--mono); font-size: 20px; font-weight: 600; color: var(--accent); min-width: 92px; text-align: right; }
+.bigval small { font-size: 11px; color: var(--muted); font-weight: 400; }
+.default-chip { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 10.5px;
+  color: var(--muted); background: var(--surface2); border: 1px solid var(--border); border-radius: 99px;
+  padding: 3px 10px; margin-top: 10px; }
+.default-chip i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.mathcard { background: var(--ink); color: #E7E9F4; border-radius: 14px; padding: 22px;
+  box-shadow: var(--shadow-lg); position: sticky; top: 80px; }
+.mathcard .h { font-family: var(--mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: #8B90A8; }
+.mathline { display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0;
+  border-bottom: 1px solid rgba(255,255,255,.08); font-size: 13px; color: #B8BCD4; }
+.mathline .mv { font-family: var(--mono); font-size: 13.5px; color: #FFF; }
+.mathtotal { display: flex; justify-content: space-between; align-items: baseline; padding-top: 16px; }
+.mathtotal .l { font-size: 13px; color: #B8BCD4; }
+.mathtotal .v { font-family: var(--mono); font-size: 30px; font-weight: 600;
+  background: linear-gradient(135deg,#A5B4FF,#D8B4FE); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.mathcard .conf { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+.assume { margin-top: 16px; border-top: 1px solid rgba(255,255,255,.08); padding-top: 14px; }
+.assume .h2 { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #8B90A8; margin-bottom: 8px; }
+.assume .a { font-size: 11.5px; color: #B8BCD4; padding: 3px 0; display: flex; gap: 8px; align-items: baseline; }
+.assume .a::before { content: "▸"; color: #9DA8FF; font-size: 10px; }
+
+/* step 5 — live */
+.live-wrap { margin-top: 22px; display: grid; gap: 18px; }
+.pnl-card { overflow: hidden; }
+.pnl-head { display: flex; justify-content: space-between; align-items: center; padding: 15px 22px;
+  border-bottom: 1px solid var(--border-soft); font-family: var(--mono); font-size: 10.5px;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--faint); flex-wrap: wrap; gap: 8px; }
+.pnl-row { display: grid; grid-template-columns: 200px 1fr 240px; gap: 18px; align-items: center; padding: 18px 22px; }
+.pnl-row .nm { font-family: var(--mono); font-size: 13.5px; font-weight: 600; }
+.pnl-row .nm .st { display: block; font-size: 10.5px; color: var(--muted); font-weight: 400; margin-top: 3px; }
+.planbar { height: 10px; background: var(--surface2); border-radius: 6px; overflow: hidden; position: relative; }
+.planbar i { display: block; height: 100%; width: 0%; border-radius: 6px;
+  background: linear-gradient(90deg,#059669,#10B981); transition: width 1.2s cubic-bezier(.22,.9,.3,1);
+  box-shadow: 0 0 12px rgba(16,185,129,.4); }
+.planbar .mark { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); left: 76.9%; opacity: .5; }
+.plan-label { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin-top: 6px; }
+.pnl-nums { text-align: right; }
+.pnl-nums .big { font-family: var(--mono); font-size: 19px; font-weight: 600; color: var(--green); }
+.pnl-nums .sm { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+.pnl-detail { background: var(--surface2); border-top: 1px solid var(--border-soft); padding: 13px 22px;
+  font-size: 12.5px; color: var(--muted); display: flex; gap: 22px; flex-wrap: wrap; }
+.pnl-detail b { color: var(--text); font-weight: 600; }
+.queue { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.queue .qcard { padding: 18px 20px; }
+.qcard .qh { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 13px; font-weight: 600; }
+.qcard p { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+.qcard p b { color: var(--text); font-weight: 600; }
+.recap { background: var(--ink); color: #E7E9F4; border-radius: 14px; padding: 24px; box-shadow: var(--shadow-lg); }
+.recap .rgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+.recap .h { font-family: var(--mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 12px; }
+.recap .you .h { color: #7EE0B8; } .recap .us .h { color: #9DA8FF; }
+.recap li { font-size: 13px; color: #C7CBE2; list-style: none; padding: 4px 0 4px 18px; position: relative; }
+.recap li::before { content: "✓"; position: absolute; left: 0; font-size: 11px; }
+.recap .you li::before { color: #7EE0B8; } .recap .us li::before { color: #9DA8FF; }
+.recap .total { margin-top: 16px; border-top: 1px solid rgba(255,255,255,.1); padding-top: 14px;
+  font-family: var(--mono); font-size: 13px; color: #FFF; }
+
+/* closing */
+.closing { padding: 64px 0 90px; text-align: center; }
+.closing h2 { font-size: 30px; font-weight: 750; letter-spacing: -0.02em; }
+.closing p { color: var(--muted); margin: 12px auto 26px; max-width: 520px; }
+footer { border-top: 1px solid var(--border); padding: 32px 0; font-size: 13px; color: var(--muted); }
+footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+@media (max-width: 980px) {
+  .app { grid-template-columns: 1fr; }
+  .side { flex-direction: row; align-items: center; padding: 12px 16px; gap: 4px; overflow-x: auto; }
+  .side .logo { padding: 0 14px 0 0; }
+  .side .group, .side .ws { display: none; }
+  .snav { flex-direction: row; }
+  .connect-grid, .read-grid, .bind-grid, .econ-grid, .queue, .recap .rgrid { grid-template-columns: 1fr; }
+  .mathcard { position: static; }
+  .pnl-row { grid-template-columns: 1fr; gap: 12px; }
+  .pnl-nums { text-align: left; }
+  h1 { font-size: 33px; }
+}
+@media (max-width: 600px) {
+  .hero { padding: 56px 0 24px; }
+  .canvas { padding: 18px 14px 26px; }
+  .props { grid-template-columns: 1fr; }
+  .prop:nth-child(odd) { border-right: 0; }
+  .step .t { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div style="display:flex; align-items:center;">
+      <a href="index.html" class="logo" style="color:var(--text);">⌖ compass<span>_</span></a>
+      <span class="nav-tag">Live walkthrough</span>
+    </div>
+    <div class="right">
+      <a href="index.html">← Back to overview</a>
+      <a href="index.html#access" class="btn btn-primary btn-sm">Request early access</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="container">
+    <div class="kicker">Outcome setup · interactive</div>
+    <h1>Watch Compass <em>meet an agent</em> — and turn it into a P&amp;L line.</h1>
+    <p class="sub">You're about to onboard a real agent the way a customer does: Compass reads the agent from its own telemetry, proposes the outcome, and asks you for exactly two business numbers. Ten minutes, no engineering.</p>
+    <div class="meta">
+      <span class="pill"><b>~10 min</b> per agent</span>
+      <span class="pill">You answer <b>economics</b>, never mechanics</span>
+      <span class="pill">Value read from <b>your system of record</b> — never agent self-reports</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============ PRODUCT FRAME ============ -->
+<section class="stage">
+  <div class="container">
+    <div class="frame">
+      <div class="chrome"><i></i><i></i><i></i><span class="url">app.compass.dev / <b>outcomes / new</b></span></div>
+      <div class="app">
+
+        <!-- sidebar -->
+        <aside class="side">
+          <div class="logo">⌖ compass<span style="color:#A99CFF">_</span></div>
+          <div class="group">Workspace</div>
+          <div class="snav">
+            <a><span class="ic">▦</span> Fleet overview</a>
+            <a><span class="ic">◉</span> Agents <span class="badge">8</span></a>
+            <a class="on"><span class="ic">⌖</span> Outcomes</a>
+            <a><span class="ic">▤</span> Agent P&amp;L</a>
+            <a><span class="ic">⚑</span> Recommendations</a>
+          </div>
+          <div class="ws">
+            <div class="avatar">V</div>
+            <div>Veritas AI<div class="sub">8 agents · 2,612 runs / 90d</div></div>
+          </div>
+        </aside>
+
+        <!-- canvas -->
+        <div class="canvas">
+          <div class="crumb">Outcomes <b>/ new binding</b></div>
+
+          <div class="steps" id="steps">
+            <div class="step" data-step="0"><span class="n">1</span><span class="t">Connect</span></div>
+            <div class="step-sep"></div>
+            <div class="step" data-step="1"><span class="n">2</span><span class="t">The read</span></div>
+            <div class="step-sep"></div>
+            <div class="step" data-step="2"><span class="n">3</span><span class="t">Bind outcome</span></div>
+            <div class="step-sep"></div>
+            <div class="step" data-step="3"><span class="n">4</span><span class="t">Economics</span></div>
+            <div class="step-sep"></div>
+            <div class="step" data-step="4"><span class="n">5</span><span class="t">On the P&amp;L</span></div>
+          </div>
+
+          <!-- ======== STEP 1 · CONNECT ======== -->
+          <div class="panel" id="p0">
+            <h2>Point your agent at Compass.</h2>
+            <p class="lede">One line in the agent's config — whatever harness it runs on. From that moment Compass observes every run: cost, tools called, what finished.</p>
+            <div class="connect-grid">
+              <div>
+                <div class="tabs">
+                  <span class="tab on" onclick="pickTab(this)">Claude Code</span>
+                  <span class="tab" onclick="pickTab(this)">Codex</span>
+                  <span class="tab" onclick="pickTab(this)">Custom SDK</span>
+                </div>
+                <div class="code">
+                  <button class="copy" onclick="this.textContent='Copied ✓'; setTimeout(()=>this.textContent='Copy',1400)">Copy</button>
+<span class="cm">// .claude/settings.json — that's the whole install</span><br>
+{<br>
+&nbsp;&nbsp;<span class="k">"hooks"</span>: { <span class="k">"Stop"</span>: [{ <span class="k">"command"</span>: <span class="s">"compass-collect"</span> }] }<br>
+}
+                </div>
+                <p style="font-size:12.5px; color:var(--muted); margin-top:12px;">No code changes. No proxy in the request path. Compass observes — it never sits between your agent and your model.</p>
+              </div>
+              <div class="card feed">
+                <div class="fh"><span>Incoming runs</span><span class="live" id="feed-live" style="opacity:0">Live</span></div>
+                <div id="feed-lines">
+                  <div class="run-line"><span class="t">14:02:11</span><span><b>sfdc-contact-updater</b> · <span class="ok">✓ completed</span></span><span class="c">$0.009</span></div>
+                  <div class="run-line"><span class="t">14:04:36</span><span><b>sfdc-contact-updater</b> · <span class="ok">✓ completed</span></span><span class="c">$0.011</span></div>
+                  <div class="run-line"><span class="t">14:07:02</span><span><b>sfdc-contact-updater</b> · <span class="ok">✓ completed</span></span><span class="c">$0.010</span></div>
+                </div>
+                <div class="toast" id="toast0">
+                  <div class="dot">◉</div>
+                  <div>
+                    <div class="tt">New agent detected</div>
+                    <div class="ts">Compass has been reading its runs. Ready when you are.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="foot">
+              <button class="btn btn-accent" id="next0" disabled onclick="go(1)">Meet your agent →</button>
+              <span class="hint">Step 1 of 5 · the only engineering in the whole flow</span>
+            </div>
+          </div>
+
+          <!-- ======== STEP 2 · THE READ ======== -->
+          <div class="panel" id="p1">
+            <h2>Compass reads the agent. You just read this card.</h2>
+            <p class="lede">Everything below came from the agent's own telemetry — no forms, no interviews. This is the agent's profile the moment Compass meets it.</p>
+            <div class="read-grid">
+              <div class="card" style="overflow:hidden;">
+                <div class="scanline"><i id="scan"></i></div>
+                <div class="agent-head reveal" data-r="0">
+                  <div class="agent-avatar">⛁</div>
+                  <div>
+                    <div class="nm">sfdc-contact-updater <span class="chip chip-new">NEW</span></div>
+                    <div class="plain">In plain English: <b>keeps Salesforce contact records up to date, ~40 times a working day.</b></div>
+                  </div>
+                </div>
+                <div class="props">
+                  <div class="prop reveal" data-r="1">
+                    <div class="l">Harness</div>
+                    <div class="v">Claude Code <span class="chip chip-mu">stop hook</span></div>
+                  </div>
+                  <div class="prop reveal" data-r="1">
+                    <div class="l">Model</div>
+                    <div class="v"><span class="mono">claude-haiku-4-5</span></div>
+                    <div class="d">right-sized — no flag</div>
+                  </div>
+                  <div class="prop reveal" data-r="2">
+                    <div class="l">Runs · last 14 days</div>
+                    <div class="v">412
+                      <span class="spark" id="spark">
+                        <i style="height:30%"></i><i style="height:45%"></i><i style="height:38%"></i><i style="height:60%"></i><i style="height:52%"></i><i style="height:14%"></i><i style="height:10%"></i><i style="height:66%"></i><i style="height:58%"></i><i style="height:72%"></i><i style="height:64%"></i><i style="height:78%"></i><i style="height:70%"></i><i style="height:84%"></i>
+                      </span>
+                    </div>
+                    <div class="d">steady weekday cadence · quiet weekends</div>
+                  </div>
+                  <div class="prop reveal" data-r="2">
+                    <div class="l">Cost</div>
+                    <div class="v"><span class="mono">$0.011 / run</span></div>
+                    <div class="d">≈ $13.80 / month at current pace</div>
+                  </div>
+                </div>
+                <div class="props-wide reveal" data-r="3">
+                  <div class="l" style="font-family:var(--mono); font-size:10px; letter-spacing:.15em; text-transform:uppercase; color:var(--faint); margin-bottom:5px;">Tools observed</div>
+                  <div class="tools">
+                    <span class="tool"><span class="sys">salesforce ·</span> update_contact <span class="freq">38×/day</span></span>
+                    <span class="tool"><span class="sys">salesforce ·</span> search_contacts <span class="freq">12×/day</span></span>
+                    <span class="tool">Read <span class="freq">6×/day</span></span>
+                  </div>
+                </div>
+                <div class="props-wide reveal" data-r="4">
+                  <div class="l" style="font-family:var(--mono); font-size:10px; letter-spacing:.15em; text-transform:uppercase; color:var(--faint); margin-bottom:5px;">Identity detected</div>
+                  <div class="v" style="font-size:13.5px; font-weight:600;"><span class="mono">compass-agent@veritas.ai</span> <span class="chip chip-ok">found in the agent's own Salesforce credentials</span></div>
+                  <div class="d" style="font-size:11.5px; color:var(--muted); margin-top:4px;">This is how Compass counts only changes <i>this agent</i> made — you'll just confirm it.</div>
+                </div>
+                <div class="classify reveal" data-r="5">
+                  <div class="match">
+                    <div class="tname">Proposed outcome: CRM hygiene — records maintained<br><span class="mono">template · crm_hygiene/records_maintained</span></div>
+                    <span class="pct" id="matchpct">0%</span>
+                  </div>
+                  <div class="matchbar"><i id="matchbar"></i></div>
+                  <div class="why">Why: tool signature (salesforce · update_contact at sustained volume) + artifact shape match the template library.</div>
+                </div>
+                <span class="raw-toggle" onclick="document.getElementById('raw1').classList.toggle('open')">▸ view the raw read (for your engineers)</span>
+                <div class="raw code" id="raw1" style="font-size:11.5px;">
+<span class="cm"># what Compass derived — nobody typed this</span><br>
+<span class="k">agent:</span> sfdc-contact-updater<br>
+<span class="k">observe:</span> mcp<br>
+<span class="k">harness:</span> claude-code &nbsp;<span class="k">model:</span> claude-haiku-4-5<br>
+<span class="k">tools:</span> [salesforce.update_contact: <span class="s">38/day</span>, salesforce.search_contacts: <span class="s">12/day</span>]<br>
+<span class="k">identity_proposed:</span> <span class="s">"compass-agent@veritas.ai"</span><br>
+<span class="k">template_match:</span> crm_hygiene/records_maintained (<span class="s">0.96</span>)
+                </div>
+              </div>
+              <div class="card side-note">
+                <div class="h">What just happened</div>
+                <p>Compass classified this agent against its <b>outcome template library</b> — the same way it has read every agent before it.</p>
+                <div style="margin-top:14px;">
+                  <div class="kv"><span class="k">Properties read</span><span class="v">11</span></div>
+                  <div class="kv"><span class="k">Questions asked of you</span><span class="v">0</span></div>
+                  <div class="kv"><span class="k">Template match</span><span class="v">96%</span></div>
+                </div>
+                <p style="margin-top:14px;">Misclassified? You'd pick from the library instead. The proposal is a head start, not a commitment.</p>
+              </div>
+            </div>
+            <div class="foot">
+              <button class="btn btn-accent" onclick="go(2)">Looks right — bind the outcome →</button>
+              <span class="hint">Step 2 of 5 · Compass did this part</span>
+            </div>
+          </div>
+
+          <!-- ======== STEP 3 · BIND ======== -->
+          <div class="panel" id="p2">
+            <h2>Tie the agent to the system where its outcome lives.</h2>
+            <p class="lede">The work happens in Salesforce, so the truth lives in Salesforce. Compass reads delivered value from there — read-only — and never from what the agent says about itself.</p>
+            <div class="bind-grid">
+              <div class="card">
+                <div class="bind-row">
+                  <div class="bind-ic">☁</div>
+                  <div>
+                    <div class="bt">Outcome system: Salesforce <span class="chip chip-mu">read-only</span></div>
+                    <div class="bs">Compass gets a read-only window into the records this agent touches. It can never write.</div>
+                  </div>
+                  <div class="bind-act"><button class="state-btn" id="connBtn" onclick="connectSF(this)">Connect read-only</button></div>
+                </div>
+                <div class="bind-row">
+                  <div class="bind-ic">◎</div>
+                  <div>
+                    <div class="bt">The unit Compass counts</div>
+                    <div class="bs"><b>One contact record updated.</b> Concrete, countable, visible in Salesforce — not "engagement," not vibes.</div>
+                  </div>
+                </div>
+                <div class="bind-row">
+                  <div class="bind-ic">⚷</div>
+                  <div>
+                    <div class="bt">Only this agent's changes count</div>
+                    <div class="bs">Updates made by <b class="mono" style="font-size:12px;">compass-agent@veritas.ai</b> — the identity Compass found in step 2. Humans and other agents touching the same records are never credited to it.</div>
+                  </div>
+                  <div class="bind-act"><button class="state-btn" id="idBtn" onclick="confirmId(this)">Confirm identity</button></div>
+                </div>
+                <div class="bind-row">
+                  <div class="bind-ic">✓</div>
+                  <div>
+                    <div class="bt">Quality check <span class="chip chip-mu">Compass default</span></div>
+                    <div class="bs">An update that a human reverts within 7 days <b>doesn't count</b>. The agent earns credit for work that sticks.</div>
+                  </div>
+                  <div class="bind-act"><span class="editable">not_reverted_within_7d · edit</span></div>
+                </div>
+                <div class="guard-note">▸ <b>Why this matters:</b> every dollar on the P&amp;L traces to a record in <b>your</b> system, made by <b>this</b> identity, that <b>survived</b> review. That's the whole trust model.</div>
+              </div>
+              <div class="card side-note">
+                <div class="h">Your part so far</div>
+                <div class="kv"><span class="k">1. Read-only connection</span><span class="v" id="kvConn" style="color:var(--faint)">pending</span></div>
+                <div class="kv"><span class="k">2. Identity confirmation</span><span class="v" id="kvId" style="color:var(--faint)">pending</span></div>
+                <p style="margin-top:14px;">That's it for this screen. Measurement queries, attribution windows, baselines — <b>Compass's job, already done.</b></p>
+                <p style="margin-top:10px;">Next, the only two numbers you'll ever be asked for.</p>
+              </div>
+            </div>
+            <div class="foot">
+              <button class="btn btn-accent" id="next2" disabled onclick="go(3)">Set the economics →</button>
+              <span class="hint" id="hint2">Step 3 of 5 · connect &amp; confirm to continue</span>
+            </div>
+          </div>
+
+          <!-- ======== STEP 4 · ECONOMICS ======== -->
+          <div class="panel" id="p3">
+            <h2>Two numbers. That's everything you supply.</h2>
+            <p class="lede">Compass asks about your business — never about measurement. Both defaults come from fleets like yours; accept them or drag. Watch the plan price itself on the right.</p>
+            <div class="econ-grid">
+              <div class="card">
+                <div class="q">
+                  <div class="ql">① How long would one of these take a person?</div>
+                  <div class="qs">One contact record, found and updated by hand.</div>
+                  <div class="row">
+                    <input type="range" min="1" max="15" value="4" id="mins" oninput="recalc()">
+                    <span class="bigval"><span id="minsV">4</span> <small>min</small></span>
+                  </div>
+                  <span class="default-chip"><i></i> benchmark default · agents like this at companies your size</span>
+                  <div class="row" style="margin-top:18px; gap:10px;">
+                    <span style="font-size:12.5px; color:var(--muted);">at a loaded rate of</span>
+                    <input type="range" min="30" max="150" step="5" value="65" id="rate" oninput="recalc()" style="max-width:180px;">
+                    <span class="bigval" style="font-size:16px; min-width:74px;">$<span id="rateV">65</span><small>/hr</small></span>
+                  </div>
+                </div>
+                <div class="q">
+                  <div class="ql">② What was this agent hired to deliver?</div>
+                  <div class="qs">The plan. Every week gets reconciled against this number.</div>
+                  <div class="row">
+                    <input type="range" min="200" max="3000" step="50" value="1200" id="plan" oninput="recalc()">
+                    <span class="bigval"><span id="planV">1,200</span> <small>records/mo</small></span>
+                  </div>
+                </div>
+              </div>
+              <div class="mathcard">
+                <div class="h">The plan, priced live</div>
+                <div class="mathline"><span><span id="m1">1,200</span> records / month</span><span class="mv">verified in Salesforce</span></div>
+                <div class="mathline"><span>× <span id="m2">4</span> min saved each</span><span class="mv"><span id="m3">80.0</span> hrs / mo</span></div>
+                <div class="mathline"><span>× $<span id="m4">65</span> / hr loaded</span><span class="mv">labor substitution</span></div>
+                <div class="mathtotal"><span class="l">Planned value</span><span class="v">$<span id="mTotal">5,200</span><span style="font-size:14px; -webkit-text-fill-color:#8B90A8; color:#8B90A8;">/mo</span></span></div>
+                <div class="conf">
+                  <span class="chip chip-ok">units · verified</span>
+                  <span class="chip chip-md">dollars · modeled</span>
+                </div>
+                <div class="assume">
+                  <div class="h2">Recorded assumptions — on every P&amp;L line, editable forever</div>
+                  <div class="a"><span id="a1">4 min per record</span>&nbsp;<span style="color:#6C7194">(benchmark default)</span></div>
+                  <div class="a"><span id="a2">$65/hr loaded rate</span>&nbsp;<span style="color:#6C7194">(yours)</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="foot">
+              <button class="btn btn-accent" onclick="go(4)">Lock the plan →</button>
+              <span class="hint">Step 4 of 5 · no measurement questions were asked</span>
+            </div>
+          </div>
+
+          <!-- ======== STEP 5 · LIVE ======== -->
+          <div class="panel" id="p4">
+            <h2>Done. The agent is now a line on the P&amp;L.</h2>
+            <p class="lede">From here Compass baselines it, then reconciles every week — delivered value read from Salesforce against the plan it was hired on. Here's the first Monday:</p>
+            <div class="live-wrap">
+              <div class="card pnl-card">
+                <div class="pnl-head">
+                  <span>Weekly Agent P&amp;L · Veritas AI · first reconcile</span>
+                  <span style="letter-spacing:.04em; text-transform:none;">level vs. plan · Δ week · Δ since last change</span>
+                </div>
+                <div class="pnl-row">
+                  <div class="nm">⛁ sfdc-contact-updater
+                    <span class="st"><span class="chip chip-ok" style="margin-right:6px;">units verified</span><span class="chip chip-md">$ modeled · 2 assumptions</span></span>
+                  </div>
+                  <div>
+                    <div class="planbar"><span class="mark"></span><i id="liveBar"></i></div>
+                    <div class="plan-label"><span>287 contacts verified this week · 0 reverted</span><span>plan: 277/wk</span></div>
+                  </div>
+                  <div class="pnl-nums">
+                    <div class="big" id="livePct">104% of plan</div>
+                    <div class="sm">value <b id="liveVal" style="color:var(--text)">$1,243</b> · cost <b style="color:var(--text)">$3.41</b> · <span style="color:var(--green)">365× return</span></div>
+                  </div>
+                </div>
+                <div class="pnl-detail">
+                  <span>▸ counted: changes by <b>compass-agent@veritas.ai</b> only</span>
+                  <span>▸ excluded: <b>4 updates</b> reverted within 7 days</span>
+                  <span>▸ source: <b>Salesforce, read-only</b> — not agent self-reports</span>
+                </div>
+              </div>
+              <div class="queue">
+                <div class="card qcard">
+                  <div class="qh">▤ Summarizer <span class="chip chip-new">binding proposed</span></div>
+                  <p>Compass already read it: 86k-token documents in, one-page summaries out → <b>meeting_intelligence</b> template, dollars will start as <b>modeled</b>. Ten more minutes.</p>
+                </div>
+                <div class="card qcard">
+                  <div class="qh">◌ Scout <span class="chip chip-mu">shows "—"</span></div>
+                  <p>No honest value model yet — so its P&amp;L line shows a dash, <b>on purpose</b>. A dash you can trust beats a number you can't.</p>
+                </div>
+              </div>
+              <div class="recap">
+                <div class="rgrid">
+                  <div class="you">
+                    <div class="h">You supplied</div>
+                    <li>1 config line</li>
+                    <li>1 read-only connection</li>
+                    <li>1 identity confirmation</li>
+                    <li>2 business numbers</li>
+                  </div>
+                  <div class="us">
+                    <div class="h">Compass supplied</div>
+                    <li>Discovery, classification &amp; the agent read</li>
+                    <li>Measurement queries, quality checks, baselines</li>
+                    <li>Attribution windows &amp; all P&amp;L math</li>
+                    <li>Regression, loop &amp; guardrail watch — forever</li>
+                  </div>
+                </div>
+                <div class="total">⏱ Elapsed: ~10 minutes. Repeat per agent — or let Compass propose the whole fleet at once.</div>
+              </div>
+            </div>
+            <div class="foot">
+              <button class="btn btn-ghost" onclick="go(0)">↺ Replay walkthrough</button>
+              <a class="btn btn-accent" href="index.html#access">Run this on your fleet →</a>
+            </div>
+          </div>
+
+        </div><!-- /canvas -->
+      </div><!-- /app -->
+    </div><!-- /frame -->
+  </div>
+</section>
+
+<!-- ============ CLOSING ============ -->
+<section class="closing">
+  <div class="container">
+    <div class="kicker">That's the whole setup</div>
+    <h2>Every agent, hired on a plan. Every Monday, held to it.</h2>
+    <p>Two MCP connections and two numbers per agent. Compass does the rest — and never invents a dollar it can't trace.</p>
+    <a class="btn btn-accent" href="index.html#access" style="font-size:15px; padding:14px 28px;">Request early access</a>
+    <span style="display:inline-block; width:10px;"></span>
+    <a class="btn btn-ghost" href="index.html" style="font-size:15px; padding:14px 28px;">Back to overview</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <span class="mono">⌖ compass_ — the outcome ledger for AI agents</span>
+    <span>© 2026 Compass. <a href="index.html">compass.dev</a></span>
+  </div>
+</footer>
+
+<script>
+// ---------- step state machine ----------
+const N = 5;
+let cur = -1;
+const timers = [];
+
+function clearTimers() { while (timers.length) clearTimeout(timers.pop()); }
+function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+
+function go(i) {
+  clearTimers();
+  cur = i;
+  document.querySelectorAll('.panel').forEach((p, k) => p.classList.toggle('on', k === i));
+  document.querySelectorAll('#steps .step').forEach((s, k) => {
+    s.classList.toggle('on', k === i);
+    s.classList.toggle('done', k < i);
+  });
+  document.querySelectorAll('#steps .step-sep').forEach((s, k) => s.classList.toggle('fill', k < i));
+  const frame = document.querySelector('.frame');
+  if (frame.getBoundingClientRect().top < -40) frame.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (i === 0) playConnect();
+  if (i === 1) playRead();
+  if (i === 4) playLive();
+}
+
+// clicking a completed step jumps back
+document.querySelectorAll('#steps .step').forEach(s => {
+  s.addEventListener('click', () => { if (s.classList.contains('done')) go(+s.dataset.step); });
+});
+
+// ---------- step 1: run feed ----------
+function playConnect() {
+  const lines = document.querySelectorAll('#feed-lines .run-line');
+  lines.forEach(l => l.classList.remove('in'));
+  document.getElementById('toast0').classList.remove('in');
+  document.getElementById('feed-live').style.opacity = 0;
+  document.getElementById('next0').disabled = true;
+  later(() => document.getElementById('feed-live').style.opacity = 1, 500);
+  lines.forEach((l, k) => later(() => l.classList.add('in'), 800 + k * 650));
+  later(() => {
+    document.getElementById('toast0').classList.add('in');
+    document.getElementById('next0').disabled = false;
+  }, 800 + lines.length * 650 + 250);
+}
+
+// ---------- step 2: staggered read ----------
+function playRead() {
+  const els = document.querySelectorAll('#p1 .reveal');
+  els.forEach(e => e.classList.remove('in'));
+  document.querySelectorAll('#spark i').forEach(b => b.style.transform = 'scaleY(0)');
+  document.getElementById('matchbar').style.width = '0%';
+  document.getElementById('matchpct').textContent = '0%';
+  document.getElementById('scan').style.width = '0%';
+  let maxR = 0;
+  els.forEach(e => maxR = Math.max(maxR, +e.dataset.r));
+  els.forEach(e => later(() => e.classList.add('in'), 350 + (+e.dataset.r) * 480));
+  for (let s = 0; s <= maxR; s++)
+    later(() => document.getElementById('scan').style.width = ((s + 1) / (maxR + 1) * 100) + '%', 350 + s * 480);
+  later(() => document.querySelectorAll('#spark i').forEach((b, k) =>
+    setTimeout(() => b.style.transform = 'scaleY(1)', k * 45)), 350 + 2 * 480 + 150);
+  later(() => {
+    document.getElementById('matchbar').style.width = '96%';
+    animateNum(document.getElementById('matchpct'), 0, 96, 900, v => Math.round(v) + '%');
+  }, 350 + 5 * 480 + 200);
+}
+
+// ---------- step 3: bind interactions ----------
+let sfDone = false, idDone = false;
+function connectSF(btn) {
+  btn.textContent = 'Connecting…';
+  setTimeout(() => {
+    btn.textContent = '● Connected · read-only';
+    btn.classList.add('done');
+    sfDone = true;
+    document.getElementById('kvConn').textContent = 'done ✓';
+    document.getElementById('kvConn').style.color = 'var(--green)';
+    checkBind();
+  }, 900);
+}
+function confirmId(btn) {
+  btn.textContent = '✓ Confirmed';
+  btn.classList.add('done');
+  idDone = true;
+  document.getElementById('kvId').textContent = 'done ✓';
+  document.getElementById('kvId').style.color = 'var(--green)';
+  checkBind();
+}
+function checkBind() {
+  if (sfDone && idDone) {
+    document.getElementById('next2').disabled = false;
+    document.getElementById('hint2').textContent = 'Step 3 of 5 · bound — Compass starts baselining immediately';
+  }
+}
+
+// ---------- step 4: live math ----------
+const fmt = n => n.toLocaleString('en-US');
+function recalc() {
+  const mins = +document.getElementById('mins').value;
+  const rate = +document.getElementById('rate').value;
+  const plan = +document.getElementById('plan').value;
+  document.getElementById('minsV').textContent = mins;
+  document.getElementById('rateV').textContent = rate;
+  document.getElementById('planV').textContent = fmt(plan);
+  document.getElementById('m1').textContent = fmt(plan);
+  document.getElementById('m2').textContent = mins;
+  document.getElementById('m3').textContent = (plan * mins / 60).toFixed(1);
+  document.getElementById('m4').textContent = rate;
+  document.getElementById('mTotal').textContent = fmt(Math.round(plan * mins / 60 * rate));
+  document.getElementById('a1').textContent = mins + ' min per record';
+  document.getElementById('a2').textContent = '$' + rate + '/hr loaded rate';
+}
+
+// ---------- step 5: pnl animates ----------
+function playLive() {
+  const bar = document.getElementById('liveBar');
+  bar.style.width = '0%';
+  later(() => bar.style.width = '80%', 400);   /* 104% of plan; plan mark sits at 76.9% */
+  later(() => animateNum(document.getElementById('liveVal'), 0, 1243, 1100, v => '$' + fmt(Math.round(v))), 400);
+}
+
+function animateNum(el, from, to, dur, render) {
+  const t0 = performance.now();
+  (function tick(t) {
+    const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+    el.textContent = render(from + (to - from) * e);
+    if (p < 1) requestAnimationFrame(tick);
+  })(t0);
+}
+
+// ---------- misc ----------
+function pickTab(el) {
+  el.parentNode.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' && cur < N - 1) { const b = document.querySelector(`#p${cur} .btn-accent`); if (b && !b.disabled) go(cur + 1); }
+  if (e.key === 'ArrowLeft' && cur > 0) go(cur - 1);
+});
+
+recalc();
+go(0);
+</script>
+</body>
+</html>
