@@ -222,6 +222,20 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
   h1 { font-size: 34px; }
   .grid-4 { grid-template-columns: 1fr 1fr; }
 }
+@media (max-width: 600px) {
+  section { padding: 56px 0; }
+  .hero { padding: 72px 0 56px; }
+  h1 { font-size: 30px; }
+  h2 { font-size: 24px; }
+  nav .links a:not(.btn) { display: none; }
+  .grid-4 { grid-template-columns: 1fr; }
+  .fleet-mock { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .fleet-table { min-width: 600px; }
+  .screen { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .email-form input, .email-form select { width: 100%; min-width: 0; }
+  .cta-box { padding: 40px 20px; }
+  .modal-box { padding: 20px 16px; }
+}
 </style>
 </head>
 <body>
