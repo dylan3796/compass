@@ -267,7 +267,7 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
     <div class="vitals" aria-label="Agent P&amp;L demo widget">
       <div class="vitals-head"><span>WEEKLY AGENT P&amp;L · VS. PLAN</span><span><span class="live">LIVE</span> <span style="color:var(--muted); text-transform:none; letter-spacing:.04em;">(demo)</span></span></div>
       <div class="agent-row"><span class="agent-name">Drafter</span><div class="bar"><div class="fill g g1" style="width:100%"></div></div><span class="agent-pct pct-g">147%</span></div>
-      <div class="agent-row"><span class="agent-name">Analyst</span><div class="bar"><div class="fill g g2" style="width:78%"></div></div><span class="agent-pct pct-g">104%</span></div>
+      <div class="agent-row"><span class="agent-name">Analyst</span><div class="bar"><div class="fill" style="width:30%; background:#D1D5DB;"></div></div><span class="agent-pct" style="color:var(--muted)">—</span></div>
       <div class="agent-row"><span class="agent-name">Summarizer</span><div class="bar"><div class="fill a a1" style="width:33%"></div></div><span class="agent-pct pct-a">3× cost</span></div>
       <div class="agent-row"><span class="agent-name">Support</span><div class="bar"><div class="fill r r1" style="width:49%"></div></div><span class="agent-pct pct-r">49%</span></div>
       <div class="agent-row"><span class="agent-name">Scout</span><div class="bar"><div class="fill" style="width:12%; background:#D1D5DB;"></div></div><span class="agent-pct" style="color:var(--muted)">—</span></div>
@@ -338,7 +338,7 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
       </div>
       <div class="card" style="background: var(--bg); display:flex; flex-direction:column; justify-content:center; text-align:center;">
         <p style="font-family:var(--mono); font-size:14px; color:var(--text);">The report your CFO forwards.</p>
-        <p style="margin-top:8px;">Delivered every Monday. Every agent a line item.</p>
+        <p style="margin-top:8px;">Every agent a line item.</p>
       </div>
     </div>
   </div>
@@ -349,12 +349,12 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
   <div class="container">
     <div class="kicker">How it works</div>
     <h2>Connect → Define → Reconcile → Act.</h2>
-    <p class="lede">Two MCP connections and an outcome definition.</p>
+    <p class="lede">One connection, one outcome definition, a verdict every Monday.</p>
     <div class="grid-4">
       <div class="card">
         <span class="num">STEP 1</span>
         <h3>Connect your agent</h3>
-        <p>One MCP config line. Claude Code, Codex, or custom SDK agents. Compass captures runs, cost, and completion.</p>
+        <p>One line: the Claude Code plugin, or a gateway proxy for Codex and custom SDK agents. Compass captures runs, cost, prompts, and completion.</p>
       </div>
       <div class="card">
         <span class="num">STEP 2</span>
