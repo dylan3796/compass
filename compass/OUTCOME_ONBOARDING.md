@@ -88,6 +88,25 @@ regression / loop detection.
 agent, two business numbers per agent (unit assumption + plan), and approval
 of the proposed binding. ~10 minutes per agent.
 
+## Fleet-level insights (cross-agent)
+
+Identity-per-agent makes the fleet legible as a graph: agent ↔ objects touched
+in each system of record. Per-agent optimizers (routers, prompt tuners) cannot
+see cross-agent interaction by construction; this view is unique to the
+outcome layer. Findings, each with a distinct fix:
+
+- **Duplication** — two agents produce the same outcome on the same objects.
+  Priced directly: both agents' run costs joined on (system, object id, time
+  window). _"Summarizer and Notetaker both processed 312 calls — $61/mo
+  producing one outcome twice."_ → recommendation: `consolidate_overlap`.
+- **Conflict** — agents undoing each other's work (revert detected, reverter
+  is another agent identity). Worse than waste: it inflates both agents' run
+  counts and corrupts their delivered-value lines. → recommendation:
+  `resolve_conflict`; also protects ledger integrity.
+- **Consolidation** — two agents do similar work at different quality/cost.
+  Fleet-level sibling of `clone_best_performer`: retire the weaker agent.
+- **Gaps** — objects/queues no agent touches. Feeds the Opportunity Map.
+
 ## Open questions
 
 - **Attribution beyond identity:** outcomes in shared systems move for many
