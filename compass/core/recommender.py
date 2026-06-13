@@ -26,6 +26,16 @@ CORR_THRESHOLD = -0.35
 RIGHT_SIZE_MIN_RUNS = 30          # don't right-size on thin evidence
 RIGHT_SIZE_QUALITY_STD_MAX = 0.10 # only when observed quality is stable
 
+# codify — formulaic, stable, high-volume work whose economics favor moving off
+# the model entirely (deterministic code), not just onto a cheaper model.
+CODIFY_TASK_TYPES = {"classification", "doc_summarization"}  # codifiability hint
+CODIFY_MIN_RUNS = 60              # high volume amortizes deterministic logic
+CODIFY_QUALITY_STD_MAX = 0.06     # stable output -> formulaic
+CODIFY_COMPLETION_MIN = 0.95      # already near-deterministic
+CODIFY_OUTPUT_RATIO_MAX = 0.30    # out/in small -> low generative content
+CODIFY_CORR_ABS_MAX = 0.25        # quality not input-sensitive -> rule-shaped
+CODIFY_DRIFT_ALLOWANCE_FRAC = 0.15  # reserve kept for recompile-on-drift
+
 
 def _monthly(conn, agent_id, since):
     row = conn.execute(
@@ -147,6 +157,56 @@ def generate_recommendations(conn: sqlite3.Connection) -> list[dict]:
                 f"Savings assume trimming to ~{TRIM_TARGET_INPUT:,} structured input tokens."
                 + repriced,
                 savings)
+
+    # 8. codify — formulaic, stable, high-volume work whose economics favor
+    # deterministic code. Compass surfaces the economics + (on apply) a spec; the
+    # owner decides the implementation. NEVER recommends a specific tech.
+    # Codify SUPERSEDES right_size/trim for the same agent: taking the work off
+    # the model entirely makes "run it cheaper" moot, so we remove those recs and
+    # price codify on the full current spend (no double-count in the fleet total).
+    for aid, s in active.items():
+        a = agents[aid]
+        if a["type"] not in CODIFY_TASK_TYPES or s["runs"] < CODIFY_MIN_RUNS:
+            continue
+        if (s["completion_rate"] or 0) < CODIFY_COMPLETION_MIN:
+            continue
+        corr, q_std = _input_quality_corr(conn, aid, since)
+        if q_std > CODIFY_QUALITY_STD_MAX or abs(corr) > CODIFY_CORR_ABS_MAX:
+            continue
+        if s["avg_out"] / max(1.0, s["avg_in"]) > CODIFY_OUTPUT_RATIO_MAX:
+            continue
+        runs_mo, cost_mo = _monthly(conn, aid, since)
+        savings = cost_mo * (1 - CODIFY_DRIFT_ALLOWANCE_FRAC)
+        if savings < 1:
+            continue
+        # Supersede the cheaper-model recs for this agent (alternatives, not additive).
+        superseded = [r["type"] for r in recs if r["agent_id"] == aid
+                      and r["type"] in ("right_size_model", "trim_context")]
+        recs[:] = [r for r in recs if not (r["agent_id"] == aid
+                   and r["type"] in ("right_size_model", "trim_context"))]
+        right_sized.pop(aid, None)
+        sup = (f" Supersedes the {' and '.join(t.replace('_', ' ') for t in superseded)} "
+               f"recommendation{'s' if len(superseded) > 1 else ''} for this agent — moving the "
+               f"work off the model entirely makes running it cheaper moot." if superseded else "")
+        ratio = s["avg_out"] / max(1.0, s["avg_in"])
+        add(aid, "codify",
+            "high" if savings > 50 else ("medium" if savings > 5 else "low"),
+            f"{a['name']} runs a formulaic, high-volume {a['type'].replace('_', ' ')} job "
+            f"(~{runs_mo:,.0f}/mo) on {model_label(a['model'])} with very stable output "
+            f"(σ={q_std:.2f}). At this volume the same outcome may be cheaper as deterministic "
+            f"logic — est. ${savings:,.0f}/mo of token spend if the work moves off the model. "
+            f"You decide how; Compass tracks the before/after.",
+            f"Signals over 30 days: ~{runs_mo:,.0f} runs/mo, completion "
+            f"{100*(s['completion_rate'] or 0):.0f}%, output/input ratio {ratio:.0%}, quality "
+            f"stable (σ={q_std:.2f}) and not sensitive to input length (corr {corr:.2f}) — the "
+            f"fingerprints of work a rule or small program can do as well as a model. Economics "
+            f"only — Compass does not write or run code, and makes no claim about which "
+            f"implementation (a script, a library, a SaaS) is right. Applying this generates a "
+            f"one-page codify spec and marks the agent's substrate so the Agent P&L tracks "
+            f"token-ROT before vs. code-ROT after. Savings = current monthly token spend minus a "
+            f"{100*CODIFY_DRIFT_ALLOWANCE_FRAC:.0f}% recompile-on-drift reserve; directional, "
+            f"verify on your own volume.{sup}",
+            savings)
 
     # 3. prompt_regression — quality dropped >20% across two 2-week windows
     regressed = set()

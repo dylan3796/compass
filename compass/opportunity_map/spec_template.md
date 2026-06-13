@@ -42,6 +42,11 @@ down}}. Token budget per run: ~{{IN_TOKENS}} in / ~{{OUT_TOKENS}} out.
 {{2–3 sentences: is there an off-the-shelf product that does this? If buying, what it costs and
 what's lost. If building, why owning the prompt/data loop is worth it.}}
 
+**Substrate:** {{agent | code candidate}} — {{one line: if the work is formulaic, high-volume,
+and cheaply checkable, deterministic logic may cost a fraction of an agent. Economics only —
+the implementation (a script, a library, a SaaS) is the owner's call, and Compass tracks the
+outcome the same way whichever substrate ships.}}
+
 ---
 
 **When this agent ships, Compass tracks it against this projection.**

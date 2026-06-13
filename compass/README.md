@@ -5,6 +5,10 @@
 > (cloning winners), hiring plans (the Opportunity Map), and the part nobody
 > else does: checks delivered value against the projection each agent was
 > hired on.
+>
+> Compass measures Return-on-Tokens whether the work runs as an agent or as
+> deterministic code — and tells you when the economics favor moving it off the
+> model (the `codify` recommendation), never building it for you.
 
 What lives here:
 
@@ -37,13 +41,21 @@ rm -f compass/data/compass.db                # force re-seed on next launch
 
 ## The Veritas AI scenario
 
-A 50-person SaaS company, 8 agents, 90 days of run history (~2,600 runs).
+A 50-person SaaS company, 8 agents, 90 days of run history (~3,800 runs).
 The dataset is engineered so every demo beat lands:
 
 - **Summarizer** reads ~86k-token documents on an Opus-tier model →
   `right_size_model` tops the inbox (~$80/mo, Opus→Haiku) with
   `trim_context` re-priced after it (+$18/mo) so the two never
   double-count. It also runs ~3x its projected cost.
+- **Classifier** runs a formulaic routing job on Opus → `codify` (~$54/mo,
+  high): the work is high-volume, rock-stable, and low-generative, so the
+  economics favor moving it off the model entirely. `codify` *supersedes*
+  the right-size/trim recs for that agent (taking it off the model makes
+  running it cheaper moot). Applying generates a one-page codify spec and
+  graduates the agent's substrate; the P&L line then flips from agent-ROT to
+  code-ROT and Compass keeps measuring it. Economics only — Compass never
+  writes or runs the code.
 - **Support** completes ~34–37% of tasks with loop bursts →
   `add_guardrail` + `restructure_input` — and it delivers ~51% of the
   $4k/mo value projection it was specced with. The promised-vs-delivered
@@ -72,7 +84,7 @@ compass/
   core/
     cost_calculator.py       per-model pricing + tier metadata + right-size math
     agent_scorer.py          health scoring (4 dimensions → status)
-    recommender.py           7 rules-based recommendation types
+    recommender.py           8 rules-based recommendation types (incl. codify)
     pnl_generator.py         weekly Agent P&L (rows + email text + print HTML)
     db.py                    SQLite seeding, migration + access
   app/
@@ -95,7 +107,12 @@ compass/
 4. The part nobody else does: Support was *projected* to save $4k/mo, it's
    delivering ~$2.1k — the Projection vs. Actual panel (02) shows why, the
    guardrail is the fix.
-5. **Opportunity Map** (06): the three agents Veritas should build next,
-   ranked, with specs — each projection becomes a tracked baseline.
-6. Close: "this isn't a mockup" — the collector (`../collector/`) ingests a
+5. The one inch further: **Classifier** runs Opus for formulaic routing →
+   `codify`. On its detail page (02), the read-only **what-if backtest**
+   replays real runs to show cost → ~0; apply the rec to generate a spec and
+   graduate it. The P&L line flips to **⚙ code** — cost collapses, value held,
+   ROT jumps — and Compass keeps measuring it.
+6. **Opportunity Map** (06): the agents Veritas should build next, ranked, with
+   specs — each carries a substrate note (agent vs. code) and a tracked baseline.
+7. Close: "this isn't a mockup" — the collector (`../collector/`) ingests a
    real Claude Code fleet in five minutes.

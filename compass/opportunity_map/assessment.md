@@ -33,6 +33,8 @@ Prompts that surface workflows people forget to name:
 - "What gets copy-pasted between tools?"
 - "What report does someone assemble that nobody would assemble if it weren't expected?"
 - "Where does work queue up waiting for one specific person?"
+- "Is this so rule-shaped a checklist would always produce the same answer?" (a yes points at
+  the substrate note below)
 
 ## Disqualifiers (note them, don't score them)
 
@@ -52,10 +54,23 @@ Prompts that surface workflows people forget to name:
 
 Run it: `python scoring.py veritas_example.json` (or any candidates JSON in the same shape).
 
+## Agent vs. code substrate decision
+
+Some of the best candidates shouldn't be agents at all. When a workflow is **frequent, formulaic,
+clean-input, and cheaply checkable** — and the output is low-generative (a category, a routing
+decision, a few extracted fields) — deterministic code may cost a fraction of an agent and run at
+nines of accuracy. `scoring.py` surfaces this as a qualitative **substrate note** (`agent | code
+candidate`); it is *not* a weighted dimension, so it never changes the ranking.
+
+This stays economics only. Compass takes no position on the implementation (a script, a library,
+a SaaS — the owner's call) and measures the outcome the same way whichever substrate ships: you
+decide, Compass tracks the before/after.
+
 ## Output discipline
 
 - Projected value is **time recovered × loaded hourly cost**, with assumptions written down in
   `value_basis`. No strategy-deck multipliers.
 - Projected cost comes from a token-budget estimate per run (`cost_basis`), priced against
   `core/cost_calculator.py`.
-- Every spec ends with: *"When this agent ships, Compass tracks it against this projection."*
+- Every spec carries a substrate note (agent vs. code candidate) and ends with: *"When this work
+  ships — as an agent or as code — Compass tracks it against this projection."*

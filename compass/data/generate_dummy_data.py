@@ -135,9 +135,13 @@ AGENTS = [
     dict(id="ag_drafter", name="Drafter", type="email_drafting", model="claude-sonnet-4-6",
          program="Sales Pipeline", rpd=2, inp=(1500, 300), out=(700, 150),
          lat=(2600, 500), q=(0.94, 0.025), comp=0.97, start_day=0),
-    dict(id="ag_classifier", name="Classifier", type="classification", model="gpt-4o-mini",
-         program="Inbound Ops", rpd=5, inp=(450, 80), out=(60, 15),
-         lat=(800, 150), q=(0.91, 0.03), comp=0.985, start_day=0),
+    # Over-provisioned: a formulaic routing/classification job running long
+    # structured records through Opus -> the canonical 'codify' candidate (the
+    # essay's literal "why run Opus to do this" absurdity). One category token
+    # out, big record in, rock-stable -> deterministic-logic shaped.
+    dict(id="ag_classifier", name="Classifier", type="classification", model="claude-opus-4-8",
+         program="Inbound Ops", rpd=18, inp=(22000, 3500), out=(50, 15),
+         lat=(3500, 600), q=(0.93, 0.02), comp=0.99, start_day=0),
     dict(id="ag_summarizer", name="Summarizer", type="doc_summarization", model="claude-opus-4-8",
          program="Knowledge Base", rpd=7, inp=(86000, 9000), out=(950, 200),
          lat=(9500, 1500), q=(0.86, 0.05), comp=0.93, start_day=0),
@@ -175,7 +179,9 @@ VALUE_MODEL = {
         projected_cost_usd_mo=30.00, projected_value_usd_mo=500.0,
         projection_source="Knowledge Base program plan (Q4 2025)"),
     "ag_classifier": dict(
-        unit_value_usd=3.00, value_basis="4 min of manual triage @ $45/hr"),
+        unit_value_usd=3.00, value_basis="4 min of manual triage @ $45/hr",
+        projected_cost_usd_mo=2.00, projected_value_usd_mo=4500.0,
+        projection_source="Opportunity Map — Inbound Classifier spec (Dec 2025)"),
     "ag_outbound": dict(
         unit_value_usd=8.00, value_basis="cold email ≈ 12 min of SDR time @ $40/hr"),
     "ag_analyst": dict(

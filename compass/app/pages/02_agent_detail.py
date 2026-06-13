@@ -9,6 +9,8 @@ import plotly.graph_objects as go
 import streamlit as st
 
 import common
+from core.backtest import backtest_codify, backtest_model_switch
+from core.cost_calculator import MODEL_PRICING, cheaper_adequate_model, model_label
 from theme import COLORS, TYPE_ICON, badge, fmt_money, fmt_tokens, new_badge, plotly_layout, sev_badge
 
 agents = common.agents_df()
@@ -122,6 +124,62 @@ if _field("projected_value_usd_mo") or _field("projected_cost_usd_mo"):
             f'<span class="muted mono" style="font-size:12px;">Delivered value = '
             f'completed runs × ${unit:,.2f} ({_field("value_basis")})</span>',
             unsafe_allow_html=True)
+
+# ---- what-if · read-only backtest -------------------------------------------
+# Replays the agent's ACTUAL runs under a changed rule. Counterfactual only —
+# Compass re-prices/zeros real token counts, never simulates quality, never runs
+# the experiment. The customer decides whether to act.
+st.markdown("---")
+st.markdown(
+    '#### What-if · read-only backtest '
+    '<span class="badge badge-sev-low" style="vertical-align:middle;">simulated</span>',
+    unsafe_allow_html=True)
+st.markdown(
+    '<span class="muted mono" style="font-size:12px;">Replay this agent\'s actual runs under '
+    'a changed rule. Counterfactual only — Compass doesn\'t run the experiment. You decide '
+    'whether to act.</span>', unsafe_allow_html=True)
+
+if runs.empty:
+    st.markdown('<span class="muted">No runs in window to replay.</span>', unsafe_allow_html=True)
+else:
+    scenario = st.radio("Scenario", ["Model switch", "Codify (cost → near-zero)"],
+                        horizontal=True, label_visibility="collapsed")
+    if scenario == "Model switch":
+        others = [m for m in MODEL_PRICING if m != agent["model"]]
+        suggested = cheaper_adequate_model(agent["model"], agent["type"])
+        idx = others.index(suggested) if suggested in others else 0
+        target = st.selectbox("Switch to", others, index=idx, format_func=model_label)
+        bt = backtest_model_switch(common.conn(), sel, target, days=30)
+        before_label, after_label = model_label(agent["model"]), bt["target_label"]
+    else:
+        share = st.slider("Deterministic share of the work", 0.5, 1.0, 1.0, 0.05)
+        bt = backtest_codify(common.conn(), sel, deterministic_share=share, days=30)
+        before_label, after_label = "agent (today)", "code (drift reserve)"
+
+    fig = go.Figure()
+    fig.add_bar(y=[before_label, after_label],
+                x=[bt["actual_cost_mo"], bt["counterfactual_cost_mo"]],
+                orientation="h", marker_color=[COLORS["muted"], COLORS["healthy"]],
+                text=[f"${bt['actual_cost_mo']:,.0f}", f"${bt['counterfactual_cost_mo']:,.0f}"],
+                textposition="auto")
+    fig.update_layout(title=dict(text="cost / mo · simulated", font=dict(size=12)), showlegend=False)
+    st.plotly_chart(plotly_layout(fig, 200), use_container_width=True)
+    st.markdown(
+        f'<span class="mono" style="color:{COLORS["healthy"]}; font-size:13px;">'
+        f'Simulated: ~${bt["delta_cost_mo"]:,.0f}/mo lower over {bt["runs"]} replayed runs.</span> '
+        f'<span class="muted mono" style="font-size:12px;">{bt["note"]}</span>',
+        unsafe_allow_html=True)
+    if scenario != "Model switch":
+        st.markdown(
+            '<span class="muted mono" style="font-size:12px;">To act on codify, apply the '
+            'recommendation — it generates a spec and starts before/after tracking.</span>',
+            unsafe_allow_html=True)
+
+# ---- codify spec (if this agent has graduated) ------------------------------
+spec = common.codify_spec(sel)
+if spec:
+    with st.expander("View codify spec"):
+        st.markdown(spec["body_md"])
 
 st.markdown("---")
 left, right = st.columns([3, 2])

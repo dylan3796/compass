@@ -15,7 +15,11 @@ CREATE TABLE IF NOT EXISTS Agent (
   projection_source TEXT,       -- which spec/plan the projection came from
   -- Value measurement: how delivered value is estimated (NULL = not estimable)
   unit_value_usd REAL,          -- value per completed run
-  value_basis TEXT              -- the assumption behind unit_value, in plain words
+  value_basis TEXT,             -- the assumption behind unit_value, in plain words
+  -- Substrate-agnostic ROT: an agent can graduate to deterministic code.
+  substrate TEXT,               -- 'agent' (default/NULL) | 'code'
+  code_graduated_at TIMESTAMP,
+  codify_spec_id TEXT           -- FK-ish to CodifySpec.id
 );
 
 CREATE TABLE IF NOT EXISTS AgentRun (
@@ -63,6 +67,23 @@ CREATE TABLE IF NOT EXISTS AgentVersion (
   label TEXT,
   prompt_snapshot TEXT,
   config_snapshot JSON,
+  created_at TIMESTAMP,
+  created_by TEXT
+);
+
+-- A codify spec is the artifact Compass emits when an agent graduates to
+-- deterministic code: the economics + a one-page, implementation-agnostic
+-- brief. Compass never writes or runs the code — this is a decision/measurement
+-- artifact, the analog of an Opportunity Map spec. (DDL mirrored in db.CODIFY_SPEC_DDL.)
+CREATE TABLE IF NOT EXISTS CodifySpec (
+  id TEXT PRIMARY KEY,
+  agent_id TEXT NOT NULL REFERENCES Agent(id),
+  recommendation_id TEXT,
+  title TEXT,
+  body_md TEXT,                 -- one-page spec, spec_template.md-shaped
+  est_agent_cost_usd_mo REAL,   -- before (measured run-rate)
+  est_code_cost_usd_mo REAL,    -- after (drift reserve only)
+  est_savings_usd_mo REAL,
   created_at TIMESTAMP,
   created_by TEXT
 );

@@ -51,6 +51,27 @@ def _roi_score(value: float, cost: float) -> float:
     return 50.0 * ratio_part + 50.0 * net_part
 
 
+# Substrate note: a qualitative flag, NOT a weighted dimension (weights and
+# scores are unchanged). Frequent, formulaic, clean-input, low-generative work
+# is where deterministic code may beat an agent on cost — economics only, the
+# owner decides the implementation, and Compass tracks the before/after either way.
+CODIFY_MIN_VOLUME = 200
+
+
+def _codify_flag(c: dict) -> tuple[bool, str]:
+    t = c["tokens_per_run"]
+    formulaic = c["error_tolerance"] in ("high", "medium")
+    high_vol = c.get("volume_per_month", 0) >= CODIFY_MIN_VOLUME
+    checkable = c["data_availability"] == "clean"
+    low_gen = t["output"] <= 0.3 * t["input"]
+    flag = formulaic and high_vol and checkable and low_gen
+    return flag, (
+        "formulaic, high-volume, clean-input, low-generative — deterministic logic "
+        "may be cheaper than an agent; economics only, the owner decides the "
+        "implementation and Compass tracks it either way" if flag
+        else "fits an agent — too variable, low-volume, or generative to codify")
+
+
 def score_candidate(c: dict) -> dict:
     value = projected_value_usd_mo(c)
     cost = projected_cost_usd_mo(c)
@@ -71,12 +92,15 @@ def score_candidate(c: dict) -> dict:
                  + ("" if c["error_tolerance"] != "low"
                     else " — wrong outputs are expensive; human review is mandatory")),
     }
+    codify_candidate, substrate_note = _codify_flag(c)
+    rationale["substrate"] = substrate_note
     return dict(
         c,
         projected_value_usd_mo=round(value, 2),
         projected_cost_usd_mo=round(cost, 2),
         scores={k: round(v, 1) for k, v in scores.items()},
         rationale=rationale,
+        codify_candidate=codify_candidate,
         score=round(total, 1),
     )
 
@@ -104,9 +128,11 @@ def main():
               f"${c['projected_value_usd_mo']:,.0f}/mo value")
         print(f"   roi: {c['rationale']['roi']}")
         print(f"   data: {c['rationale']['data_readiness']}")
-        print(f"   risk: {c['rationale']['risk']}\n")
-    print("Every projection above becomes a baseline: when an agent ships, "
-          "Compass tracks it against this projection.")
+        print(f"   risk: {c['rationale']['risk']}")
+        tag = "agent | CODE candidate" if c["codify_candidate"] else "agent"
+        print(f"   substrate: {tag} — {c['rationale']['substrate']}\n")
+    print("Every projection above becomes a baseline: when the work ships — as an "
+          "agent or as code — Compass tracks it against this projection.")
 
 
 if __name__ == "__main__":
