@@ -59,6 +59,13 @@
   --red: #B91C1C;          /* data states only */
   --mono: 'IBM Plex Mono', 'SF Mono', Menlo, monospace;
   --sans: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+  /* dark register — boardroom hero, proof band, footer */
+  --d-bg: #0B0F14;
+  --d-bg2: #141A22;
+  --d-text: #F4F6F7;
+  --d-muted: #9BA6B2;
+  --d-border: rgba(255,255,255,.12);
+  --d-accent: #34D399;     /* lighter emerald for AA on dark */
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -72,14 +79,22 @@ section { padding: 104px 0; }
 
 /* ---------- nav ---------- */
 nav { position: sticky; top: 0; z-index: 50; background: rgba(250,250,248,0.82);
-  backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+  backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+  transition: background .3s, border-color .3s; }
 nav .container { display: flex; justify-content: space-between; align-items: center; height: 64px; }
 .logo { display: inline-flex; align-items: center; gap: 9px; font-weight: 700; font-size: 18px;
-  color: var(--text); letter-spacing: -0.01em; }
+  color: var(--text); letter-spacing: -0.01em; transition: color .3s; }
 .logo svg { display: block; }
 nav .links { display: flex; gap: 30px; align-items: center; font-size: 14.5px; }
 nav .links a { color: var(--muted); font-weight: 500; transition: color .15s; }
 nav .links a:hover { color: var(--text); }
+/* nav while overlapping the dark hero */
+nav.over-hero { background: rgba(11,15,20,.72); border-bottom-color: rgba(255,255,255,.08); }
+nav.over-hero .logo { color: #fff; }
+nav.over-hero .links a:not(.btn) { color: var(--d-muted); }
+nav.over-hero .links a:not(.btn):hover { color: #fff; }
+nav.over-hero .btn-ghost { color: #fff; border-color: rgba(255,255,255,.24); }
+nav.over-hero .btn-ghost:hover { color: var(--d-accent); border-color: var(--d-accent); }
 
 /* ---------- buttons ---------- */
 .btn { display: inline-flex; align-items: center; gap: 7px; font-family: var(--sans);
@@ -103,15 +118,40 @@ h2 { font-size: clamp(28px, 3.4vw, 38px); font-weight: 700; letter-spacing: -0.0
 h3 { font-size: 18px; font-weight: 650; letter-spacing: -0.01em; }
 .lede { color: var(--muted); font-size: 17.5px; max-width: 600px; line-height: 1.55; }
 
-/* ---------- hero ---------- */
-.hero { padding: 92px 0 84px; }
+/* ---------- hero (dark / boardroom) ---------- */
+.hero { position: relative; overflow: hidden; padding: 116px 0 100px;
+  background: var(--d-bg); color: var(--d-text); }
+.hero::before { content: ""; position: absolute; top: -35%; right: -8%; width: 56%; height: 130%;
+  background: radial-gradient(closest-side, rgba(16,185,129,.10), transparent 70%); pointer-events: none; }
+.hero .container { position: relative; z-index: 1; }
 .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 64px; align-items: center; }
-.hero h1 .em { color: var(--accent-ink); }
-.hero .subhead { margin-top: 24px; font-size: 18.5px; color: var(--muted); max-width: 500px;
+.hero h1 { color: var(--d-text); }
+.hero h1 .em { color: var(--d-accent); }
+.hero .subhead { margin-top: 24px; font-size: 18.5px; color: var(--d-muted); max-width: 500px;
   line-height: 1.55; }
 .hero-ctas { margin-top: 34px; display: flex; gap: 14px; flex-wrap: wrap; }
-.hero-note { margin-top: 22px; font-size: 13.5px; color: var(--muted); }
-.hero-note b { color: var(--text2); font-weight: 600; }
+.hero .btn-primary { background: #fff; color: var(--d-bg); }
+.hero .btn-primary:hover { background: var(--d-accent); color: #06231A; }
+.hero .btn-ghost { color: var(--d-text); border-color: rgba(255,255,255,.24); }
+.hero .btn-ghost:hover { color: var(--d-accent); border-color: var(--d-accent); }
+.trust-row { margin-top: 30px; display: flex; gap: 22px; flex-wrap: wrap; font-family: var(--mono);
+  font-size: 12px; letter-spacing: .03em; color: var(--d-muted); }
+.trust-row span { display: inline-flex; align-items: center; gap: 8px; }
+.trust-row span::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--d-accent); }
+/* hero panel on dark */
+.hero .panel { background: var(--d-bg2); border-color: var(--d-border);
+  box-shadow: 0 30px 70px -34px rgba(0,0,0,.7); }
+.hero .panel-head { border-bottom-color: var(--d-border); }
+.hero .panel-title, .hero .tag-illus, .hero .cvo-stat .l, .hero .cvo-row .vd { color: var(--d-muted); }
+.hero .tag-illus { border-color: var(--d-border); }
+.hero .cvo-stat { border-color: var(--d-border); }
+.hero .cvo-stat .v { color: var(--d-text); }
+.hero .cvo-stat .v small { color: var(--d-muted); }
+.hero .cvo-stat.value { border-color: rgba(52,211,153,.4); }
+.hero .cvo-stat.value .v { color: var(--d-accent); }
+.hero .cvo-row { border-top-color: var(--d-border); }
+.hero .cvo-row .nm { color: var(--d-text); }
+.hero .cvo-row .cpo, .hero .live { color: var(--d-accent); }
 
 /* ---------- premium panel (shared mock surface) ---------- */
 .panel { background: #FFFFFF; border: 1px solid var(--border); border-radius: 14px;
@@ -306,13 +346,30 @@ h3 { font-size: 18px; font-weight: 650; letter-spacing: -0.01em; }
 .form-ok { display: none; margin-top: 20px; font-family: var(--mono); color: var(--accent-ink); font-size: 14px; }
 .form-err { display: none; margin-top: 20px; font-family: var(--mono); color: var(--red); font-size: 13px; }
 
-footer { border-top: 1px solid var(--border); padding: 40px 0; font-size: 13.5px; color: var(--muted); }
+/* ---------- proof band (dark / why-now) ---------- */
+.proof { background: var(--d-bg); color: var(--d-text); padding: 92px 0; }
+.proof .kicker { color: var(--d-accent); }
+.proof-grid { display: grid; grid-template-columns: auto 1fr; gap: 56px; align-items: center; }
+.proof-stat { font-size: clamp(80px, 12vw, 150px); font-weight: 800; letter-spacing: -0.05em;
+  line-height: .82; color: #fff; font-variant-numeric: tabular-nums; }
+.proof-stat .pct { color: var(--d-accent); }
+.proof-text h2 { color: #fff; margin-bottom: 14px; }
+.proof-text p { color: var(--d-muted); font-size: 16.5px; max-width: 560px; line-height: 1.6; }
+.proof-cite { margin-top: 18px; font-family: var(--mono); font-size: 12px; color: var(--d-muted);
+  letter-spacing: .02em; }
+.proof-cite b { color: var(--d-text); font-weight: 500; }
+
+/* ---------- footer (dark) ---------- */
+footer { background: var(--d-bg); padding: 44px 0; font-size: 13.5px; color: var(--d-muted); }
 footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; align-items: center; }
-footer .logo { font-size: 15px; }
+footer .logo { font-size: 15px; color: #fff; }
+footer a { color: var(--d-muted); }
+footer a:hover { color: #fff; }
 
 /* ---------- responsive ---------- */
 @media (max-width: 920px) {
   .hero-grid, .disc-grid, .loop-grid { grid-template-columns: 1fr; gap: 40px; }
+  .proof-grid { grid-template-columns: 1fr; gap: 24px; }
   .pipe-grid { grid-template-columns: 1fr; gap: 0; }
   .rail { position: static; display: none; }  /* rail hidden on mobile; stages flow */
   .stage { min-height: auto; padding: 0 0 44px; }
@@ -360,13 +417,17 @@ footer .logo { font-size: 15px; }
 <header class="hero" id="top">
   <div class="container hero-grid">
     <div>
-      <h1>Know what every AI agent actually costs — <span class="em">and what it's worth.</span></h1>
-      <p class="subhead">Compass is the neutral third party that reads what your agents actually deliver across every vendor, then puts a number on it: cost per agent, and cost per outcome, against the results your business runs on.</p>
+      <h1>Know what every agent costs. <span class="em">And what it's worth.</span></h1>
+      <p class="subhead">The neutral system of record for AI-agent spend. Cost per agent, cost per outcome — across every vendor, against the outcomes that pay for them.</p>
       <div class="hero-ctas">
         <a class="btn btn-primary" href="#pipeline">See how it works →</a>
         <a class="btn btn-ghost" href="#access">Request access</a>
       </div>
-      <p class="hero-note">No vendor lock-in. <b>One honest read</b> across the agents you already run.</p>
+      <div class="trust-row">
+        <span>Vendor-neutral</span>
+        <span>Read-only access</span>
+        <span>Outcome-verified</span>
+      </div>
     </div>
 
     <div class="panel" aria-label="Cost versus outcome — illustrative">
@@ -378,26 +439,40 @@ footer .logo { font-size: 15px; }
         <div class="cvo-headline">
           <div class="cvo-stat">
             <div class="l">Agent spend</div>
-            <div class="v mono">$2,670</div>
+            <div class="v mono">$42,000</div>
           </div>
           <div class="cvo-stat value">
             <div class="l">Cost / qualified opp</div>
-            <div class="v mono">$8.34</div>
+            <div class="v mono">$14.00</div>
           </div>
         </div>
         <div class="cvo-stat" style="margin-top:14px;">
           <div class="l">Outcome · qualified opportunities created</div>
-          <div class="v mono">320 <small>across 3 agents · 3 vendors</small></div>
+          <div class="v mono">3,000 <small>across 3 agents · 3 vendors</small></div>
         </div>
         <div class="cvo-rows">
-          <div class="cvo-row"><span class="nm">Prospector</span><span class="vd">Vendor A · frontier</span><span class="cpo">$19.17</span></div>
-          <div class="cvo-row"><span class="nm">Qualifier</span><span class="vd">Vendor B · fast</span><span class="cpo">$3.39</span></div>
-          <div class="cvo-row"><span class="nm">Researcher</span><span class="vd">Open-weight · self-hosted</span><span class="cpo">$5.00</span></div>
+          <div class="cvo-row"><span class="nm">Prospector</span><span class="vd">Vendor A · frontier</span><span class="cpo">$40.00</span></div>
+          <div class="cvo-row"><span class="nm">Qualifier</span><span class="vd">Vendor B · fast</span><span class="cpo">$5.00</span></div>
+          <div class="cvo-row"><span class="nm">Researcher</span><span class="vd">Open-weight · self-hosted</span><span class="cpo">$10.00</span></div>
         </div>
       </div>
     </div>
   </div>
 </header>
+<div id="hero-end" aria-hidden="true"></div>
+
+<!-- ============ PROOF BAND (why now — dark) ============ -->
+<section class="proof">
+  <div class="container proof-grid">
+    <div class="proof-stat"><span class="pct">95%</span></div>
+    <div class="proof-text">
+      <div class="kicker">Why now</div>
+      <h2>of enterprise GenAI pilots show no measurable P&amp;L impact.</h2>
+      <p>Tens of billions invested — almost nothing on the P&amp;L. The gap isn't the models. It's that no one can tie an agent to the outcome it was hired to move. That's the number Compass exists to change.</p>
+      <p class="proof-cite">Source: MIT Project NANDA — <b>"The GenAI Divide: State of AI in Business 2025."</b></p>
+    </div>
+  </div>
+</section>
 
 <!-- ============ DISCOVERY (beat 1 — full-bleed) ============ -->
 <section class="discovery" id="discover">
@@ -499,17 +574,17 @@ footer .logo { font-size: 15px; }
                 <div class="agent-card">
                   <div><div class="an">Prospector</div><div class="vend"><span class="vdot"></span>Vendor A · frontier</div></div>
                   <span class="bind">bound</span>
-                  <div class="props"><span class="prop">researches accounts</span><span class="prop">$1,840/mo</span><span class="prop">drafts outreach</span></div>
+                  <div class="props"><span class="prop">researches accounts</span><span class="prop">$28,000/mo</span><span class="prop">drafts outreach</span></div>
                 </div>
                 <div class="agent-card">
                   <div><div class="an">Qualifier</div><div class="vend"><span class="vdot"></span>Vendor B · fast</div></div>
                   <span class="bind">bound</span>
-                  <div class="props"><span class="prop">scores inbound</span><span class="prop">$610/mo</span><span class="prop">updates CRM</span></div>
+                  <div class="props"><span class="prop">scores inbound</span><span class="prop">$9,000/mo</span><span class="prop">updates CRM</span></div>
                 </div>
                 <div class="agent-card">
                   <div><div class="an">Researcher</div><div class="vend"><span class="vdot"></span>Open-weight · self-hosted</div></div>
                   <span class="bind">bound</span>
-                  <div class="props"><span class="prop">enriches records</span><span class="prop">$220/mo</span></div>
+                  <div class="props"><span class="prop">enriches records</span><span class="prop">$5,000/mo</span></div>
                 </div>
               </div>
               <div class="explain">
@@ -534,15 +609,15 @@ footer .logo { font-size: 15px; }
                   <tr><th>Agent</th><th>Vendor</th><th class="col-right">Monthly cost</th><th class="col-right">Qualified opps</th><th class="col-right">Cost / outcome</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td class="nm">Prospector</td><td class="vend">Vendor A · frontier</td><td class="num col-right">$1,840</td><td class="num col-right">96</td><td class="num cpo col-right">$19.17</td></tr>
-                  <tr><td class="nm">Qualifier</td><td class="vend">Vendor B · fast</td><td class="num col-right">$610</td><td class="num col-right">180</td><td class="num cpo col-right">$3.39</td></tr>
-                  <tr><td class="nm">Researcher</td><td class="vend">Open-weight · self-hosted</td><td class="num col-right">$220</td><td class="num col-right">44</td><td class="num cpo col-right">$5.00</td></tr>
-                  <tr class="total"><td class="lbl">Fleet</td><td class="vend">3 vendors</td><td class="num col-right">$2,670</td><td class="num col-right">320</td><td class="num cpo col-right">$8.34</td></tr>
+                  <tr><td class="nm">Prospector</td><td class="vend">Vendor A · frontier</td><td class="num col-right">$28,000</td><td class="num col-right">700</td><td class="num cpo col-right">$40.00</td></tr>
+                  <tr><td class="nm">Qualifier</td><td class="vend">Vendor B · fast</td><td class="num col-right">$9,000</td><td class="num col-right">1,800</td><td class="num cpo col-right">$5.00</td></tr>
+                  <tr><td class="nm">Researcher</td><td class="vend">Open-weight · self-hosted</td><td class="num col-right">$5,000</td><td class="num col-right">500</td><td class="num cpo col-right">$10.00</td></tr>
+                  <tr class="total"><td class="lbl">Fleet</td><td class="vend">3 vendors</td><td class="num col-right">$42,000</td><td class="num col-right">3,000</td><td class="num cpo col-right">$14.00</td></tr>
                 </tbody>
               </table>
             </div>
           </div>
-          <p class="s-emph">One number your CFO can act on: <b>$8.34 per qualified opportunity</b>, fully attributed.</p>
+          <p class="s-emph">One number your CFO can act on: <b>$14.00 per qualified opportunity</b>, fully attributed.</p>
         </div>
 
         <!-- Stage 4 · Learning loop -->
@@ -553,21 +628,21 @@ footer .logo { font-size: 15px; }
           <div class="panel reveal" aria-label="Learning loop — illustrative">
             <div class="panel-head"><span class="panel-title">Optimization · Prospector</span><span class="tag-illus">Illustrative</span></div>
             <div class="panel-body">
-              <p style="font-size:13.5px; color:var(--text2); margin-bottom:16px;">Prospector ran a frontier model on enrichment a mid-tier could handle. Compass routes that sub-task down a tier — <b>holding all 96 credited opportunities.</b></p>
+              <p style="font-size:13.5px; color:var(--text2); margin-bottom:16px;">Prospector ran a frontier model on enrichment a mid-tier could handle. Compass routes that sub-task down a tier — <b>holding all 700 credited opportunities.</b></p>
               <div class="ba">
                 <div class="ba-card before">
                   <div class="bl">Before · cost / opp</div>
-                  <div class="ba-big mono">$19.17</div>
-                  <div class="ba-sub">Prospector · 96 opps · $1,840/mo</div>
+                  <div class="ba-big mono">$40.00</div>
+                  <div class="ba-sub">Prospector · 700 opps · $28,000/mo</div>
                 </div>
                 <div class="ba-arrow">→</div>
                 <div class="ba-card after">
                   <div class="bl">After · cost / opp</div>
-                  <div class="ba-big mono">$11.98</div>
-                  <div class="ba-sub">Prospector · 96 opps · $1,150/mo</div>
+                  <div class="ba-big mono">$25.00</div>
+                  <div class="ba-sub">Prospector · 700 opps · $17,500/mo</div>
                 </div>
               </div>
-              <div class="loop-foot">Same 96 opportunities. Same outcome you defined. <b>$690/mo back</b> — reported in qualified opps, not tokens.</div>
+              <div class="loop-foot">Same 700 opportunities. Same outcome you defined. <b>$10,500/mo back</b> — reported in qualified opps, not tokens.</div>
             </div>
           </div>
         </div>
@@ -597,7 +672,7 @@ footer .logo { font-size: 15px; }
       <div class="card lead">
         <div class="ct">Compass</div>
         <h3>Verifies delivery.</h3>
-        <p>The independent ledger after the work: every agent measured against the real outcomes it was hired to move — read from your own systems, across every vendor.</p>
+        <p>The independent system of record after the work: every agent measured against the real outcomes it was hired to move — read-only, from your own systems, across every vendor.</p>
       </div>
     </div>
   </div>
@@ -611,9 +686,9 @@ footer .logo { font-size: 15px; }
       <h2>The gain shows up where it pays for itself.</h2>
       <p class="lede">Not a chart of tokens saved. The same outcomes you defined, delivered for less — a number Finance, IT, and RevOps can all stand behind.</p>
       <div class="loop-metrics">
-        <div class="loop-metric val"><div class="v mono">$8.34→$6.19</div><div class="l">cost / qualified opp</div></div>
-        <div class="loop-metric"><div class="v mono">320</div><div class="l">outcomes held</div></div>
-        <div class="loop-metric val"><div class="v mono">$690/mo</div><div class="l">returned (~26%)</div></div>
+        <div class="loop-metric val"><div class="v mono">$14.00→$10.50</div><div class="l">cost / qualified opp</div></div>
+        <div class="loop-metric"><div class="v mono">3,000</div><div class="l">outcomes held</div></div>
+        <div class="loop-metric val"><div class="v mono">$10,500/mo</div><div class="l">returned (~25%)</div></div>
       </div>
     </div>
     <div class="panel" aria-label="Fleet impact — illustrative">
@@ -622,17 +697,17 @@ footer .logo { font-size: 15px; }
         <div class="ba">
           <div class="ba-card before">
             <div class="bl">Before</div>
-            <div class="ba-big mono">$8.34</div>
-            <div class="ba-sub">$2,670/mo · 320 opps · 3 vendors</div>
+            <div class="ba-big mono">$14.00</div>
+            <div class="ba-sub">$42,000/mo · 3,000 opps · 3 vendors</div>
           </div>
           <div class="ba-arrow">→</div>
           <div class="ba-card after">
             <div class="bl">After</div>
-            <div class="ba-big mono">$6.19</div>
-            <div class="ba-sub">$1,980/mo · 320 opps · 3 vendors</div>
+            <div class="ba-big mono">$10.50</div>
+            <div class="ba-sub">$31,500/mo · 3,000 opps · 3 vendors</div>
           </div>
         </div>
-        <div class="loop-foot">No outcomes lost. <b>$690/mo recovered</b> from one cross-vendor optimization — and Compass keeps watching.</div>
+        <div class="loop-foot">No outcomes lost. <b>$10,500/mo recovered</b> from one cross-vendor optimization — and Compass keeps watching.</div>
       </div>
     </div>
   </div>
@@ -713,6 +788,19 @@ footer .logo { font-size: 15px; }
   reveals.forEach(r => revObs.observe(r));
 
   setActive(0);
+})();
+
+// ---------- nav adapts to the dark sections at the top (hero + proof band) ----------
+(function () {
+  const navEl = document.querySelector('nav');
+  const proof = document.querySelector('.proof');
+  if (!navEl || !proof) return;
+  // dark nav while a dark section is still under the bar (proof band is the lowest dark section up top)
+  const darkUntil = () => proof.offsetTop + proof.offsetHeight - 64;
+  const sync = () => navEl.classList.toggle('over-hero', window.scrollY < darkUntil());
+  sync();
+  window.addEventListener('scroll', sync, { passive: true });
+  window.addEventListener('resize', sync, { passive: true });
 })();
 
 // ---------- email capture (FormSubmit relay; requires one-time activation by the recipient) ----------
