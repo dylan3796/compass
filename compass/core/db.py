@@ -30,7 +30,37 @@ AGENT_V2_COLUMNS = {
     "projection_source": "TEXT",
     "unit_value_usd": "REAL",
     "value_basis": "TEXT",
+    # Substrate-agnostic ROT: an agent can graduate to deterministic code.
+    # NULL reads as 'agent' everywhere (see substrate_of).
+    "substrate": "TEXT",
+    "code_graduated_at": "TIMESTAMP",
+    "codify_spec_id": "TEXT",
 }
+
+# Mirror of the CodifySpec DDL in schema.sql so migrated (pre-existing) DBs
+# gain the table too. Keep the two in sync.
+CODIFY_SPEC_DDL = """
+CREATE TABLE IF NOT EXISTS CodifySpec (
+  id TEXT PRIMARY KEY,
+  agent_id TEXT NOT NULL REFERENCES Agent(id),
+  recommendation_id TEXT,
+  title TEXT,
+  body_md TEXT,
+  est_agent_cost_usd_mo REAL,
+  est_code_cost_usd_mo REAL,
+  est_savings_usd_mo REAL,
+  created_at TIMESTAMP,
+  created_by TEXT
+);
+"""
+
+
+def substrate_of(row) -> str:
+    """Read an Agent row's substrate, treating NULL/missing as 'agent'."""
+    try:
+        return row["substrate"] or "agent"
+    except (KeyError, IndexError, TypeError):
+        return "agent"
 
 
 def _migrate(conn: sqlite3.Connection):
@@ -38,6 +68,7 @@ def _migrate(conn: sqlite3.Connection):
     for col, sqltype in AGENT_V2_COLUMNS.items():
         if col not in existing:
             conn.execute(f"ALTER TABLE Agent ADD COLUMN {col} {sqltype}")
+    conn.executescript(CODIFY_SPEC_DDL)
     conn.commit()
 
 
@@ -53,6 +84,9 @@ AGENT_DEFAULTS = {
     "projection_source": None,
     "unit_value_usd": None,
     "value_basis": None,
+    "substrate": "agent",
+    "code_graduated_at": None,
+    "codify_spec_id": None,
 }
 
 
@@ -66,10 +100,10 @@ def _seed(conn: sqlite3.Connection):
     conn.executemany(
         "INSERT INTO Agent (id, name, type, model, program, status, created_at, last_run, "
         "projected_cost_usd_mo, projected_value_usd_mo, projection_source, "
-        "unit_value_usd, value_basis) "
+        "unit_value_usd, value_basis, substrate, code_graduated_at, codify_spec_id) "
         "VALUES (:id, :name, :type, :model, :program, :status, :created_at, :last_run, "
         ":projected_cost_usd_mo, :projected_value_usd_mo, :projection_source, "
-        ":unit_value_usd, :value_basis)",
+        ":unit_value_usd, :value_basis, :substrate, :code_graduated_at, :codify_spec_id)",
         [{**AGENT_DEFAULTS, **a} for a in data["agents"]])
     conn.executemany(
         "INSERT INTO AgentRun (id, agent_id, run_at, input_tokens, output_tokens, "

@@ -15,6 +15,7 @@ import streamlit as st  # noqa: E402
 
 from core import db  # noqa: E402
 from core.agent_scorer import is_new_agent, score_agents  # noqa: E402
+from core.codify import build_codify_spec_md, codify_economics  # noqa: E402
 from core.recommender import refresh_recommendations  # noqa: E402
 
 
@@ -86,6 +87,30 @@ def _apply_side_effects(c, rec):
             "VALUES (?, ?, ?, ?, ?, 1, ?)",
             ("gr_" + uuid.uuid4().hex[:8], rec["agent_id"], "Hourly rate cap",
              "rate_limit", json.dumps({"max_runs_per_hour": 10}), now))
+    elif rec["type"] == "codify":
+        # Emit the codify spec (a decision artifact, never code) and graduate the
+        # agent's substrate so the Agent P&L tracks token-ROT -> code-ROT.
+        agent = c.execute("SELECT * FROM Agent WHERE id = ?", (rec["agent_id"],)).fetchone()
+        econ = codify_economics(c, rec["agent_id"])
+        spec_id = "cs_" + uuid.uuid4().hex[:8]
+        c.execute(
+            "INSERT INTO CodifySpec (id, agent_id, recommendation_id, title, body_md, "
+            "est_agent_cost_usd_mo, est_code_cost_usd_mo, est_savings_usd_mo, "
+            "created_at, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (spec_id, rec["agent_id"], rec["id"], f"Codify spec — {agent['name']}",
+             build_codify_spec_md(agent, econ), econ["cost_mo"], econ["est_code_cost_mo"],
+             econ["savings"], now, "dylan@veritas.ai"))
+        c.execute(
+            "UPDATE Agent SET substrate = 'code', code_graduated_at = ?, codify_spec_id = ? "
+            "WHERE id = ?", (now, spec_id, rec["agent_id"]))
+
+
+def codify_spec(agent_id: str):
+    """The most recent codify spec for an agent, or None."""
+    row = conn().execute(
+        "SELECT * FROM CodifySpec WHERE agent_id = ? ORDER BY created_at DESC LIMIT 1",
+        (agent_id,)).fetchone()
+    return dict(row) if row else None
 
 
 def add_guardrail(agent_id: str, name: str, gtype: str, config: dict):

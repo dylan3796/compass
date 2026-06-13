@@ -11,6 +11,9 @@ Three renderers: rows for the Streamlit page, a self-contained HTML report
 import sqlite3
 from datetime import datetime, timedelta
 
+from core.codify import DRIFT_ALLOWANCE_FRAC
+from core.db import substrate_of
+
 TREND_TOLERANCE = 0.10  # net-value change below this is "flat"
 
 
@@ -37,6 +40,18 @@ def weekly_pnl(conn: sqlite3.Connection, week_end: datetime | None = None) -> di
     for a in conn.execute("SELECT * FROM Agent ORDER BY name").fetchall():
         runs, completed, cost = _window_stats(conn, a["id"], start, end)
         p_runs, p_completed, p_cost = _window_stats(conn, a["id"], prior_start, start)
+
+        # Substrate-agnostic ROT: once an agent graduates to deterministic code,
+        # the work runs off the model — only the recompile-on-drift reserve is
+        # token spend. The work still gets done, so value is held; but post-
+        # graduation throughput is no longer measured from agent runs, so the
+        # line carries the `simulated` confidence tier until verified.
+        substrate = substrate_of(a)
+        confidence = None
+        if substrate == "code":
+            cost = cost * DRIFT_ALLOWANCE_FRAC
+            p_cost = p_cost * DRIFT_ALLOWANCE_FRAC
+            confidence = "simulated"
 
         unit = a["unit_value_usd"]
         value = completed * unit if unit is not None else None
@@ -65,6 +80,8 @@ def weekly_pnl(conn: sqlite3.Connection, week_end: datetime | None = None) -> di
             net=round(net, 2), roi=None if roi is None else round(roi, 1),
             trend=trend, plan_pct=None if plan_pct is None else round(plan_pct),
             value_basis=a["value_basis"], projection_source=a["projection_source"],
+            substrate=substrate, code_graduated_at=a["code_graduated_at"],
+            confidence=confidence,
         ))
 
     rows.sort(key=lambda r: (r["value"] is None, -(r["value"] or 0)))
@@ -104,9 +121,10 @@ def render_text(pnl: dict) -> str:
     ]
     for r in pnl["rows"]:
         plan = f"{r['plan_pct']}%" if r["plan_pct"] is not None else "—"
+        mark = "  code" if r["substrate"] == "code" else ""
         lines.append(
             f"{r['name']:<12}{r['runs']:>6}{_fmt(r['cost'], True):>10}"
-            f"{_fmt(r['value'], True):>10}{plan:>10}  {ARROW[r['trend']]}")
+            f"{_fmt(r['value'], True):>10}{plan:>10}  {ARROW[r['trend']]}{mark}")
     lines += ["-" * 62, ""]
     misses = [r for r in pnl["rows"] if r["plan_pct"] is not None and r["plan_pct"] < 75]
     beats = [r for r in pnl["rows"] if r["plan_pct"] is not None and r["plan_pct"] > 110]
@@ -139,8 +157,13 @@ def render_html(pnl: dict) -> str:
         roi = "—" if r["roi"] is None else "{:,.0f}x".format(r["roi"])
         return f'<td class="num">{roi}</td>'
 
+    def substrate_tag(r):
+        if r["substrate"] == "code":
+            return ' <span style="color:#047857; font-size:11px;">⚙ code</span>'
+        return ""
+
     body_rows = "\n".join(
-        f'<tr><td><b>{r["name"]}</b> <span class="muted">· {r["program"] or ""}</span></td>'
+        f'<tr><td><b>{r["name"]}</b>{substrate_tag(r)} <span class="muted">· {r["program"] or ""}</span></td>'
         f'<td class="num">{r["runs"]}</td>'
         f'<td class="num">{_fmt(r["cost"], True)}</td>'
         f'<td class="num">{_fmt(r["value"], True)}</td>'
@@ -193,7 +216,9 @@ def render_html(pnl: dict) -> str:
 <div class="foot">
   Value = completed runs × the agent's documented unit value. Agents without an honest value
   model show "—" — cost and trend are still tracked. "vs. plan" compares run-rate value against
-  the projection the agent was specced with.
+  the projection the agent was specced with. A <b>⚙ code</b> line has graduated off the model:
+  ongoing cost is the recompile-on-drift reserve only, and its post-graduation value is
+  <i>simulated</i> until verified in a system of record.
   <ul>{notes}</ul>
 </div>
 </body></html>"""

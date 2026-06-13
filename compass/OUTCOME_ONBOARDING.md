@@ -13,6 +13,10 @@ in under 30 minutes, and exactly what they specify vs. what Compass supplies.
 3. **Confidence tiers, displayed on every P&L line:**
    - `verified` — units counted in the system of record
    - `modeled` — verified units × customer-confirmed assumptions (assumptions shown)
+   - `simulated` — a counterfactual or a post-substrate-change projection (e.g. a
+     what-if backtest, or a line that has graduated from agent to code): real
+     history re-priced, no outcomes invented, never a measured result. Holds
+     until real outcomes flow from the system of record.
    - `—` — no honest value model yet; no number is invented
 4. **Every accepted default is a recorded assumption.** Shown on the P&L,
    editable later, versioned.

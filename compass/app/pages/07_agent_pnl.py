@@ -50,6 +50,7 @@ def plan_text(r):
 
 rows = pd.DataFrame([{
     "agent": r["name"],
+    "substrate": "⚙ code" if r["substrate"] == "code" else "🤖 agent",
     "program": r["program"],
     "runs": r["runs"],
     "cost": fmt_money(r["cost"]),
@@ -85,6 +86,20 @@ for r in beats:
         f'<span class="rec-line" style="margin-left:8px;"><b>{r["name"]}</b> is delivering '
         f'{r["plan_pct"]}% of its projection <span class="muted">({r["projection_source"]})</span>.'
         f'</span></div>', unsafe_allow_html=True)
+
+# ---- graduated-to-code callout --------------------------------------------------
+graduated = [r for r in pnl["rows"] if r["substrate"] == "code"]
+if graduated:
+    st.markdown("#### Graduated to code")
+for r in graduated:
+    roi_txt = f"{r['roi']:,.0f}x" if r["roi"] is not None else "—"
+    st.markdown(
+        f'<div class="compass-card"><span class="badge badge-healthy">⚙ CODE</span> '
+        f'<span class="rec-line" style="margin-left:8px;"><b>{r["name"]}</b> moved off the '
+        f'model — ongoing cost is now the recompile-on-drift reserve only ({fmt_money(r["cost"])}'
+        f'/wk), value held, ROI {roi_txt}. <span class="muted">Compass keeps measuring it; the '
+        f'post-graduation value is shown <i>simulated</i> until verified in a system of record.'
+        f'</span></span></div>', unsafe_allow_html=True)
 
 # ---- value bases (the honesty appendix) -----------------------------------------
 with st.expander("How value is estimated, per agent"):
