@@ -310,6 +310,57 @@ footer { border-top: 1px solid var(--border); padding: 40px 0; font-size: 13.5px
 footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; align-items: center; }
 footer .logo { font-size: 15px; }
 
+/* ---------- signature motion + counters ---------- */
+/* count-up numbers: tabular so width doesn't jitter mid-animation */
+.count { font-variant-numeric: tabular-nums; }
+/* hero dot-grid texture — the "ledger paper" signature, very faint */
+.hero { position: relative; }
+.hero::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background-image: radial-gradient(rgba(4,120,87,.10) 1px, transparent 1.4px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 72% 16%, #000 0%, transparent 72%);
+          mask-image: radial-gradient(ellipse 80% 70% at 72% 16%, #000 0%, transparent 72%); }
+.hero .container { position: relative; z-index: 1; }
+
+/* hero ROT KPI block (inside the panel) */
+.rot-kpi { padding: 2px 2px 4px; }
+.rot-kpi .rl { font-family: var(--mono); font-size: 10.5px; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--muted); }
+.rot-kpi .rv { font-size: 44px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.04;
+  margin-top: 6px; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+.rot-kpi .rv small { font-size: 17px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+.rot-trend { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px;
+  font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--accent-ink);
+  background: rgba(4,120,87,.08); border: 1px solid rgba(4,120,87,.22);
+  padding: 4px 10px; border-radius: 999px; }
+/* ROT meter: two bars (then vs now) so the cost-per-outcome drop is unmistakable */
+.rot-meter { margin-top: 16px; display: flex; flex-direction: column; gap: 9px; }
+.rot-meter .mb { display: grid; grid-template-columns: 40px 1fr auto; gap: 11px; align-items: center; }
+.rot-meter .mbl { font-family: var(--mono); font-size: 10px; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--muted); }
+.rot-meter .mt { height: 8px; border-radius: 999px; background: var(--surface2);
+  border: 1px solid var(--border); overflow: hidden; }
+.rot-meter .mt > i { display: block; height: 100%; width: 0; border-radius: 999px;
+  background: var(--border-strong); transition: width 1s cubic-bezier(.22,.61,.36,1); }
+.rot-meter .mt > i.good { background: linear-gradient(90deg, var(--accent), #0a9d72); }
+.rot-meter.in .mt > i { width: var(--w, 100%); }
+.rot-meter .mv { font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--text2);
+  font-variant-numeric: tabular-nums; }
+.rot-meter .mb.now .mv { color: var(--accent-ink); }
+
+/* hover lift on the interactive surfaces */
+.card, .cvo-stat, .agent-card { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+.card:hover, .cvo-stat:hover, .agent-card:hover { transform: translateY(-2px);
+  box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 14px 30px -22px rgba(16,24,40,.28); }
+
+/* before/after delta bars — width animates on reveal to dramatize the drop */
+.ba-bar { height: 6px; border-radius: 999px; background: var(--surface2); margin-top: 14px; overflow: hidden; }
+.ba-bar > span { display: block; height: 100%; width: 0; border-radius: 999px;
+  transition: width 1s cubic-bezier(.22,.61,.36,1) .15s; }
+.ba-card.before .ba-bar > span { background: var(--border-strong); }
+.ba-card.after .ba-bar > span { background: linear-gradient(90deg, var(--accent), #0a9d72); }
+.panel.in .ba-bar > span { width: var(--w, 100%); }
+
 /* ---------- responsive ---------- */
 @media (max-width: 920px) {
   .hero-grid, .disc-grid, .loop-grid { grid-template-columns: 1fr; gap: 40px; }
@@ -336,6 +387,8 @@ footer .logo { font-size: 15px; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
+  .rot-meter .fill, .ba-bar > span { transition: none; }
+  .card:hover, .cvo-stat:hover, .agent-card:hover { transform: none; }
 }
 </style>
 </head>
@@ -360,8 +413,9 @@ footer .logo { font-size: 15px; }
 <header class="hero" id="top">
   <div class="container hero-grid">
     <div>
+      <div class="kicker">Return on Tokens</div>
       <h1>Know what every AI agent actually costs — <span class="em">and what it's worth.</span></h1>
-      <p class="subhead">Compass is the neutral third party that reads what your agents actually deliver across every vendor, then puts a number on it: cost per agent, and cost per outcome, against the results your business runs on.</p>
+      <p class="subhead">The neutral read on your Return on Tokens: cost per agent and cost per outcome, across every vendor — measured against the results your business actually runs on.</p>
       <div class="hero-ctas">
         <a class="btn btn-primary" href="#pipeline">See how it works →</a>
         <a class="btn btn-ghost" href="#access">Request access</a>
@@ -369,25 +423,30 @@ footer .logo { font-size: 15px; }
       <p class="hero-note">No vendor lock-in. <b>One honest read</b> across the agents you already run.</p>
     </div>
 
-    <div class="panel" aria-label="Cost versus outcome — illustrative">
+    <div class="panel" aria-label="Return on Tokens — illustrative">
       <div class="panel-head">
-        <span class="panel-title">Cost vs. outcome · this month</span>
+        <span class="panel-title">Return on Tokens · this month</span>
         <span class="tag-illus">Illustrative</span>
       </div>
       <div class="panel-body">
-        <div class="cvo-headline">
-          <div class="cvo-stat">
-            <div class="l">Agent spend</div>
-            <div class="v mono">$2,670</div>
-          </div>
-          <div class="cvo-stat value">
-            <div class="l">Cost / qualified opp</div>
-            <div class="v mono">$8.34</div>
+        <div class="rot-kpi">
+          <div class="rl">Cost per qualified outcome</div>
+          <div class="rv mono">$<span class="count" data-to="8.34" data-dec="2">0.00</span></div>
+          <div class="rot-trend"><span aria-hidden="true">▼</span> 26% per outcome this quarter</div>
+          <div class="rot-meter" data-anim="meter">
+            <div class="mb"><span class="mbl">then</span><div class="mt"><i style="--w:100%"></i></div><span class="mv mono">$11.27</span></div>
+            <div class="mb now"><span class="mbl">now</span><div class="mt"><i class="good" style="--w:74%"></i></div><span class="mv mono">$8.34</span></div>
           </div>
         </div>
-        <div class="cvo-stat" style="margin-top:14px;">
-          <div class="l">Outcome · qualified opportunities created</div>
-          <div class="v mono">320 <small>across 3 agents · 3 vendors</small></div>
+        <div class="cvo-headline" style="margin-top:20px;">
+          <div class="cvo-stat">
+            <div class="l">Token + agent spend</div>
+            <div class="v mono">$<span class="count" data-to="2670" data-dec="0">0</span></div>
+          </div>
+          <div class="cvo-stat value">
+            <div class="l">Outcomes delivered</div>
+            <div class="v mono"><span class="count" data-to="320" data-dec="0">0</span> <small>· 3 vendors</small></div>
+          </div>
         </div>
         <div class="cvo-rows">
           <div class="cvo-row"><span class="nm">Prospector</span><span class="vd">Vendor A · frontier</span><span class="cpo">$19.17</span></div>
@@ -537,7 +596,7 @@ footer .logo { font-size: 15px; }
                   <tr><td class="nm">Prospector</td><td class="vend">Vendor A · frontier</td><td class="num col-right">$1,840</td><td class="num col-right">96</td><td class="num cpo col-right">$19.17</td></tr>
                   <tr><td class="nm">Qualifier</td><td class="vend">Vendor B · fast</td><td class="num col-right">$610</td><td class="num col-right">180</td><td class="num cpo col-right">$3.39</td></tr>
                   <tr><td class="nm">Researcher</td><td class="vend">Open-weight · self-hosted</td><td class="num col-right">$220</td><td class="num col-right">44</td><td class="num cpo col-right">$5.00</td></tr>
-                  <tr class="total"><td class="lbl">Fleet</td><td class="vend">3 vendors</td><td class="num col-right">$2,670</td><td class="num col-right">320</td><td class="num cpo col-right">$8.34</td></tr>
+                  <tr class="total"><td class="lbl">Fleet</td><td class="vend">3 vendors</td><td class="num col-right">$<span class="count" data-to="2670">0</span></td><td class="num col-right"><span class="count" data-to="320">0</span></td><td class="num cpo col-right">$<span class="count" data-to="8.34" data-dec="2">0.00</span></td></tr>
                 </tbody>
               </table>
             </div>
@@ -557,14 +616,16 @@ footer .logo { font-size: 15px; }
               <div class="ba">
                 <div class="ba-card before">
                   <div class="bl">Before · cost / opp</div>
-                  <div class="ba-big mono">$19.17</div>
+                  <div class="ba-big mono">$<span class="count" data-to="19.17" data-dec="2">0.00</span></div>
                   <div class="ba-sub">Prospector · 96 opps · $1,840/mo</div>
+                  <div class="ba-bar"><span style="--w:100%"></span></div>
                 </div>
                 <div class="ba-arrow">→</div>
                 <div class="ba-card after">
                   <div class="bl">After · cost / opp</div>
-                  <div class="ba-big mono">$11.98</div>
+                  <div class="ba-big mono">$<span class="count" data-to="11.98" data-dec="2">0.00</span></div>
                   <div class="ba-sub">Prospector · 96 opps · $1,150/mo</div>
+                  <div class="ba-bar"><span style="--w:62%"></span></div>
                 </div>
               </div>
               <div class="loop-foot">Same 96 opportunities. Same outcome you defined. <b>$690/mo back</b> — reported in qualified opps, not tokens.</div>
@@ -613,24 +674,26 @@ footer .logo { font-size: 15px; }
       <p class="lede">Not a chart of tokens saved. The same outcomes you defined, delivered for less — a number Finance, IT, and RevOps can all stand behind. Sometimes the cheapest version of an outcome isn't a cheaper agent — it's not an agent at all. Compass surfaces that call; you make it.</p>
       <div class="loop-metrics">
         <div class="loop-metric val"><div class="v mono">$8.34→$6.19</div><div class="l">cost / qualified opp</div></div>
-        <div class="loop-metric"><div class="v mono">320</div><div class="l">outcomes held</div></div>
-        <div class="loop-metric val"><div class="v mono">$690/mo</div><div class="l">returned (~26%)</div></div>
+        <div class="loop-metric"><div class="v mono"><span class="count" data-to="320">0</span></div><div class="l">outcomes held</div></div>
+        <div class="loop-metric val"><div class="v mono">$<span class="count" data-to="690">0</span>/mo</div><div class="l">returned (~26%)</div></div>
       </div>
     </div>
-    <div class="panel" aria-label="Fleet impact — illustrative">
+    <div class="panel reveal" aria-label="Fleet impact — illustrative">
       <div class="panel-head"><span class="panel-title">Fleet impact · cost per outcome</span><span class="tag-illus">Illustrative</span></div>
       <div class="panel-body">
         <div class="ba">
           <div class="ba-card before">
             <div class="bl">Before</div>
-            <div class="ba-big mono">$8.34</div>
+            <div class="ba-big mono">$<span class="count" data-to="8.34" data-dec="2">0.00</span></div>
             <div class="ba-sub">$2,670/mo · 320 opps · 3 vendors</div>
+            <div class="ba-bar"><span style="--w:100%"></span></div>
           </div>
           <div class="ba-arrow">→</div>
           <div class="ba-card after">
             <div class="bl">After</div>
-            <div class="ba-big mono">$6.19</div>
+            <div class="ba-big mono">$<span class="count" data-to="6.19" data-dec="2">0.00</span></div>
             <div class="ba-sub">$1,980/mo · 320 opps · 3 vendors</div>
+            <div class="ba-bar"><span style="--w:74%"></span></div>
           </div>
         </div>
         <div class="loop-foot">No outcomes lost. <b>$690/mo recovered</b> from one cross-vendor optimization — and Compass keeps watching.</div>
@@ -714,6 +777,47 @@ footer .logo { font-size: 15px; }
   reveals.forEach(r => revObs.observe(r));
 
   setActive(0);
+})();
+
+// ---------- count-up numbers + ROT meter activation ----------
+(function () {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fmt = (v, dec) => v.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  const finalVal = el => fmt(parseFloat(el.getAttribute('data-to')) || 0,
+                            parseInt(el.getAttribute('data-dec') || '0', 10));
+
+  function runCount(el) {
+    const to = parseFloat(el.getAttribute('data-to'));
+    const dec = parseInt(el.getAttribute('data-dec') || '0', 10);
+    if (isNaN(to)) return;
+    if (reduce) { el.textContent = fmt(to, dec); return; }
+    const dur = 1100, t0 = performance.now(), ease = p => 1 - Math.pow(1 - p, 3);
+    (function step(now) {
+      const p = Math.min(1, (now - t0) / dur);
+      el.textContent = fmt(to * ease(p), dec);
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = fmt(to, dec);
+    })(t0);
+  }
+
+  const counts = Array.from(document.querySelectorAll('.count'));
+  const meters = Array.from(document.querySelectorAll('.rot-meter'));
+
+  if (!('IntersectionObserver' in window)) {
+    counts.forEach(el => { el.textContent = finalVal(el); });
+    meters.forEach(m => m.classList.add('in'));
+    return;
+  }
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      if (e.target.classList.contains('rot-meter')) e.target.classList.add('in');
+      else runCount(e.target);
+      obs.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.35 });
+  counts.forEach(el => obs.observe(el));
+  meters.forEach(m => obs.observe(m));
 })();
 
 // ---------- email capture (FormSubmit relay; requires one-time activation by the recipient) ----------
