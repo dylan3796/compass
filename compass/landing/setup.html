@@ -341,6 +341,20 @@ input[type=range] { flex: 1; accent-color: var(--accent); height: 4px; cursor: p
 .recap .total { margin-top: 16px; border-top: 1px solid rgba(255,255,255,.1); padding-top: 14px;
   font-family: var(--mono); font-size: 13px; color: #FFF; }
 
+/* ---------- context (before the demo) ---------- */
+.context { padding: 30px 0 10px; }
+.context .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 28px; }
+.ctx-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 22px; box-shadow: var(--shadow-sm); }
+.ctx-card .num { font-family: var(--mono); color: var(--accent); font-size: 12px; letter-spacing: .1em; }
+.ctx-card h3 { font-size: 16px; font-weight: 700; margin: 10px 0 7px; letter-spacing: -0.01em; }
+.ctx-card p { font-size: 13.5px; color: var(--muted); }
+.ctx-card p b { color: var(--text); font-weight: 600; }
+.context .start { margin-top: 34px; text-align: center; }
+.context .start .below { display: block; margin-top: 12px; font-size: 12.5px; color: var(--faint); }
+.context h2 { font-size: 28px; font-weight: 750; letter-spacing: -0.02em; max-width: 640px; }
+.context .lede { color: var(--muted); font-size: 15.5px; margin-top: 10px; max-width: 620px; }
+
 /* closing */
 .closing { padding: 64px 0 90px; text-align: center; }
 .closing h2 { font-size: 30px; font-weight: 750; letter-spacing: -0.02em; }
@@ -354,7 +368,7 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
   .side .logo { padding: 0 14px 0 0; }
   .side .group, .side .ws { display: none; }
   .snav { flex-direction: row; }
-  .connect-grid, .read-grid, .bind-grid, .econ-grid, .queue, .recap .rgrid { grid-template-columns: 1fr; }
+  .connect-grid, .read-grid, .bind-grid, .econ-grid, .queue, .recap .rgrid, .context .grid { grid-template-columns: 1fr; }
   .mathcard { position: static; }
   .pnl-row { grid-template-columns: 1fr; gap: 12px; }
   .pnl-nums { text-align: left; }
@@ -387,19 +401,49 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
 <!-- ============ HERO ============ -->
 <header class="hero">
   <div class="container">
-    <div class="kicker">Outcome setup · interactive</div>
-    <h1>Watch Compass <em>meet an agent</em> — and turn it into a P&amp;L line.</h1>
-    <p class="sub">You're about to onboard a real agent the way a customer does: Compass reads the agent from its own telemetry, proposes the outcome, and asks you for exactly two business numbers. Ten minutes, no engineering.</p>
+    <div class="kicker">Outcomes, tied to agents</div>
+    <h1>Agents get hired on a promise. Compass <em>holds them to it.</em></h1>
+    <p class="sub">Every agent in your fleet was brought in to deliver something — clean records, deflected tickets, drafted replies. Compass ties each agent to that outcome and verifies delivery in your own systems, run after run.</p>
     <div class="meta">
-      <span class="pill"><b>~10 min</b> per agent</span>
+      <span class="pill"><b>~10 min</b> of setup per agent</span>
       <span class="pill">You answer <b>economics</b>, never mechanics</span>
       <span class="pill">Value read from <b>your system of record</b> — never agent self-reports</span>
     </div>
   </div>
 </header>
 
+<!-- ============ CONTEXT — BEFORE THE DEMO ============ -->
+<section class="context">
+  <div class="container">
+    <div class="kicker">The idea, in three beats</div>
+    <h2>How an agent becomes accountable.</h2>
+    <p class="lede">Before you click anything — this is the whole mental model. The walkthrough below just makes it real.</p>
+    <div class="grid">
+      <div class="ctx-card">
+        <span class="num">01 · THE PLAN</span>
+        <h3>An agent is hired like an employee.</h3>
+        <p>It has a job and a number it was brought in to deliver. Most teams never write that number down. <b>Compass makes it the plan</b> — the line every result is measured against.</p>
+      </div>
+      <div class="ctx-card">
+        <span class="num">02 · THE READ</span>
+        <h3>Compass reads the agent. Nobody fills in a form.</h3>
+        <p>From the agent's own telemetry: what it runs on, which tools it calls, what it costs, <b>whose identity it acts under</b>. You confirm — you don't type.</p>
+      </div>
+      <div class="ctx-card">
+        <span class="num">03 · THE LEDGER</span>
+        <h3>Delivery is verified where the work lands.</h3>
+        <p>Value is read from your CRM, helpdesk, or billing — <b>run after run, not at review time</b>. Never from what the agent says about itself.</p>
+      </div>
+    </div>
+    <div class="start">
+      <a class="btn btn-accent" href="#walkthrough" style="font-size:15px; padding:14px 28px;">Start the walkthrough ↓</a>
+      <span class="below">Interactive · ~2 minutes · the same five steps a customer follows</span>
+    </div>
+  </div>
+</section>
+
 <!-- ============ PRODUCT FRAME ============ -->
-<section class="stage">
+<section class="stage" id="walkthrough">
   <div class="container">
     <div class="frame">
       <div class="chrome"><i></i><i></i><i></i><span class="url">app.compass.dev / <b>outcomes / new</b></span></div>
@@ -676,11 +720,11 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
           <!-- ======== STEP 5 · LIVE ======== -->
           <div class="panel" id="p4">
             <h2>Done. The agent is now a line on the P&amp;L.</h2>
-            <p class="lede">From here Compass baselines it, then reconciles every week — delivered value read from Salesforce against the plan it was hired on. Here's the first Monday:</p>
+            <p class="lede">From here Compass baselines it and reconciles continuously — every run's delivered value read from Salesforce against the plan it was hired on. Here's its first week on the ledger:</p>
             <div class="live-wrap">
               <div class="card pnl-card">
                 <div class="pnl-head">
-                  <span>Weekly Agent P&amp;L · Veritas AI · first reconcile</span>
+                  <span>Agent P&amp;L · Veritas AI · week 1 on the ledger</span>
                   <span style="letter-spacing:.04em; text-transform:none;">level vs. plan · Δ week · Δ since last change</span>
                 </div>
                 <div class="pnl-row">
@@ -748,7 +792,7 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
 <section class="closing">
   <div class="container">
     <div class="kicker">That's the whole setup</div>
-    <h2>Every agent, hired on a plan. Every Monday, held to it.</h2>
+    <h2>Every agent, hired on a plan. Held to it, run after run.</h2>
     <p>Two MCP connections and two numbers per agent. Compass does the rest — and never invents a dollar it can't trace.</p>
     <a class="btn btn-accent" href="index.html#access" style="font-size:15px; padding:14px 28px;">Request early access</a>
     <span style="display:inline-block; width:10px;"></span>
