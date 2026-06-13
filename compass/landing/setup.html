@@ -67,6 +67,7 @@ nav .container { display: flex; justify-content: space-between; align-items: cen
   padding: 4px 10px; border-radius: 99px; margin-left: 12px; }
 nav .right { display: flex; align-items: center; gap: 18px; font-size: 13.5px; }
 nav .right a { color: var(--muted); } nav .right a:hover { color: var(--text); }
+nav .right a.btn-primary, nav .right a.btn-primary:hover { color: #FFF; }
 .btn { display: inline-flex; align-items: center; gap: 8px; font-family: var(--sans); font-size: 14px;
   font-weight: 600; padding: 11px 20px; border-radius: 8px; cursor: pointer; border: 1px solid transparent;
   transition: all .18s ease; user-select: none; }
@@ -98,7 +99,7 @@ h1 em { font-style: normal; background: var(--grad); -webkit-background-clip: te
 .meta .pill b { color: var(--text); font-weight: 600; }
 
 /* ---------- product frame ---------- */
-.stage { padding: 36px 0 30px; }
+.stage { padding: 36px 0 30px; scroll-margin-top: 70px; }
 .frame { border-radius: 16px; overflow: hidden; border: 1px solid var(--border);
   box-shadow: var(--shadow-lg); background: var(--canvas); }
 .chrome { display: flex; align-items: center; gap: 8px; background: var(--ink); padding: 12px 16px; }
@@ -335,6 +336,7 @@ input[type=range] { flex: 1; accent-color: var(--accent); height: 4px; cursor: p
 .recap .rgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
 .recap .h { font-family: var(--mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 12px; }
 .recap .you .h { color: #7EE0B8; } .recap .us .h { color: #9DA8FF; }
+.recap ul { margin: 0; padding: 0; }
 .recap li { font-size: 13px; color: #C7CBE2; list-style: none; padding: 4px 0 4px 18px; position: relative; }
 .recap li::before { content: "✓"; position: absolute; left: 0; font-size: 11px; }
 .recap .you li::before { color: #7EE0B8; } .recap .us li::before { color: #9DA8FF; }
@@ -535,7 +537,7 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
                   <div class="agent-avatar">⛁</div>
                   <div>
                     <div class="nm">sfdc-contact-updater <span class="chip chip-new">NEW</span></div>
-                    <div class="plain">In plain English: <b>keeps Salesforce contact records up to date, ~40 times a working day.</b></div>
+                    <div class="plain">In plain English: <b>keeps Salesforce contact records up to date — about 290 records every week.</b></div>
                   </div>
                 </div>
                 <div class="props">
@@ -560,13 +562,13 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
                   <div class="prop reveal" data-r="2">
                     <div class="l">Cost</div>
                     <div class="v"><span class="mono">$0.011 / run</span></div>
-                    <div class="d">≈ $13.80 / month at current pace</div>
+                    <div class="d">≈ $9.70 / month at current pace</div>
                   </div>
                 </div>
                 <div class="props-wide reveal" data-r="3">
                   <div class="l" style="font-family:var(--mono); font-size:10px; letter-spacing:.15em; text-transform:uppercase; color:var(--faint); margin-bottom:5px;">Tools observed</div>
                   <div class="tools">
-                    <span class="tool"><span class="sys">salesforce ·</span> update_contact <span class="freq">38×/day</span></span>
+                    <span class="tool"><span class="sys">salesforce ·</span> update_contact <span class="freq">58×/day</span></span>
                     <span class="tool"><span class="sys">salesforce ·</span> search_contacts <span class="freq">12×/day</span></span>
                     <span class="tool">Read <span class="freq">6×/day</span></span>
                   </div>
@@ -590,14 +592,14 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
 <span class="k">agent:</span> sfdc-contact-updater<br>
 <span class="k">observe:</span> mcp<br>
 <span class="k">harness:</span> claude-code &nbsp;<span class="k">model:</span> claude-haiku-4-5<br>
-<span class="k">tools:</span> [salesforce.update_contact: <span class="s">38/day</span>, salesforce.search_contacts: <span class="s">12/day</span>]<br>
+<span class="k">tools:</span> [salesforce.update_contact: <span class="s">58/day</span>, salesforce.search_contacts: <span class="s">12/day</span>]<br>
 <span class="k">identity_proposed:</span> <span class="s">"compass-agent@veritas.ai"</span><br>
 <span class="k">template_match:</span> crm_hygiene/records_maintained (<span class="s">0.96</span>)
                 </div>
               </div>
               <div class="card side-note">
                 <div class="h">What just happened</div>
-                <p>Compass classified this agent against its <b>outcome template library</b> — the same way it has read every agent before it.</p>
+                <p>Compass classified this agent against its <b>outcome template library</b> — defaults sharpened by every fleet it has read before.</p>
                 <div style="margin-top:14px;">
                   <div class="kv"><span class="k">Properties read</span><span class="v">11</span></div>
                   <div class="kv"><span class="k">Questions asked of you</span><span class="v">0</span></div>
@@ -684,6 +686,7 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
                     <input type="range" min="30" max="150" step="5" value="65" id="rate" oninput="recalc()" style="max-width:180px;">
                     <span class="bigval" style="font-size:16px; min-width:74px;">$<span id="rateV">65</span><small>/hr</small></span>
                   </div>
+                  <span class="default-chip"><i></i> set once for the whole fleet — not per agent</span>
                 </div>
                 <div class="q">
                   <div class="ql">② What was this agent hired to deliver?</div>
@@ -733,11 +736,11 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
                   </div>
                   <div>
                     <div class="planbar"><span class="mark"></span><i id="liveBar"></i></div>
-                    <div class="plan-label"><span>287 contacts verified this week · 0 reverted</span><span>plan: 277/wk</span></div>
+                    <div class="plan-label"><span>291 updates made · 287 counted</span><span>plan: 277/wk</span></div>
                   </div>
                   <div class="pnl-nums">
                     <div class="big" id="livePct">104% of plan</div>
-                    <div class="sm">value <b id="liveVal" style="color:var(--text)">$1,243</b> · cost <b style="color:var(--text)">$3.41</b> · <span style="color:var(--green)">365× return</span></div>
+                    <div class="sm">value <b id="liveVal" style="color:var(--text)">$1,243</b> · cost <b style="color:var(--text)">$2.27</b> · <span style="color:var(--green)">≈550× return</span></div>
                   </div>
                 </div>
                 <div class="pnl-detail">
@@ -760,17 +763,21 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
                 <div class="rgrid">
                   <div class="you">
                     <div class="h">You supplied</div>
-                    <li>1 config line</li>
-                    <li>1 read-only connection</li>
-                    <li>1 identity confirmation</li>
-                    <li>2 business numbers</li>
+                    <ul>
+                      <li>1 config line</li>
+                      <li>1 read-only connection</li>
+                      <li>1 identity confirmation</li>
+                      <li>2 business numbers</li>
+                    </ul>
                   </div>
                   <div class="us">
                     <div class="h">Compass supplied</div>
-                    <li>Discovery, classification &amp; the agent read</li>
-                    <li>Measurement queries, quality checks, baselines</li>
-                    <li>Attribution windows &amp; all P&amp;L math</li>
-                    <li>Regression, loop &amp; guardrail watch — forever</li>
+                    <ul>
+                      <li>Discovery, classification &amp; the agent read</li>
+                      <li>Measurement queries, quality checks, baselines</li>
+                      <li>Attribution windows &amp; all P&amp;L math</li>
+                      <li>Regression, loop &amp; guardrail watch — forever</li>
+                    </ul>
                   </div>
                 </div>
                 <div class="total">⏱ Elapsed: ~10 minutes. Repeat per agent — or let Compass propose the whole fleet at once.</div>
@@ -827,7 +834,7 @@ function go(i) {
   document.querySelectorAll('#steps .step-sep').forEach((s, k) => s.classList.toggle('fill', k < i));
   const frame = document.querySelector('.frame');
   if (frame.getBoundingClientRect().top < -40) frame.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  if (i === 0) playConnect();
+  if (i === 0) { resetBind(); playConnect(); }
   if (i === 1) playRead();
   if (i === 4) playLive();
 }
@@ -875,6 +882,18 @@ function playRead() {
 
 // ---------- step 3: bind interactions ----------
 let sfDone = false, idDone = false;
+function resetBind() {
+  sfDone = idDone = false;
+  const c = document.getElementById('connBtn'), d = document.getElementById('idBtn');
+  c.textContent = 'Connect read-only'; d.textContent = 'Confirm identity';
+  c.classList.remove('done'); d.classList.remove('done');
+  ['kvConn', 'kvId'].forEach(id => {
+    const el = document.getElementById(id);
+    el.textContent = 'pending'; el.style.color = 'var(--faint)';
+  });
+  document.getElementById('next2').disabled = true;
+  document.getElementById('hint2').textContent = 'Step 3 of 5 · connect & confirm to continue';
+}
 function connectSF(btn) {
   btn.textContent = 'Connecting…';
   setTimeout(() => {
