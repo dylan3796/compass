@@ -118,19 +118,40 @@ h2 { font-size: clamp(28px, 3.4vw, 38px); font-weight: 700; letter-spacing: -0.0
 h3 { font-size: 18px; font-weight: 650; letter-spacing: -0.01em; }
 .lede { color: var(--muted); font-size: 17.5px; max-width: 600px; line-height: 1.55; }
 
-/* ---------- hero ---------- */
+/* ---------- hero (dark / boardroom) ---------- */
 .hero { position: relative; overflow: hidden; padding: 116px 0 100px;
-  background: var(--bg); }
+  background: var(--d-bg); color: var(--d-text); }
+.hero::before { content: ""; position: absolute; top: -35%; right: -8%; width: 56%; height: 130%;
+  background: radial-gradient(closest-side, rgba(16,185,129,.10), transparent 70%); pointer-events: none; }
 .hero .container { position: relative; z-index: 1; }
 .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 64px; align-items: center; }
-.hero h1 .em { color: var(--accent-ink); }
-.hero .subhead { margin-top: 24px; font-size: 18.5px; color: var(--muted); max-width: 500px;
+.hero h1 { color: var(--d-text); }
+.hero h1 .em { color: var(--d-accent); }
+.hero .subhead { margin-top: 24px; font-size: 18.5px; color: var(--d-muted); max-width: 500px;
   line-height: 1.55; }
 .hero-ctas { margin-top: 34px; display: flex; gap: 14px; flex-wrap: wrap; }
+.hero .btn-primary { background: #fff; color: var(--d-bg); }
+.hero .btn-primary:hover { background: var(--d-accent); color: #06231A; }
+.hero .btn-ghost { color: var(--d-text); border-color: rgba(255,255,255,.24); }
+.hero .btn-ghost:hover { color: var(--d-accent); border-color: var(--d-accent); }
 .trust-row { margin-top: 30px; display: flex; gap: 22px; flex-wrap: wrap; font-family: var(--mono);
-  font-size: 12px; letter-spacing: .03em; color: var(--muted); }
+  font-size: 12px; letter-spacing: .03em; color: var(--d-muted); }
 .trust-row span { display: inline-flex; align-items: center; gap: 8px; }
-.trust-row span::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+.trust-row span::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--d-accent); }
+/* hero panel on dark */
+.hero .panel { background: var(--d-bg2); border-color: var(--d-border);
+  box-shadow: 0 30px 70px -34px rgba(0,0,0,.7); }
+.hero .panel-head { border-bottom-color: var(--d-border); }
+.hero .panel-title, .hero .tag-illus, .hero .cvo-stat .l, .hero .cvo-row .vd { color: var(--d-muted); }
+.hero .tag-illus { border-color: var(--d-border); }
+.hero .cvo-stat { border-color: var(--d-border); }
+.hero .cvo-stat .v { color: var(--d-text); }
+.hero .cvo-stat .v small { color: var(--d-muted); }
+.hero .cvo-stat.value { border-color: rgba(52,211,153,.4); }
+.hero .cvo-stat.value .v { color: var(--d-accent); }
+.hero .cvo-row { border-top-color: var(--d-border); }
+.hero .cvo-row .nm { color: var(--d-text); }
+.hero .cvo-row .cpo, .hero .live { color: var(--d-accent); }
 
 /* ---------- premium panel (shared mock surface) ---------- */
 .panel { background: #FFFFFF; border: 1px solid var(--border); border-radius: 14px;
@@ -768,18 +789,14 @@ footer a:hover { color: #fff; }
   setActive(0);
 })();
 
-// ---------- nav adapts while the dark proof band passes under the bar ----------
+// ---------- nav adapts to the dark sections at the top (hero + proof band) ----------
 (function () {
   const navEl = document.querySelector('nav');
   const proof = document.querySelector('.proof');
   if (!navEl || !proof) return;
-  // dark nav only while the dark proof band overlaps the 64px bar
-  const sync = () => {
-    const y = window.scrollY;
-    const start = proof.offsetTop - 64;
-    const end = proof.offsetTop + proof.offsetHeight - 64;
-    navEl.classList.toggle('over-hero', y >= start && y < end);
-  };
+  // dark nav while a dark section is still under the bar (proof band is the lowest dark section up top)
+  const darkUntil = () => proof.offsetTop + proof.offsetHeight - 64;
+  const sync = () => navEl.classList.toggle('over-hero', window.scrollY < darkUntil());
   sync();
   window.addEventListener('scroll', sync, { passive: true });
   window.addEventListener('resize', sync, { passive: true });
