@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Compass — Hold every AI agent accountable</title>
-<meta name="description" content="Compass watches every run your AI agents make, verifies the results in your CRM and helpdesk, and tells you what each agent cost, what it delivered, and which to fix, clone, or kill.">
-<meta name="theme-color" content="#FFFFFF">
-<meta property="og:title" content="Compass — Hold every AI agent accountable">
-<meta property="og:description" content="Compass watches every run your AI agents make, verifies the results in your CRM and helpdesk, and tells you what each agent cost, what it delivered, and which to fix, clone, or kill.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23FFFFFF' stroke='%234338CA' stroke-width='2.5'/%3E%3Cpath d='M21.5 10.5 L18 18 L10.5 21.5 L14 14 Z' fill='%234338CA'/%3E%3C/svg%3E">
+<title>Compass — Know what every AI agent costs, and what it's worth</title>
+<meta name="description" content="Compass is the neutral third party that reads what your AI agents actually deliver — across every vendor — and tells you cost per agent and cost per outcome against the results your business runs on.">
+<meta name="theme-color" content="#FAFAF8">
+<meta property="og:title" content="Compass — Know what every AI agent costs, and what it's worth">
+<meta property="og:description" content="The neutral read on AI-agent spend. Cost per agent and cost per outcome, across every vendor, measured against the outcomes that pay for them.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23FAFAF8' stroke='%23047857' stroke-width='2.5'/%3E%3Cpath d='M21.5 10.5 L18 18 L10.5 21.5 L14 14 Z' fill='%23047857'/%3E%3C/svg%3E">
 <style>
 /* Self-hosted fonts (latin subsets) — no external requests */
 @font-face {
@@ -43,198 +43,299 @@
   src: url(fonts/ibm-plex-mono-600-latin.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+
 :root {
-  --bg: #FFFFFF;
-  --surface: #F7F8FA;
-  --surface2: #EFF1F4;
-  --border: #E5E7EB;
+  --bg: #FAFAF8;
+  --surface: #F2F3F3;
+  --surface2: #E9EAEA;
+  --border: #E2E3E3;
+  --border-strong: #D3D5D5;
   --text: #111827;
-  --muted: #6B7280;
-  --green: #047857;
-  --amber: #B45309;
-  --red: #DC2626;
-  --accent: #4338CA;
+  --text2: #374151;
+  --muted: #5B6472;
+  --accent: #047857;       /* emerald — accent ONLY: lines, labels, value figures */
+  --accent-ink: #03684B;   /* darker emerald for small text on paper (AA) */
+  --amber: #B45309;        /* data states only */
+  --red: #B91C1C;          /* data states only */
   --mono: 'IBM Plex Mono', 'SF Mono', Menlo, monospace;
   --sans: 'Inter', -apple-system, 'Segoe UI', sans-serif;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.6; }
-a { color: var(--accent); text-decoration: none; }
-.mono { font-family: var(--mono); }
-.container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
-section { padding: 88px 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans);
+  line-height: 1.6; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+a { color: var(--accent-ink); text-decoration: none; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.container { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+section { padding: 104px 0; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 
 /* ---------- nav ---------- */
-nav { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.88);
-  backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
-nav .container { display: flex; justify-content: space-between; align-items: center; height: 60px; }
-.logo { font-family: var(--mono); font-weight: 600; font-size: 17px; color: var(--text); letter-spacing: 0.02em; }
-.logo span { color: var(--accent); }
-nav .links { display: flex; gap: 24px; align-items: center; font-size: 14px; }
-nav .links a { color: var(--muted); }
+nav { position: sticky; top: 0; z-index: 50; background: rgba(250,250,248,0.82);
+  backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+nav .container { display: flex; justify-content: space-between; align-items: center; height: 64px; }
+.logo { display: inline-flex; align-items: center; gap: 9px; font-weight: 700; font-size: 18px;
+  color: var(--text); letter-spacing: -0.01em; }
+.logo svg { display: block; }
+nav .links { display: flex; gap: 30px; align-items: center; font-size: 14.5px; }
+nav .links a { color: var(--muted); font-weight: 500; transition: color .15s; }
 nav .links a:hover { color: var(--text); }
 
 /* ---------- buttons ---------- */
-.btn { display: inline-block; font-family: var(--sans); font-size: 14px; font-weight: 600;
-  padding: 12px 22px; border-radius: 6px; cursor: pointer; border: 1px solid transparent;
-  transition: all .15s; }
-.btn-primary { background: #111827; color: #FFFFFF; }
-.btn-primary:hover { background: #1F2937; }
-.btn-ghost { background: transparent; color: var(--text); border-color: #D1D5DB; }
-.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+.btn { display: inline-flex; align-items: center; gap: 7px; font-family: var(--sans);
+  font-size: 14.5px; font-weight: 600; padding: 12px 22px; border-radius: 8px; cursor: pointer;
+  border: 1px solid transparent; transition: all .15s; white-space: nowrap; }
+.btn-primary { background: var(--text); color: #FFFFFF; }
+.btn-primary:hover { background: #000; transform: translateY(-1px); }
+.btn-ghost { background: transparent; color: var(--text); border-color: var(--border-strong); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent-ink); }
+.btn-sm { padding: 9px 16px; font-size: 14px; }
+
+/* ---------- type scale ---------- */
+.kicker { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono);
+  font-size: 12px; letter-spacing: .16em; color: var(--accent-ink); text-transform: uppercase;
+  font-weight: 500; margin-bottom: 18px; }
+.kicker::before { content: ""; width: 18px; height: 1px; background: var(--accent); }
+h1 { font-size: clamp(40px, 5.4vw, 60px); line-height: 1.05; font-weight: 800;
+  letter-spacing: -0.03em; }
+h2 { font-size: clamp(28px, 3.4vw, 38px); font-weight: 700; letter-spacing: -0.02em;
+  line-height: 1.12; margin-bottom: 16px; }
+h3 { font-size: 18px; font-weight: 650; letter-spacing: -0.01em; }
+.lede { color: var(--muted); font-size: 17.5px; max-width: 600px; line-height: 1.55; }
 
 /* ---------- hero ---------- */
-.hero { padding: 110px 0 90px; }
-.hero-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 56px; align-items: center; }
-h1 { font-size: 44px; line-height: 1.15; font-weight: 800; letter-spacing: -0.02em; }
-.subhead { margin-top: 20px; font-size: 18px; color: var(--muted); max-width: 480px; }
-.hero-ctas { margin-top: 32px; display: flex; gap: 14px; flex-wrap: wrap; }
+.hero { padding: 92px 0 84px; }
+.hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 64px; align-items: center; }
+.hero h1 .em { color: var(--accent-ink); }
+.hero .subhead { margin-top: 24px; font-size: 18.5px; color: var(--muted); max-width: 500px;
+  line-height: 1.55; }
+.hero-ctas { margin-top: 34px; display: flex; gap: 14px; flex-wrap: wrap; }
+.hero-note { margin-top: 22px; font-size: 13.5px; color: var(--muted); }
+.hero-note b { color: var(--text2); font-weight: 600; }
 
-/* ---------- vitals widget ---------- */
-.vitals { background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
-  padding: 22px; box-shadow: 0 20px 48px rgba(17,24,39,.10); }
-.vitals-head { display: flex; justify-content: space-between; font-family: var(--mono);
-  font-size: 11px; color: var(--muted); letter-spacing: .12em; text-transform: uppercase;
-  margin-bottom: 16px; }
-.vitals-head .live { color: var(--green); }
-.live::before { content: "●"; margin-right: 6px; animation: blink 1.6s infinite; }
-.agent-row { display: grid; grid-template-columns: 110px 1fr 64px; gap: 12px; align-items: center;
-  padding: 9px 0; border-bottom: 1px solid #EFF1F4; }
-.agent-row:last-child { border-bottom: none; }
-.agent-name { font-family: var(--mono); font-size: 13px; }
-.agent-pct { font-family: var(--mono); font-size: 12px; text-align: right; }
-.bar { height: 7px; background: #E8EAED; border-radius: 4px; overflow: hidden; }
-.fill { height: 100%; border-radius: 4px; transform-origin: left; }
-.fill.g { background: var(--green); animation: pulse 2.6s ease-in-out infinite; }
-.fill.a { background: var(--amber); animation: wobble 2.2s ease-in-out infinite; }
-.fill.r { background: var(--red); animation: flatline 1.4s ease-in-out infinite; }
-.g1 { width: 92%; } .g2 { width: 88%; animation-delay: .6s !important; }
-.g3 { width: 84%; animation-delay: 1.1s !important; }
-.a1 { width: 58%; } .r1 { width: 23%; }
-.pct-g { color: var(--green); } .pct-a { color: var(--amber); } .pct-r { color: var(--red); animation: blink 1.4s infinite; }
-@keyframes pulse { 0%,100% { opacity: .75; } 50% { opacity: 1; } }
-@keyframes wobble { 0%,100% { transform: scaleX(1); opacity:.85; } 50% { transform: scaleX(.93); opacity: 1; } }
-@keyframes flatline { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
-@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
-.vitals-foot { margin-top: 14px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
-.vitals-foot b { color: var(--red); font-weight: 600; }
+/* ---------- premium panel (shared mock surface) ---------- */
+.panel { background: #FFFFFF; border: 1px solid var(--border); border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 16px 40px -24px rgba(16,24,40,.18); }
+.panel-head { display: flex; align-items: center; justify-content: space-between;
+  padding: 15px 20px; border-bottom: 1px solid var(--border); }
+.panel-title { font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted); }
+.panel-body { padding: 20px; }
+.tag-illus { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--muted); border: 1px solid var(--border-strong);
+  border-radius: 5px; padding: 3px 8px; }
+.live { color: var(--accent-ink); font-family: var(--mono); font-size: 11px; letter-spacing: .1em; }
+.live::before { content: "●"; margin-right: 6px; font-size: 9px; vertical-align: 1px; }
 
-/* ---------- section headers ---------- */
-.kicker { font-family: var(--mono); font-size: 12px; letter-spacing: .18em; color: var(--accent);
-  text-transform: uppercase; margin-bottom: 14px; }
-h2 { font-size: 30px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 14px; }
-.lede { color: var(--muted); font-size: 16px; max-width: 620px; }
+/* hero cost-vs-outcome panel */
+.cvo-headline { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 6px; }
+.cvo-stat { padding: 14px 16px; border: 1px solid var(--border); border-radius: 10px; }
+.cvo-stat .l { font-family: var(--mono); font-size: 10.5px; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--muted); }
+.cvo-stat .v { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; margin-top: 4px;
+  font-variant-numeric: tabular-nums; }
+.cvo-stat.value { border-color: rgba(4,120,87,.35); }
+.cvo-stat.value .v { color: var(--accent-ink); }
+.cvo-stat .v small { font-size: 14px; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+.cvo-rows { margin-top: 16px; }
+.cvo-row { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center;
+  padding: 10px 0; border-top: 1px solid var(--border); font-size: 13.5px; }
+.cvo-row .nm { font-weight: 600; }
+.cvo-row .vd { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.cvo-row .cpo { font-family: var(--mono); font-size: 13px; color: var(--accent-ink); font-weight: 500;
+  text-align: right; }
 
-/* ---------- cards ---------- */
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 40px; }
-.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 40px; }
-.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-top: 40px; }
-.card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 24px;
-  box-shadow: 0 1px 2px rgba(16,24,40,.05); }
-.card h3 { font-size: 16px; font-weight: 600; margin: 10px 0 8px; }
-.card p { font-size: 14px; color: var(--muted); }
-.card .num { font-family: var(--mono); color: var(--accent); font-size: 13px; }
-.card .ex { margin-top: 14px; font-family: var(--mono); font-size: 12px; color: #374151;
-  background: var(--surface); border-left: 2px solid var(--accent); padding: 10px 12px; border-radius: 0 6px 6px 0; }
+/* ---------- discovery (full-bleed beat) ---------- */
+.discovery { background: var(--surface); border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border); }
+.disc-grid { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 64px; align-items: center; }
+.disc-list { margin-top: 26px; display: flex; flex-direction: column; gap: 16px; }
+.disc-item { display: flex; gap: 14px; align-items: flex-start; }
+.disc-item .ix { flex: none; width: 26px; height: 26px; border: 1px solid var(--accent);
+  color: var(--accent-ink); border-radius: 50%; display: grid; place-items: center;
+  font-family: var(--mono); font-size: 12px; margin-top: 2px; }
+.disc-item p { font-size: 15.5px; color: var(--text2); }
+.disc-item p b { color: var(--text); }
+/* guided discovery chat mock */
+.gd-msg { max-width: 86%; padding: 13px 16px; border-radius: 12px; font-size: 14.5px; margin-bottom: 12px; }
+.gd-msg.ai { background: var(--surface2); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+.gd-msg.you { background: var(--text); color: #fff; margin-left: auto; border-bottom-right-radius: 4px; }
+.gd-sugg { margin-top: 4px; }
+.gd-sugg .h { font-family: var(--mono); font-size: 10.5px; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.gd-pick { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border: 1px solid var(--border);
+  border-radius: 9px; margin-bottom: 8px; font-size: 14px; }
+.gd-pick.on { border-color: var(--accent); }
+.gd-pick .ck { flex: none; width: 16px; height: 16px; border-radius: 5px; border: 1.5px solid var(--border-strong); }
+.gd-pick.on .ck { border-color: var(--accent); background: var(--accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5 L7 11.5 L12 5' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+.gd-pick .tail { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--muted); }
 
-/* ---------- fleet mock ---------- */
-.fleet-mock { background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-  padding: 22px; margin-top: 40px; font-family: var(--mono); }
-.fleet-head { display:flex; gap: 10px; flex-wrap: wrap; font-size: 11px; margin-bottom: 16px; }
-.chip { padding: 4px 10px; border-radius: 4px; font-weight: 600; letter-spacing: .06em; }
-.chip-g { color: var(--green); background: rgba(4,120,87,.07); border: 1px solid rgba(4,120,87,.25); }
-.chip-a { color: var(--amber); background: rgba(180,83,9,.07); border: 1px solid rgba(180,83,9,.25); }
-.chip-r { color: var(--red); background: rgba(220,38,38,.06); border: 1px solid rgba(220,38,38,.25); }
-.chip-n { color: var(--accent); background: rgba(67,56,202,.06); border: 1px solid rgba(67,56,202,.25); }
-.fleet-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-.fleet-table th { text-align: left; color: var(--muted); font-weight: 500; font-size: 11px;
-  letter-spacing: .1em; text-transform: uppercase; padding: 8px 10px; border-bottom: 1px solid var(--border); }
-.fleet-table td { padding: 9px 10px; border-bottom: 1px solid #EFF1F4; }
-.fleet-table tr:last-child td { border-bottom: none; }
-.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
-.dot-g { background: var(--green); } .dot-a { background: var(--amber); } .dot-r { background: var(--red); }
-.rec-cell { color: var(--muted); }
-.rec-cell b { color: #374151; font-weight: 500; }
+/* ---------- pipeline centerpiece (scroll-driven) ---------- */
+.pipeline-intro { text-align: center; max-width: 720px; margin: 0 auto 8px; }
+.pipeline-intro .lede { margin: 0 auto; }
+.pipe-grid { display: grid; grid-template-columns: 280px 1fr; gap: 56px; align-items: start;
+  margin-top: 56px; }
+/* allow grid/flex tracks to shrink below content min-size (prevents wide tables/mono from overflowing) */
+.hero-grid > *, .disc-grid > *, .loop-grid > *, .pipe-grid > *, .stages, .stage, .stage > .panel { min-width: 0; }
+/* sticky rail */
+.rail { position: sticky; top: 96px; }
+.rail-node { position: relative; padding: 0 0 30px 30px; }
+.rail-node:last-child { padding-bottom: 0; }
+.rail-node::before { content: ""; position: absolute; left: 7px; top: 5px; width: 1px; bottom: -5px;
+  background: var(--border-strong); }
+.rail-node:last-child::before { display: none; }
+.rail-dot { position: absolute; left: 0; top: 3px; width: 15px; height: 15px; border-radius: 50%;
+  background: var(--bg); border: 2px solid var(--border-strong); transition: all .3s; }
+.rail-node .rn { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; color: var(--muted); }
+.rail-node .rt { font-size: 16px; font-weight: 650; color: var(--muted); transition: color .3s;
+  letter-spacing: -0.01em; }
+.rail-node.active .rail-dot { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(4,120,87,.12); }
+.rail-node.active .rt { color: var(--text); }
+.rail-node.active .rn { color: var(--accent-ink); }
+/* scroll column stages */
+.stage { min-height: 60vh; padding: 4vh 0 8vh; display: flex; flex-direction: column;
+  justify-content: center; }
+.stage:first-child { padding-top: 0; }
+.stage .s-kick { font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--accent-ink); margin-bottom: 12px; }
+.stage h3 { font-size: 24px; letter-spacing: -0.02em; margin-bottom: 8px; }
+.stage .s-lede { color: var(--muted); font-size: 16px; max-width: 520px; margin-bottom: 22px; }
+.stage .s-emph { margin-top: 18px; font-size: 14px; color: var(--text2); }
+.stage .s-emph b { color: var(--accent-ink); }
+/* reveal */
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.in { opacity: 1; transform: none; }
 
-/* ---------- investor ---------- */
-.investor { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-.investor blockquote { font-size: 24px; font-weight: 600; line-height: 1.5; max-width: 780px; letter-spacing: -0.01em; }
-.investor blockquote em { color: var(--accent); font-style: normal; }
+/* mock building blocks */
+.field { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+.field .fl { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 10px; }
+.src-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.src-chip { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 500;
+  padding: 7px 13px; border: 1px solid var(--border); border-radius: 7px; color: var(--muted); }
+.src-chip .ic { width: 7px; height: 7px; border-radius: 2px; background: var(--border-strong); }
+.src-chip.on { border-color: var(--accent); color: var(--text); }
+.src-chip.on .ic { background: var(--accent); }
+.rule-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 14px; }
+.rule-tok { font-family: var(--mono); font-size: 12.5px; padding: 6px 11px; border-radius: 6px;
+  background: var(--surface); border: 1px solid var(--border); }
+.rule-tok.val { color: var(--accent-ink); border-color: rgba(4,120,87,.35); font-weight: 500; }
+.rule-arrow { color: var(--muted); }
+
+/* agent-read (cross-vendor) */
+.agents { display: flex; flex-direction: column; gap: 10px; }
+.agent-card { display: grid; grid-template-columns: 1fr auto; gap: 8px 14px; align-items: center;
+  border: 1px solid var(--border); border-radius: 10px; padding: 13px 15px; }
+.agent-card .an { font-weight: 650; font-size: 14.5px; }
+.agent-card .vend { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 2px;
+  display: inline-flex; align-items: center; gap: 6px; }
+.vdot { width: 7px; height: 7px; border-radius: 50%; background: var(--border-strong); display: inline-block; }
+.agent-card .props { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.prop { font-family: var(--mono); font-size: 11px; color: var(--muted); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 5px; padding: 3px 8px; }
+.bind { font-family: var(--mono); font-size: 11px; color: var(--accent-ink); white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 5px; }
+.bind::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+/* explainability */
+.explain { margin-top: 14px; border: 1px solid var(--border); border-left: 2px solid var(--accent);
+  border-radius: 0 9px 9px 0; padding: 13px 15px; background: var(--surface); }
+.explain .h { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--accent-ink); margin-bottom: 8px; }
+.explain p { font-size: 13px; color: var(--text2); line-height: 1.5; }
+.explain .mono { color: var(--text); }
+
+/* cost dashboard table */
+.dash { width: 100%; border-collapse: collapse; }
+.dash th { text-align: left; font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--muted); font-weight: 500; padding: 0 12px 12px;
+  border-bottom: 1px solid var(--border); }
+.dash td { padding: 13px 12px; border-bottom: 1px solid var(--border); font-size: 13.5px;
+  font-variant-numeric: tabular-nums; }
+.dash .num { font-family: var(--mono); }
+.dash .nm { font-weight: 600; }
+.dash .vend { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+.dash .cpo { font-family: var(--mono); color: var(--accent-ink); font-weight: 500; }
+.dash tr:last-child td { border-bottom: none; }
+.dash tr.total td { border-top: 1.5px solid var(--border-strong); font-weight: 700; padding-top: 14px; }
+.dash tr.total .lbl { font-weight: 700; }
+.dash tr.total .cpo { font-size: 15px; }
+.col-right { text-align: right; }
+
+/* learning loop (full-bleed beat) */
+.loop { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.loop-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 60px; align-items: center; }
+.ba { display: grid; grid-template-columns: 1fr auto 1fr; gap: 18px; align-items: stretch; }
+.ba-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px; background: #fff; }
+.ba-card.after { border-color: rgba(4,120,87,.35); }
+.ba-card .bl { font-family: var(--mono); font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 14px; }
+.ba-card.after .bl { color: var(--accent-ink); }
+.ba-big { font-size: 34px; font-weight: 750; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.ba-card.after .ba-big { color: var(--accent-ink); }
+.ba-sub { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+.ba-arrow { display: grid; place-items: center; color: var(--muted); font-family: var(--mono); font-size: 20px; }
+.loop-foot { margin-top: 20px; border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px;
+  background: #fff; font-size: 13px; color: var(--text2); }
+.loop-foot b { color: var(--accent-ink); }
+.loop-metrics { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 22px; }
+.loop-metric .v { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.loop-metric.val .v { color: var(--accent-ink); }
+.loop-metric .l { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* ---------- why / neutrality ---------- */
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 44px; }
+.card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 26px; }
+.card .ct { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 14px; }
+.card.lead .ct { color: var(--accent-ink); }
+.card h3 { margin-bottom: 9px; }
+.card p { font-size: 14.5px; color: var(--muted); line-height: 1.55; }
+.card.lead { border-color: rgba(4,120,87,.35); }
 
 /* ---------- cta ---------- */
-.cta-box { background: linear-gradient(180deg, #FFFFFF, #F4F5F7); border: 1px solid var(--border);
-  border-radius: 12px; padding: 56px 40px; text-align: center; }
-.email-form { margin: 28px auto 0; display: flex; gap: 10px; max-width: 520px; flex-wrap: wrap; justify-content: center; }
-.email-form input, .email-form select { font-family: var(--sans); font-size: 14px; padding: 12px 14px;
-  background: var(--bg); color: var(--text); border: 1px solid #D1D5DB; border-radius: 6px; min-width: 200px; }
+.cta-box { border: 1px solid var(--border); border-radius: 18px; padding: 60px 44px; text-align: center;
+  background: #fff; box-shadow: 0 16px 40px -28px rgba(16,24,40,.2); }
+.cta-box .lede { margin: 0 auto; }
+.email-form { margin: 30px auto 0; display: flex; gap: 10px; max-width: 560px; flex-wrap: wrap;
+  justify-content: center; }
+.email-form input, .email-form select { font-family: var(--sans); font-size: 14.5px; padding: 12px 14px;
+  background: var(--bg); color: var(--text); border: 1px solid var(--border-strong); border-radius: 8px;
+  min-width: 200px; }
 .email-form input:focus, .email-form select:focus { outline: none; border-color: var(--accent); }
-.form-ok { display: none; margin-top: 18px; font-family: var(--mono); color: var(--green); font-size: 14px; }
-.form-err { display: none; margin-top: 18px; font-family: var(--mono); color: var(--red); font-size: 13px; }
+.form-ok { display: none; margin-top: 20px; font-family: var(--mono); color: var(--accent-ink); font-size: 14px; }
+.form-err { display: none; margin-top: 20px; font-family: var(--mono); color: var(--red); font-size: 13px; }
 
-footer { border-top: 1px solid var(--border); padding: 36px 0; font-size: 13px; color: var(--muted); }
-footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+footer { border-top: 1px solid var(--border); padding: 40px 0; font-size: 13.5px; color: var(--muted); }
+footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; align-items: center; }
+footer .logo { font-size: 15px; }
 
-/* ---------- walkthrough modal ---------- */
-.modal { display: none; position: fixed; inset: 0; z-index: 100; background: rgba(17,24,39,.55);
-  backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 24px; }
-.modal.open { display: flex; }
-.modal-box { background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
-  width: 100%; max-width: 860px; max-height: 92vh; overflow-y: auto; padding: 28px; position: relative; }
-.modal-close { position: absolute; top: 14px; right: 16px; background: none; border: none;
-  color: var(--muted); font-size: 22px; cursor: pointer; }
-.modal-close:hover { color: var(--text); }
-.step-tag { font-family: var(--mono); font-size: 11px; letter-spacing: .15em; color: var(--accent);
-  text-transform: uppercase; }
-.modal-box h3 { font-size: 22px; margin: 8px 0 6px; }
-.modal-box .narr { color: var(--muted); font-size: 14.5px; margin-bottom: 18px; }
-.screen { background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
-  padding: 18px; font-family: var(--mono); font-size: 12.5px; min-height: 280px; }
-.modal-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
-.step-dots { display: flex; gap: 7px; }
-.step-dots i { width: 7px; height: 7px; border-radius: 50%; background: #D1D5DB; }
-.step-dots i.on { background: var(--accent); }
-
-/* walkthrough screen widgets */
-.s-row { display: grid; grid-template-columns: 120px 90px 1fr 80px; gap: 10px; padding: 9px 6px;
-  border-bottom: 1px solid #EFF1F4; align-items: center; }
-.s-row.hl { background: rgba(220,38,38,.04); outline: 1px solid rgba(220,38,38,.25); border-radius: 6px; }
-.s-row.hl-a { background: rgba(180,83,9,.04); outline: 1px solid rgba(180,83,9,.25); border-radius: 6px; }
-.s-metric { display: inline-block; background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 6px; padding: 10px 14px; margin: 4px 6px 4px 0; }
-.s-metric .l { font-size: 10px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
-.s-metric .v { font-size: 19px; font-weight: 600; }
-.s-rec { border: 1px solid rgba(67,56,202,.3); background: rgba(67,56,202,.04);
-  border-radius: 8px; padding: 14px; margin-top: 14px; }
-.s-rec .t { color: var(--accent); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
-.s-btn { display: inline-block; background: #111827; color: #FFFFFF; font-weight: 600;
-  border-radius: 5px; padding: 7px 14px; font-size: 12px; margin-top: 10px; }
-.s-ok { color: var(--green); }
-.tok-bar { display: flex; height: 26px; border-radius: 6px; overflow: hidden; margin: 12px 0 6px; }
-.tok-in { background: var(--amber); } .tok-out { background: var(--green); }
-.s-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.s-panel { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
-.s-panel .h { font-size: 11px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
-.diff-add { color: var(--green); } .diff-del { color: var(--red); text-decoration: line-through; opacity: .7; }
-
-@media (max-width: 860px) {
-  .hero-grid, .grid-3, .grid-4, .grid-2, .s-cols { grid-template-columns: 1fr; }
-  h1 { font-size: 34px; }
-  .grid-4 { grid-template-columns: 1fr 1fr; }
+/* ---------- responsive ---------- */
+@media (max-width: 920px) {
+  .hero-grid, .disc-grid, .loop-grid { grid-template-columns: 1fr; gap: 40px; }
+  .pipe-grid { grid-template-columns: 1fr; gap: 0; }
+  .rail { position: static; display: none; }  /* rail hidden on mobile; stages flow */
+  .stage { min-height: auto; padding: 0 0 44px; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .cvo-headline { grid-template-columns: 1fr 1fr; }
 }
-@media (max-width: 600px) {
-  section { padding: 56px 0; }
-  .hero { padding: 72px 0 56px; }
-  h1 { font-size: 30px; }
-  h2 { font-size: 24px; }
+@media (max-width: 620px) {
+  section { padding: 64px 0; }
+  .container { padding: 0 20px; }
+  .hero { padding: 60px 0 48px; }
   nav .links a:not(.btn) { display: none; }
-  .grid-4 { grid-template-columns: 1fr; }
-  .fleet-mock { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .fleet-table { min-width: 600px; }
-  .screen { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .hero-ctas .btn { flex: 1 1 auto; justify-content: center; }
+  .ba { grid-template-columns: 1fr; }
+  .ba-arrow { transform: rotate(90deg); padding: 4px 0; }
+  .cvo-stat .v { font-size: 22px; }
   .email-form input, .email-form select { width: 100%; min-width: 0; }
-  .cta-box { padding: 40px 20px; }
-  .modal-box { padding: 20px 16px; }
+  .cta-box { padding: 40px 22px; }
+  .dash-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .dash { min-width: 480px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
 }
 </style>
 </head>
@@ -242,274 +343,298 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
 
 <nav>
   <div class="container">
-    <div class="logo">⌖ compass<span>_</span></div>
+    <a href="#top" class="logo" aria-label="Compass home">
+      <svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="none" stroke="#047857" stroke-width="2.5"/><path d="M21.5 10.5 L18 18 L10.5 21.5 L14 14 Z" fill="#047857"/></svg>
+      Compass
+    </a>
     <div class="links">
-      <a href="#problem">Problem</a>
-      <a href="#pnl">Agent P&amp;L</a>
       <a href="#how">How it works</a>
-      <a href="setup.html">Setup walkthrough</a>
-      <a href="#recommendations">Recommendations</a>
-      <a href="#access" class="btn btn-ghost" style="padding:8px 16px;">Request early access</a>
+      <a href="#pipeline">The pipeline</a>
+      <a href="#why">Why Compass</a>
+      <a href="#access" class="btn btn-ghost btn-sm">Request access</a>
     </div>
   </div>
 </nav>
 
 <!-- ============ HERO ============ -->
-<header class="hero">
+<header class="hero" id="top">
   <div class="container hero-grid">
     <div>
-      <h1>Hold every AI agent accountable.</h1>
-      <p class="subhead">Compass watches every run your agents make, reads what they actually changed in your Salesforce or Zendesk, and tells you each Monday what every agent cost, what it delivered, and which ones to fix, clone, or kill.</p>
+      <h1>Know what every AI agent actually costs — <span class="em">and what it's worth.</span></h1>
+      <p class="subhead">Compass is the neutral third party that reads what your agents actually deliver across every vendor, then puts a number on it: cost per agent, and cost per outcome, against the results your business runs on.</p>
       <div class="hero-ctas">
-        <button class="btn btn-primary" onclick="openTour()">See how it works →</button>
-        <a class="btn btn-ghost" href="#access">Request early access</a>
+        <a class="btn btn-primary" href="#pipeline">See how it works →</a>
+        <a class="btn btn-ghost" href="#access">Request access</a>
       </div>
+      <p class="hero-note">No vendor lock-in. <b>One honest read</b> across the agents you already run.</p>
     </div>
-    <div class="vitals" aria-label="Agent P&amp;L demo widget">
-      <div class="vitals-head"><span>WEEKLY AGENT P&amp;L · VS. PLAN</span><span><span class="live">LIVE</span> <span style="color:var(--muted); text-transform:none; letter-spacing:.04em;">(demo)</span></span></div>
-      <div class="agent-row"><span class="agent-name">Drafter</span><div class="bar"><div class="fill g g1" style="width:100%"></div></div><span class="agent-pct pct-g">147%</span></div>
-      <div class="agent-row"><span class="agent-name">Analyst</span><div class="bar"><div class="fill g g2" style="width:78%"></div></div><span class="agent-pct pct-g">104%</span></div>
-      <div class="agent-row"><span class="agent-name">Summarizer</span><div class="bar"><div class="fill a a1" style="width:33%"></div></div><span class="agent-pct pct-a">3× cost</span></div>
-      <div class="agent-row"><span class="agent-name">Support</span><div class="bar"><div class="fill r r1" style="width:49%"></div></div><span class="agent-pct pct-r">49%</span></div>
-      <div class="agent-row"><span class="agent-name">Scout</span><div class="bar"><div class="fill" style="width:12%; background:#D1D5DB;"></div></div><span class="agent-pct" style="color:var(--muted)">—</span></div>
-      <div class="vitals-foot">▸ Support was hired on <b style="color:var(--text)">$4,000/mo</b> of ticket deflection — it's delivering <b>$2,100</b></div>
+
+    <div class="panel" aria-label="Cost versus outcome — illustrative">
+      <div class="panel-head">
+        <span class="panel-title">Cost vs. outcome · this month</span>
+        <span class="tag-illus">Illustrative</span>
+      </div>
+      <div class="panel-body">
+        <div class="cvo-headline">
+          <div class="cvo-stat">
+            <div class="l">Agent spend</div>
+            <div class="v mono">$2,670</div>
+          </div>
+          <div class="cvo-stat value">
+            <div class="l">Cost / qualified opp</div>
+            <div class="v mono">$8.34</div>
+          </div>
+        </div>
+        <div class="cvo-stat" style="margin-top:14px;">
+          <div class="l">Outcome · qualified opportunities created</div>
+          <div class="v mono">320 <small>across 3 agents · 3 vendors</small></div>
+        </div>
+        <div class="cvo-rows">
+          <div class="cvo-row"><span class="nm">Prospector</span><span class="vd">Vendor A · frontier</span><span class="cpo">$19.17</span></div>
+          <div class="cvo-row"><span class="nm">Qualifier</span><span class="vd">Vendor B · fast</span><span class="cpo">$3.39</span></div>
+          <div class="cvo-row"><span class="nm">Researcher</span><span class="vd">Open-weight · self-hosted</span><span class="cpo">$5.00</span></div>
+        </div>
+      </div>
     </div>
   </div>
 </header>
 
-<!-- ============ PROBLEM ============ -->
-<section id="problem">
+<!-- ============ DISCOVERY (beat 1 — full-bleed) ============ -->
+<section class="discovery" id="discover">
+  <div class="container disc-grid">
+    <div>
+      <div class="kicker">Before setup</div>
+      <h2>Most teams don't know what to measure yet. Compass starts there.</h2>
+      <p class="lede">You don't arrive with a tidy list of outcomes and agents. Most buyers are still asking what "working" even means for their agents. Compass meets you before you have the answers — and helps you name them.</p>
+      <div class="disc-list">
+        <div class="disc-item"><span class="ix">1</span><p><b>Name the outcomes that matter.</b> Compass proposes the results your business already runs on — qualified opportunities, resolved tickets, registrations — drawn from the systems you use.</p></div>
+        <div class="disc-item"><span class="ix">2</span><p><b>Surface the agents worth watching.</b> It finds the agents touching those results, whatever vendor they run on, so nothing important goes unmeasured.</p></div>
+        <div class="disc-item"><span class="ix">3</span><p><b>Leave with a plan, not a blank page.</b> A short, guided conversation — no dashboards to configure, no jargon to decode.</p></div>
+      </div>
+    </div>
+
+    <div class="panel" aria-label="Guided discovery — illustrative">
+      <div class="panel-head">
+        <span class="panel-title">Guided discovery</span>
+        <span class="tag-illus">Illustrative</span>
+      </div>
+      <div class="panel-body">
+        <div class="gd-msg ai">What does a good month look like for your team? In plain terms — what has to happen?</div>
+        <div class="gd-msg you">More qualified pipeline, without burning the SDR team out.</div>
+        <div class="gd-msg ai">Got it. Based on your CRM, here are outcomes worth measuring. I'll watch the agents that touch them.</div>
+        <div class="gd-sugg">
+          <div class="h">Suggested outcomes</div>
+          <div class="gd-pick on"><span class="ck"></span>Qualified opportunity created<span class="tail">CRM</span></div>
+          <div class="gd-pick on"><span class="ck"></span>Meeting booked<span class="tail">CRM</span></div>
+          <div class="gd-pick"><span class="ck"></span>Ticket resolved<span class="tail">Ticketing</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PIPELINE CENTERPIECE (scroll-driven) ============ -->
+<section id="pipeline">
   <div class="container">
-    <div class="kicker">The problem</div>
-    <h2>Agent fleets scale faster than your visibility into them.</h2>
+    <div class="pipeline-intro" id="how">
+      <div class="kicker" style="justify-content:center;">The pipeline</div>
+      <h2>From "what should we measure" to a number you can trust.</h2>
+      <p class="lede">Four stages, one continuous read. Set the outcome, bind any agent to it, watch cost land against it — and let Compass return the gains in the currency you chose.</p>
+    </div>
+
+    <div class="pipe-grid">
+      <!-- sticky rail -->
+      <aside class="rail" aria-hidden="true">
+        <div class="rail-node" data-node="0"><span class="rail-dot"></span><div class="rn">01</div><div class="rt">Outcome setup</div></div>
+        <div class="rail-node" data-node="1"><span class="rail-dot"></span><div class="rn">02</div><div class="rt">Agent binding</div></div>
+        <div class="rail-node" data-node="2"><span class="rail-dot"></span><div class="rn">03</div><div class="rt">Cost engine</div></div>
+        <div class="rail-node" data-node="3"><span class="rail-dot"></span><div class="rn">04</div><div class="rt">Learning loop</div></div>
+      </aside>
+
+      <!-- scroll column -->
+      <div class="stages">
+
+        <!-- Stage 1 · Outcome setup -->
+        <div class="stage" data-stage="0">
+          <div class="s-kick">Stage 01 · Outcome setup</div>
+          <h3>Define an outcome in two moves.</h3>
+          <p class="s-lede">Point at the system where the result already lives, then write the rule that qualifies it. That's the whole setup.</p>
+          <div class="panel reveal" aria-label="Outcome rule builder — illustrative">
+            <div class="panel-head"><span class="panel-title">New outcome</span><span class="tag-illus">Illustrative</span></div>
+            <div class="panel-body">
+              <div class="field">
+                <div class="fl">Move 1 — find the source</div>
+                <div class="src-chips">
+                  <span class="src-chip on"><span class="ic"></span>CRM</span>
+                  <span class="src-chip"><span class="ic"></span>Marketing</span>
+                  <span class="src-chip"><span class="ic"></span>Ticketing</span>
+                  <span class="src-chip"><span class="ic"></span>Billing</span>
+                  <span class="src-chip"><span class="ic"></span>Product</span>
+                </div>
+              </div>
+              <div class="field" style="margin-bottom:0;">
+                <div class="fl">Move 2 — add the rule that qualifies the outcome</div>
+                <div class="rule-row">
+                  <span class="rule-tok">Opportunity</span>
+                  <span class="rule-arrow">·</span>
+                  <span class="rule-tok">stage changes to</span>
+                  <span class="rule-arrow">→</span>
+                  <span class="rule-tok val">Qualified</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="s-emph">As easy as connecting the agent — <b>near one-shot</b>. No data team required.</p>
+        </div>
+
+        <!-- Stage 2 · Agent binding -->
+        <div class="stage" data-stage="1">
+          <div class="s-kick">Stage 02 · Agent binding</div>
+          <h3>Connect any agent. From any vendor.</h3>
+          <p class="s-lede">Compass reads each agent's properties, activity, and cost profile — whatever provider it runs on — and binds it to the outcomes you defined. One read across a mixed fleet.</p>
+          <div class="panel reveal" aria-label="Agent read and binding — illustrative">
+            <div class="panel-head"><span class="panel-title">Agents → outcome: qualified opportunity</span><span class="live">Reading</span></div>
+            <div class="panel-body">
+              <div class="agents">
+                <div class="agent-card">
+                  <div><div class="an">Prospector</div><div class="vend"><span class="vdot"></span>Vendor A · frontier</div></div>
+                  <span class="bind">bound</span>
+                  <div class="props"><span class="prop">researches accounts</span><span class="prop">$1,840/mo</span><span class="prop">drafts outreach</span></div>
+                </div>
+                <div class="agent-card">
+                  <div><div class="an">Qualifier</div><div class="vend"><span class="vdot"></span>Vendor B · fast</div></div>
+                  <span class="bind">bound</span>
+                  <div class="props"><span class="prop">scores inbound</span><span class="prop">$610/mo</span><span class="prop">updates CRM</span></div>
+                </div>
+                <div class="agent-card">
+                  <div><div class="an">Researcher</div><div class="vend"><span class="vdot"></span>Open-weight · self-hosted</div></div>
+                  <span class="bind">bound</span>
+                  <div class="props"><span class="prop">enriches records</span><span class="prop">$220/mo</span></div>
+                </div>
+              </div>
+              <div class="explain">
+                <div class="h">Why this outcome was credited</div>
+                <p><span class="mono">Qualifier</span> acted on <span class="mono">OPP-4471</span> 14 min before it reached <b>Qualified</b> → within the 24h same-record attribution window → <b>credited</b>. Every credit is rule-based and inspectable — never an agent's self-report.</p>
+              </div>
+            </div>
+          </div>
+          <p class="s-emph">The differentiator: <b>tie any agent, from any vendor, to outcomes bound in any other system.</b></p>
+        </div>
+
+        <!-- Stage 3 · Cost engine -->
+        <div class="stage" data-stage="2">
+          <div class="s-kick">Stage 03 · Cost-against-outcome engine</div>
+          <h3>The honest cross-vendor read no single vendor will give you.</h3>
+          <p class="s-lede">Cost per agent and cost per outcome, surfaced continuously, with every vendor on the same page. No agent platform will rank itself against its competitors. Compass will.</p>
+          <div class="panel reveal" aria-label="Cost dashboard — illustrative">
+            <div class="panel-head"><span class="panel-title">Cost per qualified opportunity · this month</span><span class="tag-illus">Illustrative</span></div>
+            <div class="panel-body dash-wrap">
+              <table class="dash">
+                <thead>
+                  <tr><th>Agent</th><th>Vendor</th><th class="col-right">Monthly cost</th><th class="col-right">Qualified opps</th><th class="col-right">Cost / outcome</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="nm">Prospector</td><td class="vend">Vendor A · frontier</td><td class="num col-right">$1,840</td><td class="num col-right">96</td><td class="num cpo col-right">$19.17</td></tr>
+                  <tr><td class="nm">Qualifier</td><td class="vend">Vendor B · fast</td><td class="num col-right">$610</td><td class="num col-right">180</td><td class="num cpo col-right">$3.39</td></tr>
+                  <tr><td class="nm">Researcher</td><td class="vend">Open-weight · self-hosted</td><td class="num col-right">$220</td><td class="num col-right">44</td><td class="num cpo col-right">$5.00</td></tr>
+                  <tr class="total"><td class="lbl">Fleet</td><td class="vend">3 vendors</td><td class="num col-right">$2,670</td><td class="num col-right">320</td><td class="num cpo col-right">$8.34</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <p class="s-emph">One number your CFO can act on: <b>$8.34 per qualified opportunity</b>, fully attributed.</p>
+        </div>
+
+        <!-- Stage 4 · Learning loop -->
+        <div class="stage" data-stage="3">
+          <div class="s-kick">Stage 04 · The learning loop</div>
+          <h3>Compass learns — for you.</h3>
+          <p class="s-lede">It watches what each agent actually produces and feeds optimizations back — then reports the gain in the currency you chose, not an abstract score.</p>
+          <div class="panel reveal" aria-label="Learning loop — illustrative">
+            <div class="panel-head"><span class="panel-title">Optimization · Prospector</span><span class="tag-illus">Illustrative</span></div>
+            <div class="panel-body">
+              <p style="font-size:13.5px; color:var(--text2); margin-bottom:16px;">Prospector ran a frontier model on enrichment a mid-tier could handle. Compass routes that sub-task down a tier — <b>holding all 96 credited opportunities.</b></p>
+              <div class="ba">
+                <div class="ba-card before">
+                  <div class="bl">Before · cost / opp</div>
+                  <div class="ba-big mono">$19.17</div>
+                  <div class="ba-sub">Prospector · 96 opps · $1,840/mo</div>
+                </div>
+                <div class="ba-arrow">→</div>
+                <div class="ba-card after">
+                  <div class="bl">After · cost / opp</div>
+                  <div class="ba-big mono">$11.98</div>
+                  <div class="ba-sub">Prospector · 96 opps · $1,150/mo</div>
+                </div>
+              </div>
+              <div class="loop-foot">Same 96 opportunities. Same outcome you defined. <b>$690/mo back</b> — reported in qualified opps, not tokens.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY COMPASS / NEUTRALITY ============ -->
+<section id="why" style="background: var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="kicker">Why Compass</div>
+    <h2>A neutral third party. By design.</h2>
+    <p class="lede">Everyone in your stack has a reason to make their own numbers look good. The honest read has to come from someone who isn't selling you the agent.</p>
     <div class="grid-3">
       <div class="card">
-        <span class="num">01</span>
-        <h3>Logs say it ran. Not whether it worked.</h3>
-        <p>Activity isn't outcomes. Most teams can't say which agents finish the job — or what finishing costs.</p>
-      </div>
-      <div class="card">
-        <span class="num">02</span>
-        <h3>Spend is not value.</h3>
-        <p>An agent reading an 80k-token document to produce ten lines looks busy. Busy is not delivering.</p>
-      </div>
-      <div class="card">
-        <span class="num">03</span>
-        <h3>Regressions surface weeks late.</h3>
-        <p>Quality drops the day a prompt "improves." Without a baseline, you hear about it from a customer.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ AGENT P&L ============ -->
-<section id="pnl" style="background: var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
-  <div class="container">
-    <div class="kicker">The Agent P&amp;L</div>
-    <h2>The weekly Agent P&amp;L.</h2>
-    <p class="lede">What each agent cost, what it delivered, and where it stands against the plan it was hired on. Every Monday.</p>
-    <div class="fleet-mock" style="background: var(--bg);">
-      <div class="fleet-head">
-        <span style="color: var(--muted); font-size:11.5px; padding-top:5px;">WEEKLY AGENT P&amp;L · VERITAS AI · JUN 1–7</span>
-        <span style="margin-left:auto; color: var(--muted); font-size:11.5px; padding-top:5px;">
-          cost <b style="color:var(--text)">$26.97</b> <span style="color:var(--red)">▲9% wk</span> · value delivered <b style="color:var(--green)">$1,167</b> <span style="color:var(--green)">▲6% wk</span></span>
-      </div>
-      <table class="fleet-table">
-        <tr><th>Agent</th><th>Runs</th><th>Cost</th><th>Δ cost wk</th><th>Value delivered</th><th>vs. plan</th></tr>
-        <tr><td><span class="dot dot-g"></span>Drafter</td><td>14</td><td>$0.22</td><td class="rec-cell">·</td><td>$272</td><td style="color:var(--green)">147% of plan ▲</td></tr>
-        <tr><td><span class="dot dot-r"></span>Support</td><td>44</td><td>$1.22</td><td style="color:var(--red)">▲38%</td><td>$485</td><td style="color:var(--red)">49% of plan ▼</td></tr>
-        <tr><td><span class="dot dot-a"></span>Summarizer</td><td>49</td><td>$22.10</td><td style="color:var(--red)">▲41%</td><td>$104</td><td style="color:var(--amber)">cost 3× plan ▼</td></tr>
-        <tr><td><span class="dot dot-g"></span>Analyst</td><td>14</td><td>$0.84</td><td style="color:var(--green)">▼12%</td><td>$210</td><td class="rec-cell">—</td></tr>
-        <tr><td><span class="dot dot-g"></span>Classifier</td><td>35</td><td>$0.01</td><td class="rec-cell">·</td><td>$96</td><td class="rec-cell">—</td></tr>
-        <tr><td><span class="dot dot-g"></span>Scout</td><td>21</td><td>$0.06</td><td class="rec-cell">·</td><td class="rec-cell">—</td><td class="rec-cell">—</td></tr>
-        <tr><td><span class="dot dot-a"></span>Coder</td><td>21</td><td>$2.52</td><td style="color:var(--green)">▼8%</td><td class="rec-cell">—</td><td class="rec-cell">—</td></tr>
-      </table>
-      <div style="margin-top:14px; font-size:12px; color:var(--muted); border-top:1px solid var(--border); padding-top:12px;">
-        ▸ Support was hired on <b style="color:var(--text)">$4,000/mo</b> of ticket deflection. It's delivering
-        <b style="color:var(--red)">$2,100</b>. Delivered value is read from the system of record via MCP — never from
-        agent self-reports.<br>
-        ▸ Summarizer's cost is <b style="color:var(--red)">▲41%</b> since the Jun 3 model switch — flagged the day it moved.
-      </div>
-    </div>
-    <div class="grid-2" style="margin-top:24px; grid-template-columns: 1fr 1fr; align-items: stretch;">
-      <div class="card" style="background: var(--bg);">
-        <span class="num">NO VALUE MODEL, NO NUMBER</span>
-        <h3>We don't invent ROI.</h3>
-        <p>Agents without an honest value model show "—". A dash you can trust beats a number you can't.</p>
-      </div>
-      <div class="card" style="background: var(--bg); display:flex; flex-direction:column; justify-content:center; text-align:center;">
-        <p style="font-family:var(--mono); font-size:14px; color:var(--text);">The report your CFO forwards.</p>
-        <p style="margin-top:8px;">Delivered every Monday. Every agent a line item.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ HOW IT WORKS ============ -->
-<section id="how">
-  <div class="container">
-    <div class="kicker">How it works</div>
-    <h2>Connect → Define → Reconcile → Act.</h2>
-    <p class="lede">Two MCP connections and an outcome definition.</p>
-    <div class="grid-4">
-      <div class="card">
-        <span class="num">STEP 1</span>
-        <h3>Connect your agent</h3>
-        <p>One MCP config line. Claude Code, Codex, or custom SDK agents. Compass captures runs, cost, and completion.</p>
-      </div>
-      <div class="card">
-        <span class="num">STEP 2</span>
-        <h3>Define the outcome</h3>
-        <p>Bind each agent to the system where its outcome lives — Salesforce, Zendesk, Stripe. Set the unit value and the projection. Read-only.</p>
-      </div>
-      <div class="card">
-        <span class="num">STEP 3</span>
-        <h3>Reconcile weekly</h3>
-        <p>Delivered value, read from the system of record, against plan. Measured — not self-reported by the agent.</p>
-      </div>
-      <div class="card">
-        <span class="num">STEP 4</span>
-        <h3>Act</h3>
-        <p>Fix the prompt, clone the winner, add a guardrail. Watch the value line.</p>
-      </div>
-    </div>
-    <div style="margin-top:28px;">
-      <a class="btn btn-primary" href="setup.html">Walk through the setup yourself →</a>
-      <span style="margin-left:14px; font-size:13.5px; color:var(--muted);">Interactive — onboard an agent exactly the way a customer does.</span>
-    </div>
-  </div>
-</section>
-
-<!-- ============ FLEET VIEW ============ -->
-<section id="fleet" style="background: var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
-  <div class="container">
-    <div class="kicker">The fleet view</div>
-    <h2>Monday morning clarity on every agent in your stack.</h2>
-    <div class="fleet-mock" style="background: var(--bg);">
-      <div class="fleet-head">
-        <span class="chip chip-g">4 HEALTHY</span>
-        <span class="chip chip-a">3 NEEDS ATTENTION</span>
-        <span class="chip chip-r">1 CRITICAL</span>
-        <span class="chip chip-n">1 NEW</span>
-        <span style="margin-left:auto; color: var(--muted); font-size:11.5px; padding-top:5px;">
-          spend/mo <b style="color:var(--text)">$248.10</b> <span style="color:var(--amber)">▲4% wk</span> · potential savings <b style="color:var(--accent)">$94.82</b></span>
-      </div>
-      <table class="fleet-table">
-        <tr><th>Agent</th><th>Cost / run</th><th>Top recommendation</th><th>Health</th></tr>
-        <tr><td><span class="dot dot-r"></span>Support</td><td>$0.027</td><td class="rec-cell"><b>Add guardrail</b> — completes 34% of tasks, stuck in revision loops</td><td style="color:var(--red)">49</td></tr>
-        <tr><td><span class="dot dot-a"></span>Summarizer</td><td>$0.44</td><td class="rec-cell"><b>Right-size model</b> — Opus on a Haiku-grade task · save $80/mo</td><td style="color:var(--amber)">58</td></tr>
-        <tr><td><span class="dot dot-a"></span>Coder</td><td>$0.12</td><td class="rec-cell"><b>Clone best performer</b> — Drafter's prompt structure outperforms by 33%</td><td style="color:var(--amber)">63</td></tr>
-        <tr><td><span class="dot dot-a"></span>Outbound</td><td>$0.021</td><td class="rec-cell"><b>Regression</b> — quality fell 40% after a prompt change 3 weeks ago</td><td style="color:var(--amber)">67</td></tr>
-        <tr><td><span class="dot dot-g"></span>Drafter</td><td>$0.016</td><td class="rec-cell">Fleet's best prompt — clone source</td><td style="color:var(--green)">92</td></tr>
-        <tr><td><span class="dot dot-g"></span>Scout</td><td>$0.003</td><td class="rec-cell">—</td><td style="color:var(--green)">90</td></tr>
-        <tr><td><span class="dot dot-g"></span>Classifier</td><td>$0.0001</td><td class="rec-cell">—</td><td style="color:var(--green)">84</td></tr>
-        <tr><td><span class="dot dot-g"></span>Analyst <span class="chip chip-n" style="font-size:9px; padding:2px 6px;">NEW</span></td><td>$0.06</td><td class="rec-cell">—</td><td style="color:var(--green)">75</td></tr>
-      </table>
-    </div>
-  </div>
-</section>
-
-<!-- ============ RECOMMENDATION TYPES ============ -->
-<section id="recommendations">
-  <div class="container">
-    <div class="kicker">Recommendations</div>
-    <h2>Not another dashboard. A to-do list ranked in dollars.</h2>
-    <p class="lede">Outcome signals first — the calls no spend cap or model router can make.</p>
-    <div class="grid-2">
-      <div class="card">
-        <span class="num">ADD GUARDRAIL</span>
-        <h3>Catch the agent stuck in a loop.</h3>
-        <p>Fires when completion collapses or run frequency spikes with no trigger.</p>
-        <div class="ex">Support fails to complete 66% of tasks — add a completion-checker guardrail</div>
-      </div>
-      <div class="card">
-        <span class="num">DETECT REGRESSION</span>
-        <h3>Know the day a change hurts you.</h3>
-        <p>Fires when quality drops against the agent's own baseline — correlated with prompt edits and model switches.</p>
-        <div class="ex">Outbound quality dropped 40% after the prompt change on day 69 — review v2</div>
-      </div>
-      <div class="card">
-        <span class="num">CLONE BEST PERFORMER</span>
-        <h3>Your best prompt is an asset.</h3>
-        <p>Fires when one agent's structure measurably beats another's on the same task.</p>
-        <div class="ex">Drafter's prompt structure outperforms Coder by 33% on quality — clone it in one click</div>
-      </div>
-      <div class="card">
-        <span class="num">RIGHT-SIZE &amp; TRIM</span>
-        <h3>For fleets without a smart gateway.</h3>
-        <p>No platform routing your models? Compass finds the overpaying agents and prices the fix.</p>
-        <div class="ex">Summarizer runs a frontier model on 86k-token documents — est. savings $98/mo</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ VS. YOUR PLATFORM ============ -->
-<section id="vs-platform" style="background: var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
-  <div class="container">
-    <div class="kicker">Vs. your platform</div>
-    <h2>Not another optimizer.</h2>
-    <p class="lede">Platforms make agents cheaper and faster. None measure whether the output was worth it — and an optimizer can't audit itself.</p>
-    <div class="grid-3">
-      <div class="card" style="background: var(--bg);">
-        <span class="num">YOUR GATEWAY</span>
+        <div class="ct">Your vendor gateway</div>
         <h3>Caps spend.</h3>
-        <p>Budgets, routing, auto-downgrades. Decisions made before the run, on a prediction that quality holds.</p>
+        <p>Budgets and routing decide cost before the work happens — betting that quality holds. It never measures whether the result was worth it.</p>
       </div>
-      <div class="card" style="background: var(--bg);">
-        <span class="num">YOUR PLATFORM</span>
-        <h3>Tunes against proxies.</h3>
-        <p>Synthetic benchmarks and LLM judges. The agent gets better at pleasing the judge.</p>
+      <div class="card">
+        <div class="ct">Your agent platform</div>
+        <h3>Tunes to proxies.</h3>
+        <p>Optimizes against its own benchmarks and scores. The agent gets better at pleasing the test — and the platform grades its own homework.</p>
       </div>
-      <div class="card" style="background: var(--bg);">
-        <span class="num">COMPASS</span>
+      <div class="card lead">
+        <div class="ct">Compass</div>
         <h3>Verifies delivery.</h3>
-        <p>The ledger after the run. Every change measured against the dollars the agent was hired to deliver — read from your CRM, helpdesk, and billing. Held, or dipped.</p>
+        <p>The independent ledger after the work: every agent measured against the real outcomes it was hired to move — read from your own systems, across every vendor.</p>
       </div>
     </div>
-  </div>
-</section>
-<!-- ============ TWO DOORS ============ -->
-<section id="paths">
-  <div class="container">
-    <div class="kicker">Where are you?</div>
-    <h2>Two ways in. Same loop.</h2>
-    <div class="grid-2">
-      <div class="card" style="display:flex; flex-direction:column;">
-        <span class="num">DOOR 1 · COMPASS FLEET</span>
-        <h3>"I'm running agents and don't trust the numbers."</h3>
-        <p>Monitoring, health scores, dollar-ranked recommendations, and the weekly Agent P&amp;L —
-        every agent justified or flagged, every Monday.</p>
-        <div class="ex">Fleet of 8 → 1 critical, $94.82/mo recoverable, ranked by impact</div>
-        <div style="margin-top:auto; padding-top:20px;"><a class="btn btn-primary" href="#access">Request early access →</a></div>
-      </div>
-      <div class="card" style="display:flex; flex-direction:column;">
-        <span class="num">DOOR 2 · COMPASS DISCOVERY</span>
-        <h3>"I know we need agents. I don't know which ones."</h3>
-        <p>The Fleet Audit and the Opportunity Map: every agent you run, what each costs, what to fix —
-        and the five to build next, ranked by projected ROI.</p>
-        <div class="ex">Audit → Fix List + Build List + 90-day roadmap · from $2,500</div>
-        <div style="margin-top:auto; padding-top:20px;"><a class="btn btn-primary" href="#access" onclick="requestAudit()">Request an audit →</a></div>
-      </div>
-    </div>
-    <p style="margin-top:24px; text-align:center; color:var(--muted); font-size:14px;">Most teams are somewhere in between. Start where you are.</p>
   </div>
 </section>
 
-<!-- ============ INVESTOR FRAME ============ -->
-<section class="investor">
-  <div class="container">
-    <div class="kicker">Why now</div>
-    <blockquote>
-      The industry is racing toward outcome-based pricing — per resolution, per booked meeting, per closed ticket.
-      You can't price an outcome you can't verify.
-      <em>Compass is the outcome ledger both sides of that contract trust.</em>
-    </blockquote>
-    <p style="margin-top:22px; font-family:var(--mono); font-size:13px; color:var(--muted); max-width:720px;">
-      MIT's Project NANDA, 2025: ~95% of enterprise GenAI pilots show no measurable P&amp;L impact
-      <span style="color:#6B7280;">("The GenAI Divide: State of AI in Business 2025")</span>.
-      The gap isn't models — it's outcome accountability.
-    </p>
+<!-- ============ LEARNING LOOP RECAP / VALUE (full-bleed close before CTA) ============ -->
+<section class="loop" id="value">
+  <div class="container loop-grid">
+    <div>
+      <div class="kicker">Value, in your currency</div>
+      <h2>The gain shows up where it pays for itself.</h2>
+      <p class="lede">Not a chart of tokens saved. The same outcomes you defined, delivered for less — a number Finance, IT, and RevOps can all stand behind.</p>
+      <div class="loop-metrics">
+        <div class="loop-metric val"><div class="v mono">$8.34→$6.19</div><div class="l">cost / qualified opp</div></div>
+        <div class="loop-metric"><div class="v mono">320</div><div class="l">outcomes held</div></div>
+        <div class="loop-metric val"><div class="v mono">$690/mo</div><div class="l">returned (~26%)</div></div>
+      </div>
+    </div>
+    <div class="panel" aria-label="Fleet impact — illustrative">
+      <div class="panel-head"><span class="panel-title">Fleet impact · cost per outcome</span><span class="tag-illus">Illustrative</span></div>
+      <div class="panel-body">
+        <div class="ba">
+          <div class="ba-card before">
+            <div class="bl">Before</div>
+            <div class="ba-big mono">$8.34</div>
+            <div class="ba-sub">$2,670/mo · 320 opps · 3 vendors</div>
+          </div>
+          <div class="ba-arrow">→</div>
+          <div class="ba-card after">
+            <div class="bl">After</div>
+            <div class="ba-big mono">$6.19</div>
+            <div class="ba-sub">$1,980/mo · 320 opps · 3 vendors</div>
+          </div>
+        </div>
+        <div class="loop-foot">No outcomes lost. <b>$690/mo recovered</b> from one cross-vendor optimization — and Compass keeps watching.</div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -517,224 +642,108 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
 <section id="access">
   <div class="container">
     <div class="cta-box">
-      <div class="kicker">Early access</div>
-      <h2>Every agent, accountable.</h2>
-      <p class="lede" style="margin: 0 auto;">For teams running twenty agents — and teams planning their first.</p>
+      <div class="kicker" style="justify-content:center;">Request access</div>
+      <h2>See every agent against the outcomes that pay for it.</h2>
+      <p class="lede">For teams running a fleet of agents — and teams deciding where to start. One neutral read, across every vendor.</p>
       <form class="email-form" onsubmit="return captureEmail(event)">
         <input type="email" id="ea-email" placeholder="you@company.com" required>
         <select id="ea-role" required>
           <option value="" disabled selected>Your role</option>
-          <option>Founder</option>
-          <option>CTO / VP Engineering</option>
-          <option>AI lead</option>
-          <option>Platform team</option>
-          <option>Finance / CFO</option>
+          <option>CFO / Finance</option>
+          <option>IT / Platform admin</option>
+          <option>RevOps</option>
+          <option>Founder / CEO</option>
+          <option>Engineering lead</option>
         </select>
         <select id="ea-interest" required>
           <option value="Early access" selected>Early access</option>
-          <option value="Fleet Audit">Fleet Audit</option>
+          <option value="Fleet review">Fleet review</option>
         </select>
         <button class="btn btn-primary" type="submit" id="ea-submit">Request access</button>
       </form>
       <div class="form-ok" id="form-ok">✓ Got it — we'll be in touch.</div>
       <div class="form-err" id="form-err">Couldn't send — email us at <a href="mailto:dylan@compass.dev">dylan@compass.dev</a> instead.</div>
-      <p style="margin-top:22px; font-size:14px;"><a href="mailto:dylan@compass.dev">Or talk to us directly →</a></p>
+      <p style="margin-top:24px; font-size:14.5px;"><a href="mailto:dylan@compass.dev">Or talk to us directly →</a></p>
     </div>
   </div>
 </section>
 
 <footer>
   <div class="container">
-    <span class="mono">⌖ compass_ — the outcome ledger for AI agents</span>
-    <span>© 2026 Compass. <a href="#" onclick="openTour(); return false;">Product walkthrough</a></span>
+    <span class="logo">
+      <svg width="18" height="18" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="none" stroke="#047857" stroke-width="2.5"/><path d="M21.5 10.5 L18 18 L10.5 21.5 L14 14 Z" fill="#047857"/></svg>
+      Compass
+    </span>
+    <span>© 2026 Compass — the neutral read on AI-agent spend. <a href="setup.html">Detailed walkthrough</a></span>
   </div>
 </footer>
 
-<!-- ============ WALKTHROUGH MODAL ============ -->
-<div class="modal" id="tour" role="dialog" aria-modal="true">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeTour()" aria-label="Close">×</button>
-    <span class="step-tag" id="tour-tag"></span>
-    <h3 id="tour-title"></h3>
-    <p class="narr" id="tour-narr"></p>
-    <div class="screen" id="tour-screen"></div>
-    <div class="modal-nav">
-      <button class="btn btn-ghost" id="tour-back" onclick="tourStep(-1)">← Back</button>
-      <div class="step-dots" id="tour-dots"></div>
-      <button class="btn btn-primary" id="tour-next" onclick="tourStep(1)">Next →</button>
-    </div>
-  </div>
-</div>
-
 <script>
-// ---------- scripted walkthrough (Veritas AI scenario, no backend) ----------
-const STEPS = [
-  {
-    tag: "Step 1 · Fleet overview",
-    title: "Monday morning. One screen.",
-    narr: "Veritas AI runs 8 agents. Compass scores each one daily — four are healthy, three need attention, one is critical.",
-    screen: `
-      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
-        <span class="chip chip-g">4 HEALTHY</span><span class="chip chip-a">3 NEEDS ATTENTION</span>
-        <span class="chip chip-r">1 CRITICAL</span><span class="chip chip-n">1 NEW</span>
-      </div>
-      <div class="s-row"><b>Scout</b><span class="s-ok">● 90</span><span style="color:var(--muted)">research · healthy</span><span>$1.5/mo</span></div>
-      <div class="s-row"><b>Drafter</b><span class="s-ok">● 92</span><span style="color:var(--muted)">email drafting · fleet's best prompt</span><span>$0.9/mo</span></div>
-      <div class="s-row hl-a"><b>Summarizer</b><span style="color:var(--amber)">● 58</span><span style="color:var(--muted)">doc summarization · context bloat</span><span>$96/mo</span></div>
-      <div class="s-row hl"><b>Support</b><span style="color:var(--red)">● 49</span><span style="color:var(--muted)">customer replies · 34% completion</span><span>$5/mo</span></div>`
-  },
-  {
-    tag: "Step 2 · Agent detail",
-    title: "Click Support. 34% task completion.",
-    narr: "It's getting stuck — drafting a reply, second-guessing it, revising forever. The run history shows loop bursts: 12+ runs packed into a single hour.",
-    screen: `
-      <div><span class="s-metric"><div class="l">completion</div><div class="v" style="color:var(--red)">34%</div></span>
-      <span class="s-metric"><div class="l">quality</div><div class="v" style="color:var(--amber)">0.62</div></span>
-      <span class="s-metric"><div class="l">peak runs/hr</div><div class="v" style="color:var(--red)">17</div></span>
-      <span class="s-metric"><div class="l">wasted spend</div><div class="v">$3.4/mo</div></span></div>
-      <div style="margin-top:12px; color:var(--muted)">run log</div>
-      <div class="s-row"><span>14:02:11</span><span style="color:var(--red)">✗ failed</span><span style="color:var(--muted)">Loop detected: no progress after 3 revisions</span><span>$0.03</span></div>
-      <div class="s-row"><span>14:06:48</span><span style="color:var(--red)">✗ failed</span><span style="color:var(--muted)">Loop detected: no progress after 3 revisions</span><span>$0.03</span></div>
-      <div class="s-row"><span>14:09:30</span><span style="color:var(--red)">✗ failed</span><span style="color:var(--muted)">Loop detected: no progress after 3 revisions</span><span>$0.03</span></div>`
-  },
-  {
-    tag: "Step 3 · Recommendation",
-    title: "Compass already knows the fix.",
-    narr: "A completion-checker guardrail detects when the agent stops making progress and breaks the loop.",
-    screen: `
-      <div class="s-rec"><div class="t">▸ recommendation · add_guardrail · HIGH</div>
-      <div style="margin-top:8px; font-size:13px;">Support completes only 34% of tasks — add a <b>completion-checker guardrail</b> to break revision loops.</div>
-      <div style="margin-top:8px; color:var(--muted); font-size:12px;">How detected: completion over last 30 days is 34% (threshold 60%). Failed runs show repeated self-revision without progress.</div>
-      <span class="s-btn">Apply</span> <span style="color:var(--muted); font-size:12px; margin-left:8px;">Dismiss</span></div>`
-  },
-  {
-    tag: "Step 4 · Applied",
-    title: "One click. Done.",
-    narr: "The guardrail is live: max 3 revisions, stall detection at 2k tokens. Compass keeps watching to confirm the completion rate recovers.",
-    screen: `
-      <div style="padding:20px 6px;">
-      <div class="s-ok" style="font-size:14px;">✓ Guardrail applied to Support</div>
-      <div class="s-panel" style="margin-top:14px;">
-        <div class="h">completion checker</div>
-        <div>{ "max_revisions": 3, "stall_tokens": 2000 }</div>
-        <div style="margin-top:6px; color:var(--green); font-size:12px;">● active — watching next 50 runs</div>
-      </div></div>`
-  },
-  {
-    tag: "Step 5 · The expensive one",
-    title: "Summarizer: running a frontier model on a fast-model task.",
-    narr: "It reads entire 86k-token documents on an Opus-tier model to produce one-page summaries. The token breakdown makes it obvious — and the fix is one config line.",
-    screen: `
-      <div><span class="s-metric"><div class="l">avg input</div><div class="v" style="color:var(--amber)">86k</div></span>
-      <span class="s-metric"><div class="l">avg output</div><div class="v">1.0k</div></span>
-      <span class="s-metric"><div class="l">cost / run</div><div class="v">$0.44</div></span>
-      <span class="s-metric"><div class="l">vs. peers</div><div class="v" style="color:var(--red)">19×</div></span></div>
-      <div style="margin-top:14px; color:var(--muted)">token breakdown</div>
-      <div class="tok-bar"><div class="tok-in" style="width:96%"></div><div class="tok-out" style="width:4%"></div></div>
-      <div style="font-size:11.5px; color:var(--muted)"><span style="color:var(--amber)">■</span> input 98.9% &nbsp; <span style="color:var(--green)">■</span> output 1.1%</div>
-      <div class="s-rec"><div class="t">▸ recommendation · right_size_model · HIGH</div>
-      <div style="margin-top:8px; font-size:13px;">Summarizer runs Opus 4.8 — Haiku 4.5 scores within ~3% on doc summarization at ~1/5th the cost. <b style="color:var(--accent)">Est. savings $80/mo.</b></div>
-      <div style="margin-top:6px; color:var(--muted); font-size:12px;">Also pending: trim_context — structured input instead of full documents (+$18/mo after right-sizing; the two never double-count).</div>
-      <span class="s-btn">Apply</span></div>`
-  },
-  {
-    tag: "Step 6 · Clone Studio",
-    title: "Drafter is your best performer. Clone what works.",
-    narr: "Drafter's structured-input prompt beats Coder's 22k-token wall of context by 33% on quality. Copy the structure, keep Coder's domain.",
-    screen: `
-      <div class="s-cols">
-        <div class="s-panel"><div class="h">source · Drafter · quality 0.94</div>
-          <div class="diff-add">+ ## Input (structured — never raw threads)</div>
-          <div class="diff-add">+ ## Rules: subject &lt; 8 words, body &lt; 120 words</div>
-          <div class="diff-add">+ ## Output (strict)</div></div>
-        <div class="s-panel"><div class="h">target · Coder · quality 0.71</div>
-          <div class="diff-del">- [~22k tokens of pasted handbook/context]</div>
-          <div class="diff-del">- "Think very carefully and at great length..."</div>
-          <div class="diff-del">- "Re-read the guidelines twice."</div></div>
-      </div>
-      <div style="margin-top:14px;"><span class="s-btn">Copy prompt structure →</span>
-      <span class="s-btn" style="background:transparent; color:var(--text); border:1px solid #D1D5DB;">Fork as new agent</span></div>`
-  },
-  {
-    tag: "Step 7 · The loop closes",
-    title: "Now you're running Coder v2 alongside Coder.",
-    narr: "Lineage is tracked, scores keep updating, and next Monday the dashboard tells you if the clone won. This is what your Monday morning looks like with Compass.",
-    screen: `
-      <div style="padding:14px 6px;">
-      <div class="s-panel"><div class="h">version lineage</div>
-        <div>Coder · v1 ─→ <span style="color:var(--accent)">v2 (cloned from Drafter)</span> <span style="color:var(--green)">● live</span></div></div>
-      <div class="s-panel" style="margin-top:12px;"><div class="h">fleet impact · projected</div>
-        <div>monthly spend &nbsp; $248 → <b class="s-ok">$153</b></div>
-        <div>fleet health &nbsp;&nbsp; 71 → <b class="s-ok">83</b></div>
-        <div>critical agents 1 → <b class="s-ok">0</b></div></div>
-      <div style="margin-top:16px; color:var(--muted); font-size:12.5px;">Want this on your fleet? <a href="#access" onclick="closeTour()">Request early access →</a></div></div>`
-  },
-];
+// ---------- scroll-driven pipeline: activate rail node as each stage enters view ----------
+(function () {
+  const stages = Array.from(document.querySelectorAll('.stage'));
+  const nodes = Array.from(document.querySelectorAll('.rail-node'));
+  const reveals = Array.from(document.querySelectorAll('.reveal'));
+  if (!('IntersectionObserver' in window)) {
+    // no-JS-class fallback: show everything, mark all nodes active
+    reveals.forEach(r => r.classList.add('in'));
+    nodes.forEach(n => n.classList.add('active'));
+    return;
+  }
 
-let step = 0;
-const $ = id => document.getElementById(id);
+  // activate the rail node for the stage nearest the viewport center
+  const setActive = idx => nodes.forEach((n, i) => n.classList.toggle('active', i === idx));
 
-function renderStep() {
-  const s = STEPS[step];
-  $("tour-tag").textContent = s.tag;
-  $("tour-title").textContent = s.title;
-  $("tour-narr").textContent = s.narr;
-  $("tour-screen").innerHTML = s.screen;
-  $("tour-back").style.visibility = step === 0 ? "hidden" : "visible";
-  $("tour-next").textContent = step === STEPS.length - 1 ? "Finish" : "Next →";
-  $("tour-dots").innerHTML = STEPS.map((_, i) =>
-    `<i class="${i === step ? 'on' : ''}"></i>`).join("");
-}
-function openTour() { step = 0; renderStep(); $("tour").classList.add("open"); }
-function closeTour() { $("tour").classList.remove("open"); }
-function tourStep(d) {
-  if (step + d >= STEPS.length) { closeTour(); return; }
-  step = Math.max(0, step + d);
-  renderStep();
-}
-document.addEventListener("keydown", e => {
-  if (!$("tour").classList.contains("open")) return;
-  if (e.key === "Escape") closeTour();
-  if (e.key === "ArrowRight") tourStep(1);
-  if (e.key === "ArrowLeft") tourStep(-1);
-});
-$("tour").addEventListener("click", e => { if (e.target === $("tour")) closeTour(); });
+  const stageObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const idx = +e.target.getAttribute('data-stage');
+        setActive(idx);
+      }
+    });
+  }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+  stages.forEach(s => stageObs.observe(s));
+
+  // reveal each mock panel once
+  const revObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); revObs.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });
+  reveals.forEach(r => revObs.observe(r));
+
+  setActive(0);
+})();
 
 // ---------- email capture (FormSubmit relay; requires one-time activation by the recipient) ----------
 const FORM_ENDPOINT = "https://formsubmit.co/ajax/dylanmr96@gmail.com";
 
 async function captureEmail(e) {
   e.preventDefault();
-  const btn = $("ea-submit");
+  const btn = document.getElementById("ea-submit");
   btn.disabled = true;
   btn.textContent = "Sending…";
-  $("form-err").style.display = "none";
+  document.getElementById("form-err").style.display = "none";
   try {
     const res = await fetch(FORM_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify({
-        email: $("ea-email").value,
-        role: $("ea-role").value,
-        interest: $("ea-interest").value,
-        _subject: "Compass — " + $("ea-interest").value + " request",
+        email: document.getElementById("ea-email").value,
+        role: document.getElementById("ea-role").value,
+        interest: document.getElementById("ea-interest").value,
+        _subject: "Compass — " + document.getElementById("ea-interest").value + " request",
       }),
     });
     if (!res.ok) throw new Error("relay rejected");
     document.querySelector(".email-form").style.display = "none";
-    $("form-ok").style.display = "block";
+    document.getElementById("form-ok").style.display = "block";
   } catch (err) {
     btn.disabled = false;
     btn.textContent = "Request access";
-    $("form-err").style.display = "block";
+    document.getElementById("form-err").style.display = "block";
   }
   return false;
-}
-
-// Door 2 CTA: pre-select the Fleet Audit interest before scrolling to the form
-function requestAudit() {
-  const sel = $("ea-interest");
-  if (sel) sel.value = "Fleet Audit";
 }
 </script>
 </body>
