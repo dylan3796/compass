@@ -64,6 +64,9 @@ Not all proof is equal, and we say so. Every verdict carries a grade:
 - **D** — sound logic and rules. Where every engagement starts; never where it has to end.
 The grade does three jobs: it keeps us honest, it shows customers exactly how to get stronger proof (want an A-grade number to take into a vendor negotiation? we'll help you set up the holdout), and it builds the graded dataset that pays off as causal analysis keeps getting better — the companies collecting graded evidence today will be the ones who trust their numbers tomorrow.
 
+### 4.5 The intelligence — a record you can ask
+Because every activity is captured and every outcome joined, the record answers questions, not just reports: *Why did support cost more in June? Which runs touched this ticket? What should the notes agent stop doing?* And it acts on what it learns — surfacing outcomes you weren't measuring, recommending where to point agents next, flagging when it's time to retune an agent's instructions, clone it into an adjacent workflow, or cut it — and reading your fleet against the market through the Benchmark (your cost per result vs. the market's, sharpened by every statement). If you're doing a thing one way, Causa can show you the better way another fleet already found. The causal core stays sealed and deterministic (§6.3); the intelligence interprets and recommends on top of it.
+
 ## 5. The cascade — one record, every level of the org
 
 This is the go-to-market shape and the product shape at once: **one record, read differently at every altitude.** Causa is not a tool one team uses; it's a record the whole organization argues from. That's what makes it the outcome layer rather than another point solution.

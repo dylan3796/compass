@@ -15,9 +15,10 @@ import {
 } from "@/lib/data";
 import type { Grade } from "@/lib/data";
 import { OriginBadge, VerdictStamp } from "@/components/chips";
-import FleetTable from "./FleetTable";
 import LeadCapture from "./LeadCapture";
+import SpendCalculator from "./SpendCalculator";
 import Tiers from "./Tiers";
+import { benchmarkTeaser } from "@/lib/data";
 
 // Hero animation code-split; static fallback keeps LCP light.
 const SettlementFunnel = dynamic(() => import("./SettlementFunnel"), {
@@ -95,42 +96,58 @@ export default function LandingPage() {
             </Link>
           </p>
 
-          {/* The outcomes themselves — concrete, or the claim is abstract */}
-          <div className="rule mt-12 border-t">
-            {[
-              ["Zendesk", "Ticket resolved"],
-              ["Stripe", "Payment settled · Refund processed"],
-              ["Salesforce", "Opportunity created"],
-              ["ServiceNow", "Workspace provisioned"],
-              ["Google Drive", "Document approved"],
-              ["Jira", "Ticket created from meeting notes · Issue closed"],
-            ].map(([source, event]) => (
-              <div
-                key={source}
-                className="rule flex items-baseline justify-between gap-4 border-b py-2.5"
-              >
-                <span className="eyebrow text-ink/60">{source}</span>
-                <span className="text-right text-[15px]">{event}</span>
-              </div>
-            ))}
-            <p className="mt-3 text-sm text-ink/70">
-              Whatever the outcome, if it lands in a system of record, Causa verifies it — and
-              ties it to whatever did the work.
-            </p>
-          </div>
         </section>
 
-        {/* §2 The stakes */}
+        {/* §2 The problem, told at ground level */}
+        <section className="mx-auto max-w-6xl px-4 py-24">
+          <p className="eyebrow text-ink/60">
+            Meridian — {company.headcount} people, a year into agents
+          </p>
+          <h2 className="mt-2 max-w-3xl font-serif text-4xl sm:text-5xl">
+            Everyone suspects. Nobody knows.
+          </h2>
+          <div className="mt-8 max-w-3xl">
+            {(
+              [
+                [
+                  "Support manager",
+                  "The vendor's dashboard says 3,214 tickets resolved. Her gut says a chunk came back within the week. There's no came-back-angry column — so she pays the invoice.",
+                ],
+                [
+                  "IT lead",
+                  "His team's agent sets up every new hire's accounts. Nobody can say what it saves, so at budget time it's a line item with a shrug — and his ask for two more agents dies in review.",
+                ],
+                [
+                  "Sales director",
+                  "The meeting-booker books meetings. Her reps swear the pipeline was already theirs. Nobody can prove it either way, so the argument repeats every month.",
+                ],
+                [
+                  "CFO",
+                  "One line item, up and to the right. She can price a salesperson, a contractor, a seat. The agent workforce — nobody can.",
+                ],
+              ] as const
+            ).map(([role, line]) => (
+              <div key={role} className="rule grid gap-1 border-t py-5 md:grid-cols-[11rem_1fr] md:gap-6">
+                <p className="eyebrow pt-1 text-ink/60">{role}</p>
+                <p className="text-[15px] leading-relaxed text-ink/80">{line}</p>
+              </div>
+            ))}
+            <div className="rule border-t" />
+          </div>
+          <p className="mt-8 max-w-3xl font-serif text-2xl leading-snug sm:text-3xl">
+            Four people, four versions of the same missing thing: an independent record of what
+            the agents actually delivered.
+          </p>
+        </section>
+
+        {/* §3 The claim */}
         <section className="mx-auto max-w-6xl px-4 py-24">
           {[
-            "Outcome pricing is becoming software's default.",
-            "Every outcome invoice is currently self-reported.",
-            "The payer has no independent record. You're the payer.",
-            "And the agent's maker can't be the agent's referee.",
+            "Every outcome invoice is self-reported. And the agent's maker can't be the agent's referee.",
             "Causa is that record — the system of record for what your AI workforce actually delivers. Payer-funded, permanently.",
           ].map((line) => (
             <div key={line} className="rule border-t py-6">
-              <p className="font-serif text-2xl sm:text-3xl">{line}</p>
+              <p className="max-w-4xl font-serif text-2xl sm:text-3xl">{line}</p>
             </div>
           ))}
           <div className="rule border-t" />
@@ -144,76 +161,146 @@ export default function LandingPage() {
           </p>
         </section>
 
-        {/* §3 The two buyers — one ledger, read at two altitudes */}
+        {/* §4 The four pillars — what the record gives you */}
         <section className="mx-auto max-w-6xl px-4 py-24">
-          <div className="rule grid border-y md:grid-cols-2">
-            <Reveal className="py-8 md:border-r md:border-hairline md:pr-10">
-              <p className="eyebrow text-ink/60">CFO</p>
-              <h2 className="mt-2 font-serif text-3xl">An Agent P&amp;L, finally.</h2>
-              <dl className="mt-5 text-[15px]">
-                {(
-                  [
-                    ["Spend by vendor and model", fmt.usd(headers.spend)],
-                    ["Verified value delivered", `${fmt.int(headers.verified)} outcomes`],
-                    ["Cost per verified outcome", "$0.42–$9.24"],
-                    [
-                      "Verdict impact identified",
-                      `${fmt.usd(headers.projectedVerdictImpact)}/mo`,
-                    ],
-                    ["Adjustments recovered", fmt.usd(headers.adjustmentIdentified, 2)],
-                  ] as const
-                ).map(([label, figure]) => (
-                  <div
-                    key={label}
-                    className="rule flex items-baseline justify-between gap-4 border-t py-2.5"
-                  >
-                    <dt className="text-ink/80">{label}</dt>
-                    <dd className="font-mono text-sm">{figure}</dd>
-                  </div>
-                ))}
-              </dl>
-              <p className="mt-4 text-sm text-ink/60">Invoice-grade, export-ready.</p>
+          <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">
+            One record. Four things it does.
+          </h2>
+          <div className="mt-10">
+            {/* Pillar 1 — one place */}
+            <Reveal className="rule grid gap-4 border-t py-8 md:grid-cols-[minmax(0,20rem)_1fr] md:gap-10">
+              <div>
+                <p className="eyebrow text-ink/60">01 · One place</p>
+                <h3 className="mt-1 font-serif text-3xl">Every agent, one ledger.</h3>
+              </div>
+              <div>
+                <p className="max-w-2xl text-[15px] leading-relaxed text-ink/80">
+                  Built in-house, bought from a vendor, or hybrid — every agent&rsquo;s claimed
+                  outcomes land in the same record, held to the same bar, with every activity
+                  captured and every run attributed to its model.
+                </p>
+                <p className="mt-4 flex flex-wrap items-center gap-2 text-sm text-ink/70">
+                  <OriginBadge origin="BUILT" />
+                  <OriginBadge origin="BOUGHT" />
+                  <OriginBadge origin="HYBRID" />
+                  <span>
+                    Meridian&rsquo;s four workflows · {fmt.usd(headers.spend)}/mo · one
+                    statement
+                  </span>
+                </p>
+              </div>
             </Reveal>
-            <Reveal delay={0.08} className="rule border-t py-8 md:border-t-0 md:pl-10">
-              <p className="eyebrow text-ink/60">Operating leader</p>
-              <h2 className="mt-2 font-serif text-3xl">
-                Performance reviews for your digital workforce.
-              </h2>
-              <p className="mt-4 text-[15px] leading-relaxed text-ink/80">
-                Every workflow scored against its baseline, stamped with a verdict, next step
-                drafted.
-              </p>
-              {/* One specimen row from the roster */}
-              {(() => {
-                const support = workflows.find((w) => w.id === "support")!;
-                return (
-                  <div className="rule mt-6 border-t pt-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div>
-                        <p className="font-medium">{support.name}</p>
-                        <p className="mt-1 flex items-center gap-2 text-sm text-ink/70">
-                          <OriginBadge origin={support.origin} />
-                          {fmt.int(support.verified)} verified · {support.qualityPassPct}%
-                          quality
-                        </p>
-                      </div>
-                      <Stamp>
-                        <VerdictStamp verdict={support.verdict} label={support.verdictLabel} size="sm" />
-                      </Stamp>
+
+            {/* Pillar 2 — the read */}
+            <Reveal className="rule grid gap-4 border-t py-8 md:grid-cols-[minmax(0,20rem)_1fr] md:gap-10">
+              <div>
+                <p className="eyebrow text-ink/60">02 · The read</p>
+                <h3 className="mt-1 font-serif text-3xl">An Agent P&amp;L, finally.</h3>
+              </div>
+              <div>
+                <p className="max-w-2xl text-[15px] leading-relaxed text-ink/80">
+                  Outcomes on one side, what the agents cost on the other — by agent, by vendor,
+                  by model. Invoice-grade, export-ready, and finally in the same language as
+                  every other line item.
+                </p>
+                <dl className="mt-4 max-w-md">
+                  {(
+                    [
+                      ["Spend", fmt.usd(headers.spend)],
+                      ["Verified outcomes", fmt.int(headers.verified)],
+                      ["Verdict impact identified", `${fmt.usd(headers.projectedVerdictImpact)}/mo`],
+                    ] as const
+                  ).map(([label, figure]) => (
+                    <div
+                      key={label}
+                      className="rule flex items-baseline justify-between gap-4 border-t py-2"
+                    >
+                      <dt className="text-sm text-ink/80">{label}</dt>
+                      <dd className="font-mono text-sm">{figure}</dd>
                     </div>
-                  </div>
-                );
-              })()}
+                  ))}
+                </dl>
+              </div>
+            </Reveal>
+
+            {/* Pillar 3 — the refinery */}
+            <Reveal className="rule grid gap-4 border-t py-8 md:grid-cols-[minmax(0,20rem)_1fr] md:gap-10">
+              <div>
+                <p className="eyebrow text-ink/60">03 · The refinery</p>
+                <h3 className="mt-1 font-serif text-3xl">Refined, agent by agent.</h3>
+              </div>
+              <div>
+                <p className="max-w-2xl text-[15px] leading-relaxed text-ink/80">
+                  Every statement ends in the next best action per agent: retune its
+                  instructions, reroute it to a cheaper model, clone what works into the next
+                  workflow, cut what isn&rsquo;t beating its baseline — with the artifact
+                  drafted.
+                </p>
+                <div className="mt-4 space-y-3">
+                  {(
+                    [
+                      ["support", "Fair price is $1.06, not $1.50 — email drafted", `${fmt.usd(1233)}/mo back`],
+                      ["meetings", "The reps were right — agent-only meetings convert worse", `${fmt.usd(2900)}/mo back`],
+                      ["workspace", "Clone the account agent to contractor onboarding", `+${fmt.usd(2140)}/mo`],
+                    ] as const
+                  ).map(([id, line, figure]) => {
+                    const w = workflows.find((x) => x.id === id)!;
+                    return (
+                      <div key={id} className="flex flex-wrap items-center gap-3">
+                        <Stamp rotate={-1 - ((w.verdict.length * 3) % 5) * 0.5}>
+                          <VerdictStamp verdict={w.verdict} label={w.verdict} size="sm" />
+                        </Stamp>
+                        <span className="text-sm text-ink/80">{line}</span>
+                        <span className="ml-auto font-mono text-sm">{figure}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </Reveal>
+
+            {/* Pillar 4 — the intelligence */}
+            <Reveal className="rule grid gap-4 border-y py-8 md:grid-cols-[minmax(0,20rem)_1fr] md:gap-10">
+              <div>
+                <p className="eyebrow text-ink/60">04 · The intelligence</p>
+                <h3 className="mt-1 font-serif text-3xl">A record you can ask.</h3>
+              </div>
+              <div>
+                <p className="max-w-2xl text-[15px] leading-relaxed text-ink/80">
+                  Every activity captured means every question answerable — and the record
+                  learns. Causa surfaces outcomes you weren&rsquo;t measuring, recommends where
+                  to point agents next, and reads your fleet against the market.
+                </p>
+                <p className="mt-4 font-mono text-xs leading-relaxed text-ink/70">
+                  &ldquo;Why did support cost more in June?&rdquo; · &ldquo;Which runs touched
+                  this ticket?&rdquo; · &ldquo;What should the notes agent stop doing?&rdquo;
+                </p>
+                <p className="rule mt-4 max-w-md border-t pt-3 text-sm text-ink/80">
+                  Market signal: your cost per resolved ticket{" "}
+                  <span className="font-mono">
+                    {fmt.usd(benchmarkTeaser.yourCostPerResolvedTicket, 2)}
+                  </span>{" "}
+                  · Benchmark median{" "}
+                  <span className="font-mono">{fmt.usd(benchmarkTeaser.benchmarkMedian, 2)}</span>{" "}
+                  · {benchmarkTeaser.percentile}st percentile. Every statement sharpens it.
+                </p>
+              </div>
             </Reveal>
           </div>
-          <Reveal className="mt-6">
-            <p className="font-serif text-xl italic text-ink/80">
-              One record. It cascades — board deck to team standup.
-            </p>
-          </Reveal>
+          <p className="mt-6 font-serif text-xl italic text-ink/80">
+            One record. It cascades — board deck to team standup.
+          </p>
         </section>
 
-        {/* §4 How it works */}
+        {/* §5 Run it on your spend */}
+        <section className="mx-auto max-w-6xl px-4 py-24">
+          <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">Run it on your spend.</h2>
+          <div className="mt-8 max-w-2xl">
+            <SpendCalculator onGetStatement={() => setLeadOpen(true)} />
+          </div>
+        </section>
+
+        {/* §6 How it works */}
         <section className="mx-auto max-w-6xl px-4 py-24">
           <Reveal>
             <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">How it works</h2>
@@ -243,51 +330,61 @@ export default function LandingPage() {
             ))}
             <div className="rule border-t" />
           </div>
+
+          {/* What lands where — the outcomes themselves, per system */}
+          <div className="mt-10 grid max-w-3xl gap-x-10 sm:grid-cols-2">
+            {[
+              ["Zendesk", "Ticket resolved"],
+              ["Stripe", "Payment settled · Refund processed"],
+              ["Salesforce", "Opportunity created"],
+              ["ServiceNow", "Workspace provisioned"],
+              ["Google Drive", "Document approved"],
+              ["Jira", "Meeting notes → ticket · Issue closed"],
+            ].map(([source, event]) => (
+              <div
+                key={source}
+                className="rule flex items-baseline justify-between gap-4 border-b py-2"
+              >
+                <span className="eyebrow text-ink/60">{source}</span>
+                <span className="text-right text-sm">{event}</span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 max-w-3xl text-sm text-ink/70">
+            Whatever the outcome, if it lands in a system of record, Causa verifies it — and
+            ties it to whatever did the work.
+          </p>
+
           <div className="mt-10">
             <Tiers />
           </div>
         </section>
 
-        {/* §5 Evidence, graded */}
-        <section className="mx-auto max-w-6xl px-4 py-24">
-          <h2 className="font-serif text-4xl sm:text-5xl">
-            Not all proof is equal. We grade ours.
-          </h2>
-          <div className="mt-8 max-w-3xl">
-            {GRADES.map((g, i) => (
-              <div key={g} className="rule flex gap-5 border-t py-6">
-                <Stamp delay={0.1 + i * 0.05} rotate={-1 - (i % 3)}>
-                  <span className="flex h-14 w-14 items-center justify-center border-2 border-ink font-serif text-3xl">
-                    {g}
-                  </span>
-                </Stamp>
-                <div>
-                  <h3 className="font-serif text-2xl">{gradeDescriptions[g].name}</h3>
-                  <p className="mt-1 text-[15px] leading-relaxed text-ink/80">
-                    {gradeDescriptions[g].line}
-                  </p>
-                </div>
-              </div>
-            ))}
-            <div className="rule border-t" />
-          </div>
-          <p className="mt-8 max-w-3xl text-[15px] leading-relaxed text-ink/70">
-            Every Causa verdict carries its grade — and the path to a better one.
-          </p>
-        </section>
-
-        {/* §6 The Fleet Standard */}
+        {/* §7 Proof discipline — compressed */}
         <section className="mx-auto max-w-6xl px-4 py-24">
           <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">
-            Built or bought, every agent answers to the same bar.
+            Not all proof is equal. We grade ours.
           </h2>
-          <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-ink/80">
-            You&rsquo;ll build some agents and buy more. One standard for the whole fleet:
-            verified outcomes per dollar, graded evidence, same ledger.
-          </p>
-          <div className="mt-8">
-            <FleetTable />
+          <div className="mt-8 grid max-w-3xl gap-x-10 sm:grid-cols-2">
+            {GRADES.map((g) => (
+              <div key={g} className="rule flex items-baseline gap-3 border-t py-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center self-center border-2 border-ink font-serif text-xl">
+                  {g}
+                </span>
+                <p className="text-sm leading-relaxed text-ink/80">
+                  <span className="font-medium">{gradeDescriptions[g].name}.</span>{" "}
+                  {gradeDescriptions[g].line}
+                </p>
+              </div>
+            ))}
           </div>
+          <p className="mt-6 max-w-3xl text-[15px] text-ink/70">
+            Every verdict carries its grade — and the path to a better one. Built or bought,
+            every agent answers to the same bar:{" "}
+            <Link href="/demo" className="underline underline-offset-4">
+              see the fleet in the demo →
+            </Link>
+          </p>
         </section>
 
         {/* §7 The vision ladder */}
@@ -308,16 +405,6 @@ export default function LandingPage() {
               </p>
               <p className="mt-3 font-mono text-xs tracking-wide text-ink/60">
                 REPRICE · REROUTE · RENEGOTIATE · RETIRE · EXPAND
-              </p>
-              <p className="mt-2 max-w-xl text-[15px] text-ink/70">
-                June&rsquo;s meeting-booker: meetings from the agent-only slice convert 8% vs.
-                11% without it.
-              </p>
-              <p className="mt-3 flex items-baseline gap-3">
-                <Stamp>
-                  <VerdictStamp verdict="RETIRE" label="RETIRE" size="sm" />
-                </Stamp>
-                <span className="text-[15px] text-ink/70">$2,900/mo recovered.</span>
               </p>
             </Reveal>
             <Reveal className="mt-16">
