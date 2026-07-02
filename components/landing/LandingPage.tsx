@@ -26,7 +26,7 @@ export default function LandingPage() {
     <div className="bg-paper">
       {/* Nav */}
       <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5">
-        <p className="font-serif text-2xl leading-none">Causa.</p>
+        <p className="wordmark text-3xl">Causa.</p>
         <nav className="flex items-center gap-3 sm:gap-5">
           <Link
             href="/demo"
@@ -44,19 +44,19 @@ export default function LandingPage() {
         {/* §1 Hero */}
         <section className="mx-auto max-w-6xl px-4 pb-20 pt-10 sm:pt-16">
           <p className="eyebrow text-ink/60">
-            AI vendors bill you for outcomes. Then they grade their own homework.
+            AI vendors grade their own homework. Causa checks the work.
           </p>
           <h1
             className="mt-4 max-w-5xl font-serif leading-[1.02]"
             style={{ fontSize: "clamp(3rem, 8vw, 7rem)" }}
           >
-            The vendor shouldn&rsquo;t grade its own homework.
+            Know what your agents actually delivered.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink/80">
-            Agents close your tickets, provision your workspaces, draft your documents, and book
-            your revenue — then bill you for it. Causa independently verifies every claimed
-            outcome, attributes it to whatever did the work, and settles what happens next. First
-            Verified Outcome Statement in 7 days.
+            Agents answer your tickets, book your meetings, turn your meeting notes into Jira
+            tickets — and every result is self-reported. Causa checks each claimed outcome where
+            it lands, prices what was real, and tells you what to do next. First statement in 7
+            days.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <button className="btn-ink" onClick={() => setLeadOpen(true)}>
@@ -73,9 +73,7 @@ export default function LandingPage() {
           <SettlementFunnel />
 
           <p className="mt-6 max-w-2xl font-mono text-xs leading-relaxed text-ink/60">
-            A {company.headcount}-person company&rsquo;s June: {fmt.int(headers.claimed)}{" "}
-            outcomes claimed, {fmt.int(headers.attributable)} held up — the rest failed the
-            quality bar or would have happened anyway. The verdicts:{" "}
+            One {company.headcount}-person company&rsquo;s June — and the decisions were worth{" "}
             {fmt.usd(headers.projectedVerdictImpact)}/mo,{" "}
             {Math.round((headers.projectedVerdictImpact / headers.spend) * 100)}% of its agent
             spend.{" "}
@@ -92,7 +90,7 @@ export default function LandingPage() {
               ["Salesforce", "Opportunity created"],
               ["ServiceNow", "Workspace provisioned"],
               ["Google Drive", "Document approved"],
-              ["Jira", "Issue closed"],
+              ["Jira", "Ticket created from meeting notes · Issue closed"],
             ].map(([source, event]) => (
               <div
                 key={source}
@@ -122,13 +120,6 @@ export default function LandingPage() {
             </Reveal>
           ))}
           <div className="rule border-t" />
-          <Reveal>
-            <p className="max-w-3xl py-4 text-sm text-ink/70">
-              The vendor&rsquo;s dashboard says 3,214 tickets resolved this month. It
-              doesn&rsquo;t have a came-back-within-a-week column. Causa&rsquo;s statement found
-              61 — and priced the adjustment.
-            </p>
-          </Reveal>
         </section>
 
         {/* §3 The two buyers — one ledger, read at two altitudes */}
@@ -196,21 +187,37 @@ export default function LandingPage() {
           </Reveal>
         </section>
 
-        {/* §4 Two exports and a join key */}
+        {/* §4 How it works */}
         <section className="mx-auto max-w-6xl px-4 py-16">
           <Reveal>
-            <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">
-              &ldquo;Two exports and a join key.&rdquo;
-            </h2>
-            <p className="mt-3 max-w-2xl text-ink/70">
-              Every statement is three ingredients: your agents&rsquo; activity, the outcomes
-              landing in your systems of record, and the key that joins them. Whatever the
-              outcome — ticket resolved, payment settled, opportunity created — Causa ties it
-              back to the agent that produced it. Three tiers, from a no-integration pilot to
-              the full ledger.
-            </p>
+            <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">How it works</h2>
           </Reveal>
-          <div className="mt-8">
+          <div className="mt-8 max-w-3xl">
+            {[
+              [
+                "Connect where outcomes land.",
+                "Zendesk, Jira, Salesforce, Stripe — or start with two CSV exports and a join key. Read-only.",
+              ],
+              [
+                "Causa matches every outcome to whatever did the work.",
+                "Agent, model, or person — each claimed result checked against the record.",
+              ],
+              [
+                "Every month: a statement that ends in decisions.",
+                "What was real, what each outcome cost, and the next step drafted.",
+              ],
+            ].map(([head, body], i) => (
+              <Reveal key={head} delay={i * 0.05} className="rule flex gap-5 border-t py-5">
+                <span className="font-serif text-4xl text-ink/60">{i + 1}</span>
+                <div>
+                  <h3 className="font-serif text-2xl">{head}</h3>
+                  <p className="mt-1 text-[15px] text-ink/70">{body}</p>
+                </div>
+              </Reveal>
+            ))}
+            <div className="rule border-t" />
+          </div>
+          <div className="mt-10">
             <Tiers />
           </div>
         </section>
@@ -242,8 +249,6 @@ export default function LandingPage() {
           </div>
           <Reveal className="mt-8">
             <p className="max-w-3xl text-[15px] leading-relaxed text-ink/70">
-              Causal inference is about to get very good. The companies feeding graded evidence
-              into their ledger today are the ones who&rsquo;ll trust their numbers when it does.
               Every Causa verdict carries its grade — and the path to a better one.
             </p>
           </Reveal>
@@ -256,10 +261,8 @@ export default function LandingPage() {
               Built or bought, every agent answers to the same bar.
             </h2>
             <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-ink/80">
-              You&rsquo;ll build some agents. You&rsquo;ll buy more. Vendors swear by theirs; your
-              platform team swears by theirs. Causa holds the whole fleet — internal, vendor,
-              hybrid — to one standard: verified outcomes per dollar, graded evidence, same
-              ledger.
+              You&rsquo;ll build some agents and buy more. One standard for the whole fleet:
+              verified outcomes per dollar, graded evidence, same ledger.
             </p>
           </Reveal>
           <div className="mt-8">
@@ -273,39 +276,37 @@ export default function LandingPage() {
             <Reveal>
               <h2 className="font-serif text-5xl sm:text-7xl">Meter</h2>
               <p className="mt-2 max-w-xl text-[15px] text-ink/70">
-                Verify. Every claimed outcome checked against the system of record, then asked
-                the only question that matters: would it have happened anyway? Priced to the
-                penny.
+                Verify. Every claimed outcome checked where it lands, then asked: would it have
+                happened anyway?
               </p>
             </Reveal>
             <Reveal className="mt-16">
               <h2 className="font-serif text-5xl sm:text-7xl">Verdict</h2>
               <p className="mt-2 max-w-xl text-[15px] text-ink/70">
-                Act. Every statement ends in a decision — evidence attached, dollar impact
-                projected, next step drafted.
+                Act. Every statement ends in a decision with the dollar impact attached — and
+                three of the five need no vendor conversation.
               </p>
               <p className="mt-3 font-mono text-xs tracking-wide text-ink/60">
                 REPRICE · REROUTE · RENEGOTIATE · RETIRE · EXPAND
               </p>
               <p className="mt-2 max-w-xl text-[15px] text-ink/70">
-                June&rsquo;s meeting-booker: agent-sourced meetings convert 8%. Reps alone
-                convert 11%. <span className="font-serif text-2xl text-verdict">RETIRE</span> —
-                $2,900/mo recovered.
+                June&rsquo;s meeting-booker: meetings from the agent-only slice convert 8% vs.
+                11% without it. <span className="font-serif text-2xl text-verdict">RETIRE</span>{" "}
+                — $2,900/mo recovered.
               </p>
             </Reveal>
             <Reveal className="mt-16">
               <h2 className="font-serif text-5xl sm:text-7xl">Standard</h2>
               <p className="mt-2 max-w-xl text-[15px] text-ink/70">
-                Every statement sharpens the Benchmark. Every customer prices machine labor
-                smarter than the last. &ldquo;Causa Verified&rdquo; is how agent vendors will
-                prove value — and how buyers will set price.
+                Every statement sharpens the Benchmark. &ldquo;Causa Verified&rdquo; is how
+                vendors will prove value — and how buyers will set price.
               </p>
             </Reveal>
             <Reveal className="mt-16">
               <p className="max-w-3xl font-serif text-2xl leading-snug sm:text-3xl">
-                Every economy that started paying for results built a verification layer beside
-                it — audits for financial statements, ratings for credit, verification for ads,
-                networks for payments. Machine labor is next. Causa is that layer.
+                Every economy that pays for results built a verification layer beside it —
+                audits, ratings, ad verification, payment networks. Machine labor is next.
+                Causa is that layer.
               </p>
             </Reveal>
           </div>
@@ -352,7 +353,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="rule border-t py-10">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 sm:flex-row sm:items-baseline sm:justify-between">
-          <p className="font-serif text-xl">Causa.</p>
+          <p className="wordmark text-2xl">Causa.</p>
           <div className="flex flex-col gap-2 text-sm sm:flex-row sm:gap-6">
             <a
               href="mailto:hello@causa.co"

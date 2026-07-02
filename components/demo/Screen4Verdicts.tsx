@@ -36,38 +36,42 @@ const ACTIONS: Record<string, { button: string; title: string; body: React.React
     ),
   },
   workspace: {
-    button: "Draft memo",
-    title: "Expansion memo — draft",
+    button: "Clone agent",
+    title: "Clone plan — draft",
     body: (
       <div className="space-y-3 text-sm leading-relaxed">
         <p>
-          Workspace provisioning verified at $0.42 per provision against an $11.90 human
-          baseline, with cycle time down from 2.1 days to 4 minutes and a 100% quality bar —
-          every account active within 48 hours.
+          New-hire accounts verified at $0.42 each vs. $11.90 under the old process, with cycle
+          time down from 2.1 days to 4 minutes and a 100% quality bar — every account active
+          within 48 hours.
         </p>
-        <p>
-          Recommendation: extend the same agent to contractor onboarding. Projected additional
-          savings ≈ $2,140/mo at current volume.
-        </p>
+        <ol className="list-decimal space-y-1 pl-5">
+          <li>Clone the account agent for contractor onboarding — same contract, same quality bar.</li>
+          <li>Point it at the existing ServiceNow queue; no new integration.</li>
+          <li>Causa verifies the clone from its first sync.</li>
+        </ol>
+        <p>Projected additional value ≈ $2,140/mo at current volume. No vendor involved.</p>
         <p className="text-ink/60">Evidence grade C (12-month matched baseline).</p>
       </div>
     ),
   },
   docgen: {
     button: "View plan",
-    title: "Reroute plan",
+    title: "Reroute plan — notes agent",
     body: (
       <div className="space-y-3 text-sm leading-relaxed">
         <p>
-          The model-switch experiment shows identical 94% approval on both slices. Marginal
-          cost: $3.10 per document on claude-fable-5 vs. $1.21 on the qwen-3 pilot slice.
+          The model-switch experiment shows the same 94% acceptance on both slices. Marginal
+          cost: $3.10 per ticket on claude-fable-5 vs. $1.21 on the qwen-3 pilot slice.
         </p>
         <ol className="list-decimal space-y-1 pl-5">
-          <li>Route standard document classes to qwen-3; hold approval bar at 94%.</li>
-          <li>Keep claude-fable-5 for the exception queue.</li>
+          <li>Route standard meetings to qwen-3; hold acceptance at 94%.</li>
+          <li>
+            Retune the instructions once: keep claude-fable-5 for exec and multi-team meetings.
+          </li>
           <li>Re-verify after two weeks against the same quality bar.</li>
         </ol>
-        <p>Projected saving: $1.89 × 570 attributable documents ≈ $1,077/mo.</p>
+        <p>Projected saving: $1.89 × 570 attributable tickets ≈ $1,077/mo. No vendor involved.</p>
         <p className="text-ink/60">Evidence grade B (model switch).</p>
       </div>
     ),
@@ -78,13 +82,13 @@ const ACTIONS: Record<string, { button: string; title: string; body: React.React
     body: (
       <div className="space-y-3 text-sm leading-relaxed">
         <p>
-          The agent-only slice converts at 8% vs. an 11% do-nothing baseline; only the
-          human-assisted slice beats the counterfactual. Retiring the agent slice recovers the
+          Meetings from the agent-only slice convert at 8% vs. an 11% baseline without it; only
+          the assisted slice beats the counterfactual. Retiring the agent slice recovers the
           $2,900/mo vendor fee.
         </p>
         <pre className="overflow-x-auto border border-hairline bg-white/50 p-3 font-mono text-xs leading-relaxed">
 {`workflow,period,claimed,verified,attributable,action,amount
-qualified_meetings,2026-06,472,314,118,retire_agent_slice,-2900.00
+sales_meetings,2026-06,472,314,118,retire_agent_slice,-2900.00
 support_tickets,2026-06,3214,2802,1989,reopen_adjustment,-91.50`}
         </pre>
       </div>

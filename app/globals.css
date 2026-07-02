@@ -56,4 +56,11 @@
   .eyebrow {
     @apply font-mono text-[11px] uppercase tracking-[0.18em] sm:text-xs;
   }
+
+  /* Printed ledger-header mark: serif, tight tracking, fine double rule. */
+  .wordmark {
+    @apply inline-block font-serif leading-none tracking-tight;
+    padding-bottom: 0.12em;
+    border-bottom: 3px double rgba(16, 16, 16, 0.4);
+  }
 }

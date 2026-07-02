@@ -42,10 +42,6 @@ export default function Screen1Define({ onConnect }: { onConnect?: () => void })
       <header className="mb-8">
         <h1 className="font-serif text-3xl sm:text-4xl">Define outcomes</h1>
         <p className="mt-2 text-ink/70">If it lands in a system of record, Causa can verify it.</p>
-        <p className="mt-1 text-sm text-ink/60">
-          These four contracts didn&rsquo;t start this sharp. Causa read the record first —
-          next screen.
-        </p>
       </header>
 
       {/* The contract register */}
@@ -88,6 +84,10 @@ export default function Screen1Define({ onConnect }: { onConnect?: () => void })
           </Reveal>
         ))}
       </div>
+      <p className="mt-2 text-sm text-ink/60">
+        These contracts didn&rsquo;t start this sharp — Causa read the record first. Next
+        screen.
+      </p>
 
       {/* Custom outcome form — teaches the causality ladder */}
       <Reveal className="mt-10 border border-hairline bg-white/40 p-5">

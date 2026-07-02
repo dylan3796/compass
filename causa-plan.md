@@ -184,6 +184,21 @@ Live direction from the founder that extends this spec; where they conflict, the
 4. **Outcome discovery is a product element.** Causa also surfaces outcomes the customer wasn't measuring ("Outcomes you weren't measuring" panel on demo Screen 2; discovery closer in landing §4). Teams arrive knowing what they think they want; the ledger shows them what they actually want. Discovery figures derive from the Part 7 ledger where a derivation exists and are asserted in `data.ts`.
 5. **The Screen 2 meter respects the verification floor:** workflows count as verifiable only when an activity source AND the workflow's system of record are both connected.
 
+## ADDENDUM 2 — Outcome-first repositioning (July 2026, founder review of PR #8)
+
+Where these conflict with anything above, these win:
+
+1. **Outcomes first, agents second.** The product is proving the outcome, pricing it, and deciding what's next. Agent/model cost tracking is attribution detail — never the pitch (that's commodity observability: LangSmith, Langfuse, Datadog).
+2. **Hero is value-first.** H1: *Know what your agents actually delivered.* The homework line survives once, small (eyebrow kicker). Page title and meta match.
+3. **Disputes are proof of neutrality, not the focal point.** The dispute row and RENEGOTIATE stay in the statement; landing copy never leads with disputes. Three of the five verdicts need no vendor conversation — say so.
+4. **Self-serve verdict artifacts.** Every artifact is something the customer executes without the vendor: EXPAND ships a clone plan (clone the agent to an adjacent workflow), REROUTE ships a model swap + instruction retune, RETIRE ships a wind-down. RENEGOTIATE remains the one vendor-facing artifact.
+5. **Causa learns.** Discovery extends to recommendations: which outcomes to measure next and where to point agents. Every statement sharpens the next.
+6. **No agent-vs-human-outcome claims.** Baselines are pre-agent processes ("under the old process"), holdouts, or natural experiments — never "vs. human" or "reps alone."
+7. **Relatable cast, plain language.** Meridian's workflows: Support tickets · New-hire accounts · Meeting notes → Jira tickets (replaces Document generation; same Part 7 math) · Sales meetings booked. Examples reflect real 2026 agent deployments (support agents, hybrid SDRs, meeting-notes→tasks, coding agents).
+8. **"How it works" in three plain steps** (connect where outcomes land → Causa matches outcome to doer → monthly statement ending in decisions); tiers compress beneath it.
+9. **Less wordy everywhere.** Impressive and vision-conveying beats exhaustive; body copy cut roughly 40% from the first build.
+10. **Wordmark** carries a printed ledger-header treatment (serif, tight tracking, fine double rule) in nav, footer, favicon, OG.
+
 ## PART 8 — DEFINITION OF DONE
 
 1. `npm run build` clean; data assertions pass; deploys to Vercel; light mode only.

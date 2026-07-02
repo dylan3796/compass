@@ -93,9 +93,9 @@ export const workflows: Workflow[] = [
   },
   {
     id: "workspace",
-    name: "Workspace provisioning",
+    name: "New-hire accounts",
     origin: "BUILT",
-    actor: "In-house provisioning agent",
+    actor: "In-house account agent",
     claimed: 486,
     verified: 486,
     attributable: 486,
@@ -108,23 +108,23 @@ export const workflows: Workflow[] = [
     impactPerMonth: 2140,
     deltaVsMay: -0.01,
     qualityPassPct: 100,
-    vsBaseline: "$0.42 vs. $11.90 human baseline",
+    vsBaseline: "$0.42 vs. $11.90 under the old process",
     sparkline: [0.47, 0.45, 0.44, 0.43, 0.42],
     evidence: [
-      "$0.42/provision vs. $11.90 human baseline; 2.1 days → 4 minutes. 100% quality bar.",
-      "Expanding to contractor onboarding ≈ $2,140/mo additional savings.",
+      "$0.42/account vs. $11.90 under the old process; 2.1 days → 4 minutes. 100% quality bar.",
+      "Cloning the agent for contractor onboarding ≈ $2,140/mo additional savings.",
     ],
     contract: {
-      event: "Workspace provisioned in ServiceNow",
+      event: "New-hire account live in ServiceNow",
       qualityBar: "User active within 48 hours",
       counterfactual: "12-month pre-agent baseline, matched",
     },
   },
   {
     id: "docgen",
-    name: "Document generation",
+    name: "Meeting notes → Jira tickets",
     origin: "BUILT",
-    actor: "In-house drafting agent · claude-fable-5 + qwen-3",
+    actor: "In-house notes agent · claude-fable-5 + qwen-3",
     claimed: 640,
     verified: 601,
     attributable: 570,
@@ -137,25 +137,25 @@ export const workflows: Workflow[] = [
     impactPerMonth: 1077,
     deltaVsMay: 0.04,
     qualityPassPct: 94,
-    vsBaseline: "94% approval, both slices",
+    vsBaseline: "94% acceptance, both slices",
     sparkline: [3.19, 3.21, 3.23, 3.26, 3.3],
     modelSplit: [
       { model: "claude-fable-5", costPerVerified: 3.1, share: 0.85 },
       { model: "qwen-3", costPerVerified: 1.21, share: 0.15 },
     ],
     evidence: [
-      "94% approval (601 / 640). Marginal cost $3.10 on claude-fable-5 vs. $1.21 on the qwen-3 pilot slice at identical approval.",
+      "94% of tickets accepted (601 / 640). Marginal cost $3.10 on claude-fable-5 vs. $1.21 on the qwen-3 pilot slice at the same acceptance rate.",
       "Rerouting saves $1.89 × 570 ≈ $1,077/mo.",
     ],
     contract: {
-      event: "Document approved in Google Drive",
-      qualityBar: "Approved without major revision",
+      event: "Jira ticket created from meeting notes",
+      qualityBar: "Accepted by assignee without rewrite",
       counterfactual: "Model-switch natural experiment (pilot slice)",
     },
   },
   {
     id: "meetings",
-    name: "Qualified meetings",
+    name: "Sales meetings booked",
     origin: "HYBRID",
     actor: "Vendor SDR agent + 3 reps",
     claimed: 472,
@@ -170,11 +170,11 @@ export const workflows: Workflow[] = [
     impactPerMonth: 2900,
     deltaVsMay: 0.41,
     qualityPassPct: 67,
-    vsBaseline: "8% agent-only vs. 11% do-nothing",
+    vsBaseline: "8% agent-only vs. 11% without it",
     sparkline: [8.1, 8.35, 8.6, 8.83, 9.24],
     evidence: [
       "Verified = opportunity created within 14 days (314 / 472). Only the human-assisted slice beats the counterfactual (attributable 118).",
-      "Agent-only slice converts 8% vs. the 11% do-nothing baseline. The 118 attributable outcomes came from the human-assisted slice — a playbook reps keep. Retiring the agent recovers the $2,900/mo fee.",
+      "Meetings from the agent-only slice convert 8% vs. an 11% baseline without it. The 118 attributable outcomes came from the assisted slice — a playbook the team keeps. Retiring the agent recovers the $2,900/mo fee.",
     ],
     contract: {
       event: "Opportunity created in Salesforce within 14 days",
@@ -275,15 +275,15 @@ export const sources: SourceTile[] = [
   {
     name: "Jira",
     kind: "outcome",
-    reads: "Issue closed · not reopened · cycle time",
-    connected: "1,120 issues closed · 61% joinable · improve join key →",
+    reads: "Ticket created · accepted by assignee · issue closed",
+    connected: "640 tickets created · 61% joinable · improve join key →",
     partial: true,
   },
   {
     name: "ServiceNow",
     kind: "outcome",
-    reads: "Workspace provisioned · incident resolved · user active",
-    connected: "Connected — 486 workspaces provisioned · joins on employee_email",
+    reads: "Account provisioned · incident resolved · user active",
+    connected: "Connected — 486 accounts provisioned · joins on employee_email",
   },
   {
     name: "Stripe",
@@ -295,7 +295,7 @@ export const sources: SourceTile[] = [
     name: "Google Drive",
     kind: "outcome",
     reads: "Document created · approved · shared outside the org",
-    connected: "Connected — 640 documents created · 601 approved · joins on doc_id",
+    connected: "Connected — 128 documents approved · joins on doc_id",
   },
 ];
 
@@ -303,7 +303,7 @@ export const sources: SourceTile[] = [
 export const recordSystemForWorkflow: Record<string, string> = {
   support: "Zendesk",
   workspace: "ServiceNow",
-  docgen: "Google Drive",
+  docgen: "Jira",
   meetings: "Salesforce",
 };
 
@@ -340,9 +340,10 @@ export const discoveredOutcomes: DiscoveredOutcome[] = [
     figure: 9,
   },
   {
-    source: "Google Drive",
-    finding: "39 documents drafted but never approved. Drafts were counted as done.",
-    suggestion: "Measure approval, not generation",
+    source: "Jira",
+    finding:
+      "39 tickets created from meetings were rejected by their assignees. Rejections weren't counted.",
+    suggestion: "Count acceptance, not creation",
     cta: "Add outcome",
     figure: 39,
   },
@@ -402,7 +403,7 @@ const support = workflows.find((w) => w.id === "support")!;
 const docgen = workflows.find((w) => w.id === "docgen")!;
 assert(
   discoveredOutcomes[2].figure === docgen.claimed - docgen.verified,
-  "Drive discovery must equal doc gen claimed − verified"
+  "Jira discovery must equal notes-agent claimed − verified"
 );
 assert(
   support.claimed - support.verified === 412,

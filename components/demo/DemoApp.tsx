@@ -56,7 +56,7 @@ export default function DemoApp() {
       {/* Persistent sample-data banner */}
       <div className="rule border-b bg-paper">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2">
-          <Link href="/" className="font-serif text-xl leading-none">
+          <Link href="/" className="wordmark text-xl">
             Causa.
           </Link>
           <p className="eyebrow text-ink/60">Sample data — Meridian (fictional)</p>
@@ -113,9 +113,8 @@ export default function DemoApp() {
             <div className="rule mb-8 border border-hairline bg-white/50 p-5">
               <div className="flex items-start justify-between gap-4">
                 <p className="max-w-2xl text-[15px] leading-relaxed">
-                  You&rsquo;re looking at {company.name} — {company.headcount} people, four agent
-                  workflows, {fmt.usd(headers.spend)}/mo in agent spend. This is their June
-                  statement. Every screen is {company.name}&rsquo;s data.
+                  This is {company.name}&rsquo;s June statement — {company.headcount} people,
+                  four agent workflows, {fmt.usd(headers.spend)}/mo in agent spend.
                 </p>
                 <button
                   onClick={() => setFramed(false)}

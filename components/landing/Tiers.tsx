@@ -28,6 +28,10 @@ export default function Tiers() {
 
   return (
     <div>
+      <p className="eyebrow mb-3 text-ink/60">
+        &ldquo;Two exports and a join key.&rdquo; — start with no integration, go live one
+        workflow at a time
+      </p>
       {/* Desktop: stepped diagram, click to expand */}
       <div className="hidden gap-4 md:grid md:grid-cols-3">
         {TIERS.map((t, i) => {
@@ -80,14 +84,12 @@ export default function Tiers() {
       </div>
 
       <p className="mt-6 max-w-2xl text-sm leading-relaxed text-ink/70">
-        Verification has a floor: the system of record where the outcome lands, and the key
-        joining work to result. That&rsquo;s all we ask — and we&rsquo;ll tell you what&rsquo;s
-        verifiable with what you&rsquo;ve connected before you pay for anything.
+        We&rsquo;ll tell you what&rsquo;s verifiable with what you&rsquo;ve connected before
+        you pay for anything.
       </p>
-      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-ink/70">
-        One more thing the record does: it surfaces outcomes you weren&rsquo;t measuring. Teams
-        arrive knowing what they think they want. The ledger shows them what they actually
-        want.
+      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink/70">
+        And the record works both ways: it surfaces outcomes you weren&rsquo;t measuring, and
+        recommends what to aim your agents at next.
       </p>
     </div>
   );

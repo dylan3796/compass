@@ -11,6 +11,8 @@ Build rules that trip people up:
 - Colors: paper `#FAF8F4`, ink `#101010`, hairline (ink @ 15%, rules only), verdict red-orange `#E8491D` (verdicts/deltas/adjustments only), ledger green `#0E6B3D` (verified/EXPAND only). Anything else is a defect.
 - Banned words in copy: unlock, seamless, leverage, supercharge, empower, journey, effortless, revolutionize, game-changing, robust, cutting-edge, delight.
 - Never describe Causa with observability/tracing/evals/monitoring vocabulary.
+- No agent-vs-human-outcome comparisons in copy — we can't be sure human outcomes are measured right. Baselines are pre-agent processes, holdouts, or natural experiments.
+- Outcomes first, agents second: never pitch "plug in your agent, see costs" (that's commodity observability). Cost/Δ tracking is attribution detail, not the product.
 - All numbers trace to `lib/data.ts` (Part 7 of the spec); its assertion block must keep failing the build if the math stops reconciling.
 - Any screen that doesn't end in a decision is a defect.
 

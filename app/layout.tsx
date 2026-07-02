@@ -26,14 +26,14 @@ const mono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://causa.vercel.app"),
-  title: "Causa — The vendor shouldn't grade its own homework.",
+  title: "Causa — Know what your agents actually delivered.",
   description:
-    "Causa independently verifies what your AI agents deliver, attributes outcomes to whatever did the work, and settles what happens next. First Verified Outcome Statement in 7 days.",
+    "Every agent result is self-reported. Causa checks each claimed outcome where it lands, prices what was real, and tells you what to do next. First statement in 7 days.",
   icons: { icon: "/favicon.svg" },
   openGraph: {
-    title: "Causa — The vendor shouldn't grade its own homework.",
+    title: "Causa — Know what your agents actually delivered.",
     description:
-      "Causa independently verifies what your AI agents deliver, attributes outcomes to whatever did the work, and settles what happens next. First Verified Outcome Statement in 7 days.",
+      "Every agent result is self-reported. Causa checks each claimed outcome where it lands, prices what was real, and tells you what to do next. First statement in 7 days.",
     images: [{ url: "/og.png", width: 1200, height: 630 }],
   },
   twitter: {

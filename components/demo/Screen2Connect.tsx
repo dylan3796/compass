@@ -15,7 +15,7 @@ import { Reveal, Stamp } from "@/components/motion";
 const DISCOVERY_SOURCE: Record<string, number[]> = {
   Stripe: [0],
   Zendesk: [1],
-  "Google Drive": [2],
+  Jira: [2],
 };
 
 export default function Screen2Connect() {
@@ -141,8 +141,7 @@ export default function Screen2Connect() {
       <header className="mb-8">
         <h1 className="font-serif text-3xl sm:text-4xl">Connect sources</h1>
         <p className="mt-2 text-ink/70">
-          Read-only. Activity from what already logs it; outcomes from the systems of record
-          where they already land.
+          Read-only. Outcomes from where they already land; activity from what already logs it.
         </p>
       </header>
 
@@ -163,8 +162,8 @@ export default function Screen2Connect() {
           {sources.filter((s) => s.kind === "outcome").map(tile)}
         </div>
         <p className="mt-3 text-sm text-ink/60">
-          Whatever the outcome is — a ticket resolved, a payment settled, a document approved —
-          if it lands in a system of record, Causa ties it to whatever did the work.
+          Whatever the outcome — a ticket resolved, a payment settled, a meeting booked — Causa
+          ties it to whatever did the work.
         </p>
       </section>
 
@@ -187,8 +186,7 @@ export default function Screen2Connect() {
           <div className="mt-4">
             {visibleDiscoveries.length === 0 ? (
               <p className="rule border-t pt-3 text-sm text-ink/60">
-                Connect Stripe, Zendesk, or Google Drive to see what Meridian wasn&rsquo;t
-                measuring.
+                Connect Stripe, Zendesk, or Jira to see what Meridian wasn&rsquo;t measuring.
               </p>
             ) : (
               visibleDiscoveries.map((d) => (
@@ -221,6 +219,10 @@ export default function Screen2Connect() {
               ))
             )}
           </div>
+          <p className="rule mt-4 border-t pt-3 text-sm text-ink/60">
+            Every statement sharpens the next. Causa learns which outcomes move your numbers —
+            and recommends where to point your agents next.
+          </p>
         </Reveal>
       )}
 
