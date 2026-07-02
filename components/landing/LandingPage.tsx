@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
 import { Reveal, Stamp } from "@/components/motion";
-import { company, fmt, gradeDescriptions, headers, workflows } from "@/lib/data";
+import { company, fmt, gradeDescriptions, headers, impactSplit, workflows } from "@/lib/data";
 import type { Grade } from "@/lib/data";
 import { OriginBadge, VerdictStamp } from "@/components/chips";
 import FleetTable from "./FleetTable";
@@ -72,11 +72,16 @@ export default function LandingPage() {
 
           <SettlementFunnel />
 
-          <p className="mt-6 max-w-2xl font-mono text-xs leading-relaxed text-ink/60">
-            One {company.headcount}-person company&rsquo;s June — and the decisions were worth{" "}
-            {fmt.usd(headers.projectedVerdictImpact)}/mo,{" "}
-            {Math.round((headers.projectedVerdictImpact / headers.spend) * 100)}% of its agent
-            spend.{" "}
+          <p className="mt-6 font-serif text-2xl text-verdict sm:text-3xl">
+            Verdicts: {fmt.usd(headers.projectedVerdictImpact)}/mo —{" "}
+            {Math.round((headers.projectedVerdictImpact / headers.spend) * 100)}% of agent
+            spend.
+          </p>
+          <p className="mt-2 max-w-2xl font-mono text-xs leading-relaxed text-ink/60">
+            {fmt.usd(impactSplit.recovered)} recovered by repricing, rerouting, and retiring ·{" "}
+            {fmt.usd(impactSplit.expandable)} more if the account agent is cloned. Meridian is a
+            fictional {company.headcount}-person specimen — and the build fails if this math
+            stops reconciling.{" "}
             <Link href="/demo" className="underline underline-offset-4">
               See the statement →
             </Link>
@@ -108,22 +113,23 @@ export default function LandingPage() {
         </section>
 
         {/* §2 The stakes */}
-        <section className="mx-auto max-w-6xl px-4 py-16">
+        <section className="mx-auto max-w-6xl px-4 py-24">
           {[
             "Outcome pricing is becoming software's default.",
             "Every outcome invoice is currently self-reported.",
             "The payer has no independent record. You're the payer.",
-            "Causa is that record — the system of record for what your AI workforce actually delivers.",
+            "And the agent's maker can't be the agent's referee.",
+            "Causa is that record — the system of record for what your AI workforce actually delivers. Payer-funded, permanently.",
           ].map((line) => (
-            <Reveal key={line} className="rule border-t py-6">
+            <div key={line} className="rule border-t py-6">
               <p className="font-serif text-2xl sm:text-3xl">{line}</p>
-            </Reveal>
+            </div>
           ))}
           <div className="rule border-t" />
         </section>
 
         {/* §3 The two buyers — one ledger, read at two altitudes */}
-        <section className="mx-auto max-w-6xl px-4 py-16">
+        <section className="mx-auto max-w-6xl px-4 py-24">
           <div className="rule grid border-y md:grid-cols-2">
             <Reveal className="py-8 md:border-r md:border-hairline md:pr-10">
               <p className="eyebrow text-ink/60">CFO</p>
@@ -134,6 +140,10 @@ export default function LandingPage() {
                     ["Spend by vendor and model", fmt.usd(headers.spend)],
                     ["Verified value delivered", `${fmt.int(headers.verified)} outcomes`],
                     ["Cost per verified outcome", "$0.42–$9.24"],
+                    [
+                      "Verdict impact identified",
+                      `${fmt.usd(headers.projectedVerdictImpact)}/mo`,
+                    ],
                     ["Adjustments recovered", fmt.usd(headers.adjustmentIdentified, 2)],
                   ] as const
                 ).map(([label, figure]) => (
@@ -188,7 +198,7 @@ export default function LandingPage() {
         </section>
 
         {/* §4 How it works */}
-        <section className="mx-auto max-w-6xl px-4 py-16">
+        <section className="mx-auto max-w-6xl px-4 py-24">
           <Reveal>
             <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">How it works</h2>
           </Reveal>
@@ -223,16 +233,14 @@ export default function LandingPage() {
         </section>
 
         {/* §5 Evidence, graded */}
-        <section className="mx-auto max-w-6xl px-4 py-16">
-          <Reveal>
-            <h2 className="font-serif text-4xl sm:text-5xl">
-              Not all proof is equal. We grade ours.
-            </h2>
-          </Reveal>
+        <section className="mx-auto max-w-6xl px-4 py-24">
+          <h2 className="font-serif text-4xl sm:text-5xl">
+            Not all proof is equal. We grade ours.
+          </h2>
           <div className="mt-8 max-w-3xl">
             {GRADES.map((g, i) => (
-              <Reveal key={g} delay={i * 0.05} className="rule flex gap-5 border-t py-6">
-                <Stamp delay={0.1}>
+              <div key={g} className="rule flex gap-5 border-t py-6">
+                <Stamp delay={0.1 + i * 0.05} rotate={-1 - (i % 3)}>
                   <span className="flex h-14 w-14 items-center justify-center border-2 border-ink font-serif text-3xl">
                     {g}
                   </span>
@@ -243,28 +251,24 @@ export default function LandingPage() {
                     {gradeDescriptions[g].line}
                   </p>
                 </div>
-              </Reveal>
+              </div>
             ))}
             <div className="rule border-t" />
           </div>
-          <Reveal className="mt-8">
-            <p className="max-w-3xl text-[15px] leading-relaxed text-ink/70">
-              Every Causa verdict carries its grade — and the path to a better one.
-            </p>
-          </Reveal>
+          <p className="mt-8 max-w-3xl text-[15px] leading-relaxed text-ink/70">
+            Every Causa verdict carries its grade — and the path to a better one.
+          </p>
         </section>
 
         {/* §6 The Fleet Standard */}
-        <section className="mx-auto max-w-6xl px-4 py-16">
-          <Reveal>
-            <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">
-              Built or bought, every agent answers to the same bar.
-            </h2>
-            <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-ink/80">
-              You&rsquo;ll build some agents and buy more. One standard for the whole fleet:
-              verified outcomes per dollar, graded evidence, same ledger.
-            </p>
-          </Reveal>
+        <section className="mx-auto max-w-6xl px-4 py-24">
+          <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">
+            Built or bought, every agent answers to the same bar.
+          </h2>
+          <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-ink/80">
+            You&rsquo;ll build some agents and buy more. One standard for the whole fleet:
+            verified outcomes per dollar, graded evidence, same ledger.
+          </p>
           <div className="mt-8">
             <FleetTable />
           </div>
@@ -291,8 +295,13 @@ export default function LandingPage() {
               </p>
               <p className="mt-2 max-w-xl text-[15px] text-ink/70">
                 June&rsquo;s meeting-booker: meetings from the agent-only slice convert 8% vs.
-                11% without it. <span className="font-serif text-2xl text-verdict">RETIRE</span>{" "}
-                — $2,900/mo recovered.
+                11% without it.
+              </p>
+              <p className="mt-3 flex items-baseline gap-3">
+                <Stamp>
+                  <VerdictStamp verdict="RETIRE" label="RETIRE" size="sm" />
+                </Stamp>
+                <span className="text-[15px] text-ink/70">$2,900/mo recovered.</span>
               </p>
             </Reveal>
             <Reveal className="mt-16">
@@ -323,18 +332,19 @@ export default function LandingPage() {
         </section>
 
         {/* §9 Founder block + final CTA */}
-        <section className="mx-auto max-w-6xl px-4 py-20">
-          <Reveal>
-            <p className="max-w-3xl text-[15px] leading-relaxed text-ink/80">
-              Built by the operator who ran partner attribution at a $5B-ARR data company —
-              crediting logic, incentive design, and outcome measurement for the messiest actors
-              in B2B: humans. Agents are the easy part.
-            </p>
-          </Reveal>
-          <Reveal className="mt-14">
+        <section className="mx-auto max-w-6xl px-4 py-24">
+          <p className="max-w-3xl text-[15px] leading-relaxed text-ink/80">
+            Built by the operator who ran partner attribution at a $5B-ARR data company —
+            crediting logic, incentive design, and outcome measurement for the messiest actors
+            in B2B: humans. Agents are the easy part.
+          </p>
+          <div className="mt-14">
             <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">
               First Verified Outcome Statement in 7 days.
             </h2>
+            <p className="mt-3 max-w-2xl text-[15px] text-ink/70">
+              Pilot from $7.5K, credited against your first year. Two exports and a join key.
+            </p>
             <div className="mt-6 flex flex-wrap items-center gap-4">
               <button className="btn-ink" onClick={() => setLeadOpen(true)}>
                 Get statement
@@ -346,7 +356,7 @@ export default function LandingPage() {
                 See the demo →
               </Link>
             </div>
-          </Reveal>
+          </div>
         </section>
       </main>
 

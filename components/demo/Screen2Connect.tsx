@@ -81,7 +81,7 @@ export default function Screen2Connect() {
         key={t.name}
         onClick={() => toggle(t.name)}
         aria-pressed={isOn}
-        className={`flex min-h-[96px] flex-col border p-3 text-left transition-colors ${
+        className={`group flex min-h-[96px] flex-col border p-3 text-left transition-colors ${
           isOn ? "border-ink bg-white/60" : "border-hairline hover:border-ink/60"
         }`}
       >
@@ -126,7 +126,9 @@ export default function Screen2Connect() {
               <span className="text-xs font-medium text-ink">{t.connected}</span>
             )
           ) : (
-            <span className="text-xs text-ink/60">Connect source</span>
+            <span className="text-xs text-ink/60 underline decoration-hairline underline-offset-4 group-hover:decoration-ink">
+              Connect →
+            </span>
           )}
         </span>
       </button>

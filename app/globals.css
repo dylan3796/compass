@@ -29,6 +29,14 @@
     color: #faf8f4;
   }
 
+  /* Display serif: balanced rag, slight negative tracking above body sizes. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+
   :focus-visible {
     outline: 2px solid #101010;
     outline-offset: 2px;
@@ -46,7 +54,8 @@
   }
 
   .btn-ink {
-    @apply btn bg-ink text-paper transition-opacity hover:opacity-85;
+    /* Letterpress flip on hover — ink never goes translucent over paper. */
+    @apply btn border border-ink bg-ink text-paper transition-colors hover:bg-paper hover:text-ink;
   }
 
   .btn-outline {
@@ -57,10 +66,11 @@
     @apply font-mono text-[11px] uppercase tracking-[0.18em] sm:text-xs;
   }
 
-  /* Printed ledger-header mark: serif, tight tracking, fine double rule. */
+  /* Printed ledger-header mark: serif, tight tracking, fine double rule at full ink. */
   .wordmark {
     @apply inline-block font-serif leading-none tracking-tight;
-    padding-bottom: 0.12em;
-    border-bottom: 3px double rgba(16, 16, 16, 0.4);
+    padding-bottom: 0.16em;
+    border-bottom: 1px solid #101010;
+    box-shadow: 0 3px 0 -2px #101010;
   }
 }

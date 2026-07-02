@@ -123,7 +123,10 @@ export default function LeadCapture({ onClose }: { onClose: () => void }) {
               </button>
             </div>
             <p className="mt-2 text-sm text-ink/70">
-              First Verified Outcome Statement in 7 days. Two exports and a join key.
+              First Verified Outcome Statement in 7 days — from $7.5K, credited against your
+              first year. Have three things ready: an export of agent activity, an export of
+              outcomes (Zendesk, Jira, Stripe…), and the ID column they share — ticket_id
+              works.
             </p>
             <form onSubmit={submit} noValidate className="mt-6 space-y-4">
               <label className="block text-sm">

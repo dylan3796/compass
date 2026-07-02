@@ -6,6 +6,7 @@ import {
   dispute,
   fmt,
   headers,
+  impactSplit,
   meetingsAttributionSplit,
   workflows,
 } from "@/lib/data";
@@ -87,6 +88,10 @@ export default function Screen3Statement({
           <span className="font-serif text-2xl text-verdict sm:text-3xl">
             {fmt.usd(headers.projectedVerdictImpact)}/mo — {impactPctOfSpend}% of spend
           </span>
+        </p>
+        <p className="w-full font-mono text-[10px] text-ink/60">
+          {fmt.usd(impactSplit.recovered)} recovered by repricing, rerouting, and retiring ·{" "}
+          {fmt.usd(impactSplit.expandable)} more if the account agent is cloned
         </p>
       </div>
 
@@ -224,7 +229,7 @@ export default function Screen3Statement({
               Download statement
             </button>
             <button className="btn-outline" onClick={() => setPushed(true)}>
-              Push to ERP
+              Push to accounting
             </button>
             {downloaded && (
               <Stamp trigger="mount" active>

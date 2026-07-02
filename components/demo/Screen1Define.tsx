@@ -29,7 +29,7 @@ const BASELINES: { value: string; label: string; grade: Grade; note: string }[] 
     value: "rules",
     label: "Rules",
     grade: "D",
-    note: "Deterministic counterfactual logic. Where every engagement starts.",
+    note: "Rules-based comparison. Where everyone starts — never where you have to end.",
   },
 ];
 
@@ -51,7 +51,7 @@ export default function Screen1Define({ onConnect }: { onConnect?: () => void })
           <span className="eyebrow text-ink/60">Outcome</span>
           <span className="eyebrow text-ink/60">Event</span>
           <span className="eyebrow text-ink/60">Quality bar</span>
-          <span className="eyebrow text-ink/60">Counterfactual</span>
+          <span className="eyebrow text-ink/60">Would it have happened anyway?</span>
         </div>
         {workflows.map((w, i) => (
           <Reveal
@@ -76,7 +76,9 @@ export default function Screen1Define({ onConnect }: { onConnect?: () => void })
             </span>
             <span className="flex items-start gap-2 text-sm">
               <span>
-                <span className="eyebrow block text-ink/60 md:hidden">Counterfactual</span>
+                <span className="eyebrow block text-ink/60 md:hidden">
+                  Would it have happened anyway?
+                </span>
                 {w.contract.counterfactual}
               </span>
               <GradeChip grade={w.grade} />

@@ -3,7 +3,12 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
-/** Section reveal: 12px rise + fade, 400ms, fires once. Reduced motion: static. */
+/**
+ * Section reveal: 12px rise + fade, 400ms, fires once. Reduced motion: static.
+ * The reveal is an enhancement, never a gate: a fallback timer guarantees the
+ * content paints even if the intersection never fires (fast scrolls, anchor
+ * jumps, print, static capture).
+ */
 export function Reveal({
   children,
   className,
@@ -16,6 +21,30 @@ export function Reveal({
   as?: "div" | "section" | "li";
 }) {
   const reduced = useReducedMotion();
+  const [shown, setShown] = useState(reduced ?? false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (shown) return;
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setShown(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) setShown(true);
+      },
+      { threshold: 0.05 }
+    );
+    io.observe(el);
+    const fallback = window.setTimeout(() => setShown(true), 2000);
+    return () => {
+      io.disconnect();
+      window.clearTimeout(fallback);
+    };
+  }, [shown]);
+
   const Tag = motion[as];
   if (reduced) {
     const Static = as;
@@ -23,10 +52,12 @@ export function Reveal({
   }
   return (
     <Tag
+      // The union of motion element types defeats TS's ref inference; the
+      // runtime target is always an HTMLElement.
+      ref={ref as never}
       className={className}
       initial={{ opacity: 0, y: 12 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
+      animate={shown ? { opacity: 1, y: 0 } : undefined}
       transition={{ duration: 0.4, delay, ease: "easeOut" }}
     >
       {children}
@@ -112,6 +143,7 @@ export function Stamp({
   delay = 0,
   trigger = "view",
   active = true,
+  rotate = -2,
 }: {
   children: React.ReactNode;
   className?: string;
@@ -119,18 +151,23 @@ export function Stamp({
   /** "view" animates on scroll-into-view; "mount" animates immediately when `active`. */
   trigger?: "view" | "mount";
   active?: boolean;
+  /** Resting rotation in degrees — a real stamp never lands at the same angle twice. */
+  rotate?: number;
 }) {
   const reduced = useReducedMotion();
-  const resting = { opacity: 1, scale: 1, rotate: -2 };
+  const resting = { opacity: 1, scale: 1, rotate };
   if (reduced) {
     return (
-      <span className={`inline-block ${className ?? ""}`} style={{ transform: "rotate(-2deg)" }}>
+      <span
+        className={`inline-block ${className ?? ""}`}
+        style={{ transform: `rotate(${rotate}deg)` }}
+      >
         {children}
       </span>
     );
   }
   const animation = {
-    initial: { opacity: 0, scale: 1.15, rotate: -2 },
+    initial: { opacity: 0, scale: 1.15, rotate },
     transition: { duration: 0.25, delay, ease: [0.2, 0.9, 0.3, 1] as const },
   };
   return (

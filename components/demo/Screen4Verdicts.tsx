@@ -177,7 +177,7 @@ export default function Screen4Verdicts() {
               <GradeChip grade={w.grade} label={w.gradeLabel.replace(/^[A-D] /, "")} />
             </div>
             <div className="mt-4">
-              <Stamp delay={0.1 + i * 0.05}>
+              <Stamp delay={0.1 + i * 0.05} rotate={-1 - ((w.verdictLabel.length * 3) % 5) * 0.5}>
                 <VerdictStamp verdict={w.verdict} label={w.verdictLabel} />
               </Stamp>
             </div>
@@ -188,7 +188,7 @@ export default function Screen4Verdicts() {
                 </li>
               ))}
             </ul>
-            <div className="mt-5 flex items-center justify-between gap-3">
+            <div className="mt-auto flex items-center justify-between gap-3 pt-5">
               <p
                 className={`font-serif text-2xl ${w.verdict === "EXPAND" ? "text-ledger" : "text-verdict"}`}
               >

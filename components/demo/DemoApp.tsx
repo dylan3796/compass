@@ -108,7 +108,7 @@ export default function DemoApp() {
         </nav>
 
         {/* Screen content */}
-        <main className="min-w-0 flex-1 pb-20">
+        <main className="min-w-0 flex-1 pb-24">
           {framed && (
             <div className="rule mb-8 border border-hairline bg-white/50 p-5">
               <div className="flex items-start justify-between gap-4">
@@ -144,13 +144,18 @@ export default function DemoApp() {
         <div className="rule fixed inset-x-0 bottom-0 z-20 border-t bg-paper/95">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-1.5">
             <span className="font-mono text-[11px] text-ink/60">
-              {step + 1} / {PRESENTER_PATH.length}
+              {SCREENS.find((s) => s.id === screen)?.label}
+              {screen === 3 ? ` — ${persona} view` : ""}
             </span>
             <button
               onClick={advance}
               className="min-h-[44px] px-3 text-sm text-ink/70 transition-colors hover:text-ink"
             >
-              Next →
+              Next: {SCREENS.find((s) => s.id === nextStep.screen)?.label}
+              {nextStep.persona && nextStep.screen === 3 && screen === 3
+                ? ` — ${nextStep.persona} view`
+                : ""}{" "}
+              →
             </button>
           </div>
         </div>

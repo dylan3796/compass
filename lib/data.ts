@@ -236,6 +236,13 @@ export const activityRuns = {
 } as const;
 
 export const sources: SourceTile[] = [
+  // Log upload leads: it's the on-ramp everyone has, not just engineers.
+  {
+    name: "Log upload",
+    kind: "activity",
+    reads: "One CSV export of agent activity — from your vendor's dashboard or wherever your agent runs",
+    connected: `Connected — ${activityRuns["Log upload"].toLocaleString("en-US")} rows · join key detected: ticket_id`,
+  },
   {
     name: "LangSmith",
     kind: "activity",
@@ -253,12 +260,6 @@ export const sources: SourceTile[] = [
     kind: "activity",
     reads: "GenAI spans from your existing collector",
     connected: `Connected — ${activityRuns.OpenTelemetry.toLocaleString("en-US")} spans · 30 days`,
-  },
-  {
-    name: "Log upload",
-    kind: "activity",
-    reads: "One CSV or JSONL export of agent activity",
-    connected: `Connected — ${activityRuns["Log upload"].toLocaleString("en-US")} rows · join key detected: ticket_id`,
   },
   {
     name: "Zendesk",
@@ -361,8 +362,18 @@ export const gradeDescriptions: Record<Grade, { name: string; line: string }> = 
   C: { name: "Baseline", line: "Your pre-agent history, matched and compared." },
   D: {
     name: "Rules",
-    line: "Deterministic counterfactual logic. Where every engagement starts. Never where it has to end.",
+    line: "Rules-based comparison. Where every engagement starts. Never where it has to end.",
   },
+};
+
+/** Verdict impact split: recovered now vs. additional if EXPAND is acted on. */
+export const impactSplit = {
+  recovered: workflows
+    .filter((w) => w.verdict !== "EXPAND")
+    .reduce((acc, w) => acc + w.impactPerMonth, 0),
+  expandable: workflows
+    .filter((w) => w.verdict === "EXPAND")
+    .reduce((acc, w) => acc + w.impactPerMonth, 0),
 };
 
 /* ------------------------------------------------------------------ */
@@ -412,6 +423,10 @@ assert(
 assert(
   Object.values(activityRuns).reduce((a, b) => a + b, 0) === connect.runs,
   `activity source runs must sum to ${connect.runs}`
+);
+assert(
+  impactSplit.recovered + impactSplit.expandable === headers.projectedVerdictImpact,
+  "impact split must reconcile to the projected verdict impact"
 );
 
 export const fmt = {

@@ -7,13 +7,13 @@ const TIERS = [
     name: "Tier 0 — Pilot",
     summary: "No integration required.",
     detail:
-      "Export your agent activity. Export your outcomes. Give us the key that joins them. Statement in 7 days.",
+      "Export your agent activity — from your vendor's dashboard or wherever your agent runs. Export your outcomes. Give us the key that joins them. Statement in 7 days, from $7.5K, credited against your first year.",
   },
   {
     name: "Tier 1 — One workflow, live",
     summary: "One source, one system of record.",
     detail:
-      "One read-only activity source (LangSmith, Langfuse, OpenTelemetry, or logs) + one system of record where outcomes land: Zendesk (ticket resolved), Salesforce (opportunity created), Jira (issue closed), ServiceNow (incident resolved), Stripe (payment settled).",
+      "One read-only activity source (a CSV export, LangSmith, Langfuse, or OpenTelemetry) + one system of record where outcomes land: Zendesk (ticket resolved), Salesforce (opportunity created), Jira (issue closed), ServiceNow (incident resolved), Stripe (payment settled).",
   },
   {
     name: "Tier 2 — The full ledger",

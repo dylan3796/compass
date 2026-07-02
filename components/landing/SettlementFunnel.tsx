@@ -90,12 +90,15 @@ function DesktopFunnel() {
         <p className="eyebrow mt-1 text-ink/60">verified</p>
       </div>
 
-      {/* Gate two — ATTRIBUTABLE label */}
+      {/* Gate two — ATTRIBUTABLE, numeral resolves with the stamp */}
       <div
         className="absolute top-0 -translate-x-1/2 text-center"
         style={{ left: `${GATE2_X / 10}%` }}
       >
-        <p className="eyebrow mt-[46px] text-ink/60">attributable</p>
+        <motion.p className="font-serif text-4xl" style={{ opacity: stampOpacity }}>
+          {fmt.int(headers.attributable)}
+        </motion.p>
+        <p className="eyebrow mt-1 text-ink/60">attributable</p>
       </div>
 
       {/* Gate lines through the stream */}
@@ -133,7 +136,15 @@ function DesktopFunnel() {
         −{fmt.int(headers.verified - headers.attributable)} would have happened anyway
       </p>
 
-      {/* Green-stamped terminal total */}
+      {/* Terminal stamp: the box is reserved from the start, inked on arrival */}
+      <div
+        className="absolute right-0 top-[84px] border-2 border-hairline px-4 py-2 text-ink/60"
+        style={{ transform: "rotate(-2deg)" }}
+        aria-hidden="true"
+      >
+        <span className="font-serif text-3xl opacity-0">{fmt.int(headers.attributable)}</span>
+        <span className="eyebrow block opacity-60">settled</span>
+      </div>
       <motion.div
         className="absolute right-0 top-[84px] border-2 border-ledger bg-paper px-4 py-2 text-ledger"
         style={{ opacity: stampOpacity, scale: stampScale, rotate: -2 }}
