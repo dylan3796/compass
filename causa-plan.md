@@ -199,6 +199,13 @@ Where these conflict with anything above, these win:
 9. **Less wordy everywhere.** Impressive and vision-conveying beats exhaustive; body copy cut roughly 40% from the first build.
 10. **Wordmark** carries a printed ledger-header treatment (serif, tight tracking, fine double rule) in nav, footer, favicon, OG.
 
+## ADDENDUM 3 — Second wave, the join as moat, upmarket-first (July 2026)
+
+1. **Second-wave positioning.** Agent adoption is a power law (Ramp AI Index: median ~$2.2K/mo vs. top 1% at hundreds of times that per employee). The landing states the timing thesis under the stakes: the record should exist before the second wave arrives.
+2. **Public why-now facts live in `lib/data.ts` (`market`)** with sources — Fin's $0.99/resolution, the ~$3.6B Salesforce acquisition, Ramp medians. External facts stay as disciplined as ledger numbers.
+3. **The join is the sauce.** How-it-works step 2 owns it explicitly (join keys hide in tool calls, hybrid work splits credit, joinability reported before payment). CAUSA.md §6.2 carries the full argument: why everyone adjacent stops where the join begins, and the three best-not-first measures (coverage rate, replay credit, compounding graded evidence).
+4. **Upmarket-first, downmarket-ready.** ICP re-sequenced to the top decile of spenders including enterprises on six-figure agent contracts; the manager door stays as the second-wave path. The sell-side strip says "enterprise buyers" again.
+
 ## PART 8 — DEFINITION OF DONE
 
 1. `npm run build` clean; data assertions pass; deploys to Vercel; light mode only.

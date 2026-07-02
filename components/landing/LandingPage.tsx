@@ -4,7 +4,15 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
 import { Reveal, Stamp } from "@/components/motion";
-import { company, fmt, gradeDescriptions, headers, impactSplit, workflows } from "@/lib/data";
+import {
+  company,
+  fmt,
+  gradeDescriptions,
+  headers,
+  impactSplit,
+  market,
+  workflows,
+} from "@/lib/data";
 import type { Grade } from "@/lib/data";
 import { OriginBadge, VerdictStamp } from "@/components/chips";
 import FleetTable from "./FleetTable";
@@ -126,6 +134,14 @@ export default function LandingPage() {
             </div>
           ))}
           <div className="rule border-t" />
+          <p className="max-w-3xl py-4 font-mono text-xs leading-relaxed text-ink/60">
+            The market&rsquo;s biggest support agent bills{" "}
+            {fmt.usd(market.finPerResolution, 2)} a resolution — and just sold for $
+            {market.finAcquisitionBn}B. Meanwhile the median company still spends{" "}
+            {fmt.usd(market.medianMonthlyAiSpend)}/mo on AI while the top 1% runs hundreds of
+            times that. The second wave hasn&rsquo;t arrived. The record should exist before it
+            does.
+          </p>
         </section>
 
         {/* §3 The two buyers — one ledger, read at two altitudes */}
@@ -210,7 +226,7 @@ export default function LandingPage() {
               ],
               [
                 "Causa matches every outcome to whatever did the work.",
-                "Agent, model, or person — each claimed result checked against the record.",
+                "Agent, model, or person — each claimed result checked against the record. This is the hard part, and it's ours: join keys hide in tool calls, hybrid work splits credit, and Causa reports exactly what's joinable before you pay.",
               ],
               [
                 "Every month: a statement that ends in decisions.",
@@ -325,8 +341,8 @@ export default function LandingPage() {
         <section className="bg-ink py-10 text-paper">
           <div className="mx-auto max-w-6xl px-4">
             <p className="max-w-3xl font-serif text-xl sm:text-2xl">
-              Agent vendors: your buyers are going to ask who verified your outcomes. Get Causa
-              Verified before they do.
+              Agent vendors: enterprise buyers are going to ask who verified your outcomes. Get
+              Causa Verified before they do.
             </p>
           </div>
         </section>

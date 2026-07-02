@@ -366,6 +366,20 @@ export const gradeDescriptions: Record<Grade, { name: string; line: string }> = 
   },
 };
 
+/**
+ * Public market facts cited on the landing page (not Meridian ledger data).
+ * Sources: Intercom/Fin public pricing ($0.99/resolution); Salesforce's ~$3.6B
+ * acquisition of Fin (June 2026); Ramp AI Index (April & June 2026, 70,000+
+ * businesses): median monthly company AI spend $2,246 vs. top-1% firms at
+ * ~$7,450 per employee per month.
+ */
+export const market = {
+  finPerResolution: 0.99,
+  finAcquisitionBn: 3.6,
+  medianMonthlyAiSpend: 2246,
+  top1PctPerEmployeeMonthly: 7450,
+} as const;
+
 /** Verdict impact split: recovered now vs. additional if EXPAND is acted on. */
 export const impactSplit = {
   recovered: workflows
