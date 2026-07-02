@@ -1,53 +1,36 @@
-# compass-cli
+# Causa
 
-> **Also in this repo:** [`compass/`](compass/README.md) — Compass, the agent
-> ROI observability product (landing page + internal Streamlit dashboard with
-> the Veritas AI demo scenario).
+**The vendor shouldn't grade its own homework.**
 
-Scan your `~/.claude/` directory and generate a self-contained HTML report showing what your Claude Code agents shipped.
+Landing page + interactive demo for Causa — the independent verification and attribution layer for AI-agent outcomes. Causa doesn't report outcomes. It settles them.
 
-## What you get
+Two governing documents live at the repo root:
 
-- **Agents grouped by project** — collapsed across worktrees
-- **Tools observed** — built-in (Read, Edit, Bash, ...) and MCP servers
-- **Outcome attribution** — commits, pushes, files changed, tests passed, MCP actions
-- **Cost estimation** — tokens × model pricing
-- **Session summaries** — completion status, outcome chips, last assistant text
+- [`CAUSA.md`](CAUSA.md) — Vision & Product Doctrine (the substance)
+- [`causa-plan.md`](causa-plan.md) — the build spec this app implements (the expression)
 
-## Install
+## Stack
 
-```bash
-npm install -g compass-cli
-```
+Next.js (App Router) · TypeScript · Tailwind · Framer Motion. Light mode only. Deploys to Vercel as-is.
 
-Or run directly:
+## Develop
 
 ```bash
-npx compass-cli scan
+npm install
+npm run dev     # http://localhost:3000  (landing) · /demo (interactive demo)
+npm run build   # production build — data assertions in lib/data.ts run here and fail the build if the ledger doesn't reconcile
 ```
 
-## Usage
+## Environment variables
 
-```bash
-compass-cli scan                    # generates compass-report.html and opens it
-compass-cli scan --out report.html  # custom output path
-```
+| Variable | Purpose |
+|---|---|
+| `NEXT_PUBLIC_FORMSPREE_ENDPOINT` | Formspree form endpoint (e.g. `https://formspree.io/f/xxxxxxxx`). The *Get statement* lead-capture form POSTs here so leads land in a real inbox. If unset, the form shows an inline configuration error rather than silently no-oping. |
 
-The report opens automatically in your default browser. Runs in ~2 seconds.
+Set it in `.env.local` for development and in the Vercel project settings for production.
 
-## How it works
+Placeholders to update before launch: the footer contact email (`hello@causa.co` in `components/landing/LandingPage.tsx`) and the production domain in `metadataBase` (`app/layout.tsx`).
 
-1. **Scanner** walks `~/.claude/projects/`, `settings.json`, sessions, and subagent transcripts
-2. **Classifier** groups projects by working directory, extracts tool/model/token metadata
-3. **Attributor** parses transcript JSONL for `git commit`, `git push`, `Write`/`Edit` targets, test runner output, and MCP tool calls
-4. **Pricer** estimates USD cost from token counts × model pricing (editable in `src/pricing/models.json`)
-5. **Renderer** emits one self-contained HTML file — inline CSS, no JavaScript, no external requests
+## Data
 
-## Requirements
-
-- Node.js 18+
-- `~/.claude/` directory (created by Claude Code)
-
-## Local-only
-
-No data leaves your machine. No server, no upload, no auth. Everything runs locally against your filesystem.
+Every number on every screen traces to `lib/data.ts` (Meridian, June 2026 — fictional sample data, per Part 7 of the spec). The module throws at build time if any row violates claimed ≥ verified ≥ attributable, any column stops summing to its header, or the verdict impacts stop totaling $7,350.

@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light only;
+  }
+
+  html {
+    background-color: #faf8f4;
+    color: #101010;
+    font-variant-numeric: tabular-nums;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+  }
+
+  ::selection {
+    background: rgba(16, 16, 16, 0.9);
+    color: #faf8f4;
+  }
+
+  :focus-visible {
+    outline: 2px solid #101010;
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Decorative rules only — never text. */
+  .rule {
+    @apply border-t border-hairline;
+  }
+
+  .btn {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 px-5 py-2.5 text-[15px] font-medium;
+  }
+
+  .btn-ink {
+    @apply btn bg-ink text-paper transition-opacity hover:opacity-85;
+  }
+
+  .btn-outline {
+    @apply btn border border-ink text-ink transition-colors hover:bg-ink hover:text-paper;
+  }
+
+  .eyebrow {
+    @apply font-mono text-[11px] uppercase tracking-[0.18em] sm:text-xs;
+  }
+}
