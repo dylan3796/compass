@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import {
-  connect,
+  activityRuns,
   discoveredOutcomes,
   fmt,
   recordSystemForWorkflow,
@@ -45,17 +45,22 @@ export default function Screen2Connect() {
       ? 0
       : Object.values(recordSystemForWorkflow).filter((sys) => connected.has(sys)).length;
 
+  // Only the connected activity sources' runs count as ingested.
+  const runsIngested = sources
+    .filter((s) => s.kind === "activity" && connected.has(s.name))
+    .reduce((acc, s) => acc + (activityRuns[s.name as keyof typeof activityRuns] ?? 0), 0);
+
   const meterLine = useMemo(() => {
     if (activityCount === 0 && outcomeCount === 0)
       return "Connect one activity source and one system of record to begin.";
     if (activityCount > 0 && outcomeCount === 0)
-      return `${fmt.int(connect.runs)} runs ingested. Connect a system of record — outcomes live where work lands.`;
+      return `${fmt.int(runsIngested)} runs ingested. Connect a system of record — outcomes live where work lands.`;
     if (activityCount === 0 && outcomeCount > 0)
       return `Outcome events found in ${outcomeCount} ${outcomeCount === 1 ? "system" : "systems"}. Connect an activity source to join work to result.`;
     if (verifiable < 4)
       return `${verifiable} of 4 workflows verifiable · Evidence ceiling: Grade C. Add rollout history for Grade B.`;
     return "4 of 4 workflows verifiable · Evidence ceiling: Grade B. Reserve a holdout for Grade A — support already runs one.";
-  }, [activityCount, outcomeCount, verifiable]);
+  }, [activityCount, outcomeCount, verifiable, runsIngested]);
 
   const visibleDiscoveries = useMemo(
     () =>

@@ -187,9 +187,10 @@ export default function Screen3Statement({
                           <span className="text-ink/60">—</span>
                         )}
                       </td>
+                      {/* Verdict red fails AA below stamp scale; weight carries the cue. */}
                       <td
                         className={`py-3 pl-3 pr-4 text-right ${
-                          w.deltaVsMay > 0 ? "text-verdict" : "text-ink/70"
+                          w.deltaVsMay > 0 ? "font-semibold text-ink" : "text-ink/70"
                         }`}
                       >
                         {w.deltaVsMay >= 0 ? "+" : "−"}
