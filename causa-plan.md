@@ -214,6 +214,15 @@ Arc: **Hero** (value H1 + funnel) → **§2 The problem, told at ground level** 
 
 The people's resolutions live inside the pillars (CFO → the read; support manager and sales director → the refinery). Doctrine §4.5 (the intelligence) covers the ask-the-record and market-signal features.
 
+## ADDENDUM 5 — The workbench: a use-your-data demo (July 2026)
+
+The product must prove the join, not narrate it. `/workbench` runs Causa's join engine on the visitor's own exports, entirely in the browser (no row leaves the tab — stated on the page and true).
+
+- **Input spec** (documented on the page): (1) agent activity CSV — one row per run with the entity ID it touched, plus optional agent/model/cost columns; (2) outcomes CSV from the system of record — same ID, event, status column for the quality bar; (3) the shared ID column is the join key. Databricks path: serving inference tables or MLflow trace exports; request_id/conversation_id as the key.
+- **Engine** (`lib/workbench.ts`, deterministic throughout): RFC-4180 CSV parse, column auto-guessing, key join, claimed → verified → joined funnel (grade D — rules, labeled as such), join-coverage and key-coverage rates, cost per verified & joined outcome by agent and by model, and five rule-based recommendations (improve join key · reroute candidate · unverified activity · baseline slice · quality-bar adjustment). Sample files in `public/samples/` exercise every rule; "Load sample files" runs the whole engine in one click.
+- **Demo intelligence**: Screen 3 gains "Ask the record" (three sample questions whose answers compute from the ledger, labeled — nothing generated beyond it); Screen 4 gains the July cadence strip (statement drafts automatically, recommendations queued, adjustment files to accounting) — the statement is a subscription, not a report.
+- Links: landing hero ("Run your own files →") and demo Screen 2 footnote point at the workbench.
+
 ## PART 8 — DEFINITION OF DONE
 
 1. `npm run build` clean; data assertions pass; deploys to Vercel; light mode only.

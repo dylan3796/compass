@@ -77,6 +77,12 @@ export default function LandingPage() {
             >
               See the demo →
             </Link>
+            <Link
+              href="/workbench"
+              className="flex min-h-[44px] items-center text-[15px] underline-offset-4 hover:underline"
+            >
+              Run your own files →
+            </Link>
           </div>
 
           <SettlementFunnel />
