@@ -162,10 +162,13 @@ export function runWorkbench(
     else byKey.set(k, [i]);
   });
 
+  // No status column mapped = nothing to gate on, everything counts.
+  // A status column IS mapped but zero values are marked passing = nothing
+  // verifies yet, not everything — an empty passValues set must never be
+  // read as "no filter," or a quality bar the customer explicitly chose
+  // silently stops gating anything.
   const passes = (r: string[]) =>
-    cfg.statusCol === -1 || cfg.passValues.size === 0
-      ? true
-      : cfg.passValues.has((r[cfg.statusCol] ?? "").trim());
+    cfg.statusCol === -1 ? true : cfg.passValues.has((r[cfg.statusCol] ?? "").trim());
 
   const claimed = outcomes.rows.length;
   let verified = 0;

@@ -38,6 +38,18 @@ function looksLikePass(value: string) {
   return PASS_HINTS.some((h) => v.includes(h)) && !v.includes("reopen") && !v.includes("un");
 }
 
+/**
+ * A status column with no value matching our hints (e.g. "pass"/"fail") must
+ * not default to an empty pass set — the engine now (correctly) reads that
+ * as "nothing verifies," which would greet the customer with a wall of
+ * failures on first load. Fail open to "everything passes" instead, and let
+ * the visible checkboxes invite them to narrow it down.
+ */
+function guessPassValues(vals: { value: string; count: number }[]): Set<string> {
+  const guessed = vals.filter((v) => looksLikePass(v.value)).map((v) => v.value);
+  return new Set(guessed.length > 0 ? guessed : vals.map((v) => v.value));
+}
+
 const fmtUsd = (n: number, d = 2) =>
   "$" + n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
 const fmtInt = (n: number) => n.toLocaleString("en-US");
@@ -158,7 +170,7 @@ export default function Workbench() {
     setStatusCol(status);
     if (status !== -1) {
       const vals = distinctValues(f.csv, status);
-      setPassValues(new Set(vals.filter((v) => looksLikePass(v.value)).map((v) => v.value)));
+      setPassValues(guessPassValues(vals));
     } else {
       setPassValues(new Set());
     }
@@ -311,10 +323,7 @@ export default function Workbench() {
                 onChange={(i) => {
                   setStatusCol(i);
                   if (outcomes && i !== -1) {
-                    const vals = distinctValues(outcomes.csv, i);
-                    setPassValues(
-                      new Set(vals.filter((v) => looksLikePass(v.value)).map((v) => v.value))
-                    );
+                    setPassValues(guessPassValues(distinctValues(outcomes.csv, i)));
                   }
                 }}
                 allowNone
