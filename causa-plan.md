@@ -206,6 +206,23 @@ Where these conflict with anything above, these win:
 3. **The join is the sauce.** How-it-works step 2 owns it explicitly (join keys hide in tool calls, hybrid work splits credit, joinability reported before payment). CAUSA.md §6.2 carries the full argument: why everyone adjacent stops where the join begins, and the three best-not-first measures (coverage rate, replay credit, compounding graded evidence).
 4. **Upmarket-first, downmarket-ready.** ICP re-sequenced to the top decile of spenders including enterprises on six-figure agent contracts; the manager door stays as the second-wave path. The sell-side strip says "enterprise buyers" again.
 
+## ADDENDUM 4 — Landing page, not product page (July 2026)
+
+The landing runs a story arc, not a feature tour. The demo carries the product; the landing carries the problem, the claim, and the value.
+
+Arc: **Hero** (value H1 + funnel) → **§2 The problem, told at ground level** (the four Meridian people from CAUSA.md §2 — everyone suspects, nobody knows) → **§3 The claim** (self-reported invoices; the maker can't be the referee; Causa is the record — plus the second-wave market note) → **§4 The four pillars** (01 One place: every agent, one ledger · 02 The read: the Agent P&L · 03 The refinery: next best action per agent — retune, reroute, clone, cut — with stamped specimens · 04 The intelligence: a record you can ask, learning recommendations, market signals from the Benchmark) → **§5 Run it on your spend** (interactive calculator at the specimen's verdict rate, honestly labeled) → **§6 How it works** (3 steps + what-lands-where index + tiers) → **§7 Proof discipline** (grades compressed to a strip; fleet table retired from the landing — it lives in the demo).
+
+The people's resolutions live inside the pillars (CFO → the read; support manager and sales director → the refinery). Doctrine §4.5 (the intelligence) covers the ask-the-record and market-signal features.
+
+## ADDENDUM 5 — The workbench: a use-your-data demo (July 2026)
+
+The product must prove the join, not narrate it. `/workbench` runs Causa's join engine on the visitor's own exports, entirely in the browser (no row leaves the tab — stated on the page and true).
+
+- **Input spec** (documented on the page): (1) agent activity CSV — one row per run with the entity ID it touched, plus optional agent/model/cost columns; (2) outcomes CSV from the system of record — same ID, event, status column for the quality bar; (3) the shared ID column is the join key. Databricks path: serving inference tables or MLflow trace exports; request_id/conversation_id as the key.
+- **Engine** (`lib/workbench.ts`, deterministic throughout): RFC-4180 CSV parse, column auto-guessing, key join, claimed → verified → joined funnel (grade D — rules, labeled as such), join-coverage and key-coverage rates, cost per verified & joined outcome by agent and by model, and five rule-based recommendations (improve join key · reroute candidate · unverified activity · baseline slice · quality-bar adjustment). Sample files in `public/samples/` exercise every rule; "Load sample files" runs the whole engine in one click.
+- **Demo intelligence**: Screen 3 gains "Ask the record" (three sample questions whose answers compute from the ledger, labeled — nothing generated beyond it); Screen 4 gains the July cadence strip (statement drafts automatically, recommendations queued, adjustment files to accounting) — the statement is a subscription, not a report.
+- Links: landing hero ("Run your own files →") and demo Screen 2 footnote point at the workbench.
+
 ## PART 8 — DEFINITION OF DONE
 
 1. `npm run build` clean; data assertions pass; deploys to Vercel; light mode only.

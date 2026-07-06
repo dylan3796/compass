@@ -258,7 +258,10 @@ export default function Screen2Connect() {
           </p>
         )}
         <p className="rule mt-4 border-t pt-3 text-sm text-ink/60">
-          No SDK. No proxy. Statement ready in 7 days from first sync.
+          No SDK. No proxy. Statement ready in 7 days from first sync. Have exports already?{" "}
+          <a href="/workbench" className="underline underline-offset-4">
+            Run them in the workbench →
+          </a>
         </p>
       </Reveal>
     </div>

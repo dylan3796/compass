@@ -15,6 +15,52 @@ import { CountUp, Reveal, Stamp } from "@/components/motion";
 
 export type Persona = "CFO" | "Team";
 
+const QUESTIONS: { q: string; a: string }[] = [
+  {
+    q: "Why is a meeting $9.24?",
+    a: "472 meetings booked; 314 became opportunities within 14 days; only 118 beat the counterfactual. $2,900 spend ÷ 314 verified = $9.24 — and only the assisted slice is beating the baseline. That's what the RETIRE verdict prices.",
+  },
+  {
+    q: "Why did support get cheaper in June?",
+    a: "Cost per verified resolution fell $0.06 vs. May: the claude-fable-5 slice ($1.19 marginal) carried more of the volume than gpt-5 ($1.31). Verified volume held at 2,802.",
+  },
+  {
+    q: "What should the notes agent stop doing?",
+    a: "Sending every meeting to claude-fable-5. The qwen-3 pilot slice holds the same 94% acceptance at $1.21 vs. $3.10 — reroute standard meetings, keep exec meetings premium. ≈ $1,077/mo.",
+  },
+];
+
+function AskTheRecord() {
+  const [active, setActive] = useState<number | null>(null);
+  return (
+    <div>
+      <p className="eyebrow text-ink/60">Ask the record</p>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {QUESTIONS.map((item, i) => (
+          <button
+            key={item.q}
+            onClick={() => setActive(active === i ? null : i)}
+            aria-expanded={active === i}
+            className={`min-h-[44px] border px-3 py-1.5 text-left font-mono text-xs transition-colors ${
+              active === i ? "border-ink bg-white/60" : "border-hairline hover:border-ink/60"
+            }`}
+          >
+            &ldquo;{item.q}&rdquo;
+          </button>
+        ))}
+      </div>
+      {active !== null && (
+        <p className="mt-3 max-w-3xl text-sm leading-relaxed text-ink/80">
+          {QUESTIONS[active].a}
+        </p>
+      )}
+      <p className="mt-2 font-mono text-[10px] text-ink/60">
+        Sample questions — every answer computes from the ledger, nothing generated beyond it.
+      </p>
+    </div>
+  );
+}
+
 function FunnelStage({
   label,
   value,
@@ -93,6 +139,11 @@ export default function Screen3Statement({
           {fmt.usd(impactSplit.recovered)} recovered by repricing, rerouting, and retiring ·{" "}
           {fmt.usd(impactSplit.expandable)} more if the account agent is cloned
         </p>
+      </div>
+
+      {/* Ask the record — sample questions, answers computed from the ledger */}
+      <div className="rule mt-6 border-y py-4">
+        <AskTheRecord />
       </div>
 
       {/* Persona toggle */}

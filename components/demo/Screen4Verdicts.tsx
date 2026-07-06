@@ -203,6 +203,19 @@ export default function Screen4Verdicts() {
         ))}
       </div>
 
+      {/* The cadence — a statement is a subscription, not a report */}
+      <div className="rule mt-8 border-y py-4">
+        <p className="eyebrow text-ink/60">July — already in motion</p>
+        <div className="mt-2 grid gap-2 text-sm text-ink/80 sm:grid-cols-3">
+          <p>Statement drafts automatically on the 3rd.</p>
+          <p>
+            Two recommendations queued: retune the notes agent&rsquo;s meeting filter ·
+            re-verify the reroute.
+          </p>
+          <p>The $91.50 adjustment files to accounting.</p>
+        </div>
+      </div>
+
       {/* Benchmark teaser — one card only */}
       <Reveal className="mt-8 border border-dashed border-ink/60 p-5">
         <p className="eyebrow text-ink/60">Causa Benchmark — locked</p>
