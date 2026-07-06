@@ -35,8 +35,8 @@ export default function SpendCalculator({ onGetStatement }: { onGetStatement: ()
         {fmt.usd(verdicts)}/mo in verdicts.
       </p>
       <p className="mt-2 max-w-xl text-sm text-ink/70">
-        At Meridian&rsquo;s rate — {Math.round(RATE * 100)}% of spend, one fictional specimen,
-        not a promise. Your statement computes yours.
+        Meridian&rsquo;s verdict rate — {Math.round(RATE * 100)}% of spend — applied to yours.
+        Your statement computes the real number.
       </p>
       <button className="btn-ink mt-5" onClick={onGetStatement}>
         Get statement

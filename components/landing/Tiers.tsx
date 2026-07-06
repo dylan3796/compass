@@ -32,7 +32,7 @@ export default function Tiers() {
         &ldquo;Two exports and a join key.&rdquo; — start with no integration, go live one
         workflow at a time
       </p>
-      {/* Desktop: stepped diagram, click to expand */}
+      {/* Desktop: three ruled columns, click to expand */}
       <div className="hidden gap-4 md:grid md:grid-cols-3">
         {TIERS.map((t, i) => {
           const open = active === i;
@@ -44,10 +44,9 @@ export default function Tiers() {
               className={`flex flex-col border p-5 text-left transition-colors ${
                 open ? "border-ink bg-white/50" : "border-hairline hover:border-ink/60"
               }`}
-              style={{ marginTop: `${i * 28}px` }}
             >
-              <span className={`font-serif text-5xl ${open ? "" : "text-ink/60"}`}>{i}</span>
-              <span className="rule mt-2 border-t pt-2 font-serif text-xl">
+              <span className={`eyebrow ${open ? "text-ink" : "text-ink/50"}`}>Tier {i}</span>
+              <span className="rule mt-2 border-t pt-2 font-serif text-2xl">
                 {t.name.replace(/^Tier \d — /, "")}
               </span>
               <span className="mt-1 text-sm text-ink/60">{t.summary}</span>

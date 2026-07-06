@@ -5,20 +5,20 @@ import Link from "next/link";
 import { useState } from "react";
 import { Reveal, Stamp } from "@/components/motion";
 import {
+  benchmarkTeaser,
   company,
   fmt,
   gradeDescriptions,
   headers,
-  impactSplit,
-  market,
   workflows,
 } from "@/lib/data";
 import type { Grade } from "@/lib/data";
 import { OriginBadge, VerdictStamp } from "@/components/chips";
 import LeadCapture from "./LeadCapture";
+import SiteFooter from "./SiteFooter";
+import SiteNav from "./SiteNav";
 import SpendCalculator from "./SpendCalculator";
 import Tiers from "./Tiers";
-import { benchmarkTeaser } from "@/lib/data";
 
 // Hero animation code-split; static fallback keeps LCP light.
 const SettlementFunnel = dynamic(() => import("./SettlementFunnel"), {
@@ -33,21 +33,7 @@ export default function LandingPage() {
 
   return (
     <div className="bg-paper">
-      {/* Nav */}
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5">
-        <p className="wordmark text-3xl">Causa.</p>
-        <nav className="flex items-center gap-3 sm:gap-5">
-          <Link
-            href="/demo"
-            className="flex min-h-[44px] items-center text-[15px] underline-offset-4 hover:underline"
-          >
-            See the demo
-          </Link>
-          <button className="btn-ink" onClick={() => setLeadOpen(true)}>
-            Get statement
-          </button>
-        </nav>
-      </header>
+      <SiteNav onGetStatement={() => setLeadOpen(true)} />
 
       <main>
         {/* §1 Hero */}
@@ -62,10 +48,9 @@ export default function LandingPage() {
             Know what your agents actually delivered.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink/80">
-            Agents answer your tickets, book your meetings, turn your meeting notes into Jira
-            tickets — and every result is self-reported. Causa checks each claimed outcome where
-            it lands, prices what was real, and tells you what to do next. First statement in 7
-            days.
+            Tickets closed, meetings booked, accounts provisioned — Causa checks every claim
+            where it lands, prices what was real, and drafts the next move. First statement in
+            7 days.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <button className="btn-ink" onClick={() => setLeadOpen(true)}>
@@ -77,12 +62,6 @@ export default function LandingPage() {
             >
               See the demo →
             </Link>
-            <Link
-              href="/workbench"
-              className="flex min-h-[44px] items-center text-[15px] underline-offset-4 hover:underline"
-            >
-              Run your own files →
-            </Link>
           </div>
 
           <SettlementFunnel />
@@ -93,19 +72,19 @@ export default function LandingPage() {
             spend.
           </p>
           <p className="mt-2 max-w-2xl font-mono text-xs leading-relaxed text-ink/60">
-            {fmt.usd(impactSplit.recovered)} recovered by repricing, rerouting, and retiring ·{" "}
-            {fmt.usd(impactSplit.expandable)} more if the account agent is cloned. Meridian is a
-            fictional {company.headcount}-person specimen — and the build fails if this math
-            stops reconciling.{" "}
-            <Link href="/demo" className="underline underline-offset-4">
-              See the statement →
+            Meridian, June 2026 — the specimen statement behind every number on this page.{" "}
+            <Link href="/demo" className="whitespace-nowrap underline underline-offset-4">
+              See it in full →
+            </Link>{" "}
+            ·{" "}
+            <Link href="/workbench" className="whitespace-nowrap underline underline-offset-4">
+              Run your own files →
             </Link>
           </p>
-
         </section>
 
         {/* §2 The problem, told at ground level */}
-        <section className="mx-auto max-w-6xl px-4 py-24">
+        <section className="mx-auto max-w-6xl px-4 py-20">
           <p className="eyebrow text-ink/60">
             Meridian — {company.headcount} people, a year into agents
           </p>
@@ -117,19 +96,19 @@ export default function LandingPage() {
               [
                 [
                   "Support manager",
-                  "The vendor's dashboard says 3,214 tickets resolved. Her gut says a chunk came back within the week. There's no came-back-angry column — so she pays the invoice.",
+                  "The vendor billed 3,214 resolutions. Reopens don't show on its dashboard, and she has no count of her own. She pays.",
                 ],
                 [
                   "IT lead",
-                  "His team's agent sets up every new hire's accounts. Nobody can say what it saves, so at budget time it's a line item with a shrug — and his ask for two more agents dies in review.",
+                  "His onboarding agent works — he's almost sure. No number for what it saves, so his ask for two more dies in review.",
                 ],
                 [
                   "Sales director",
-                  "The meeting-booker books meetings. Her reps swear the pipeline was already theirs. Nobody can prove it either way, so the argument repeats every month.",
+                  "The SDR agent bills for meetings her reps say were already coming. Nobody can prove it either way. The fight repeats monthly.",
                 ],
                 [
                   "CFO",
-                  "One line item, up and to the right. She can price a salesperson, a contractor, a seat. The agent workforce — nobody can.",
+                  "Agent spend: one line, up and to the right. She can price a rep, a contractor, a seat. Not this.",
                 ],
               ] as const
             ).map(([role, line]) => (
@@ -141,36 +120,33 @@ export default function LandingPage() {
             <div className="rule border-t" />
           </div>
           <p className="mt-8 max-w-3xl font-serif text-2xl leading-snug sm:text-3xl">
-            Four people, four versions of the same missing thing: an independent record of what
-            the agents actually delivered.
+            Four people, one missing thing: an independent record of what the agents actually
+            delivered.
           </p>
         </section>
 
         {/* §3 The claim */}
-        <section className="mx-auto max-w-6xl px-4 py-24">
+        <section className="mx-auto max-w-6xl px-4 py-20">
           {[
-            "Every outcome invoice is self-reported. And the agent's maker can't be the agent's referee.",
-            "Causa is that record — the system of record for what your AI workforce actually delivers. Payer-funded, permanently.",
+            "Every outcome invoice is self-reported. The agent's maker can't be its referee.",
+            "Causa is that record — what your AI workforce actually delivered, priced and settled. Payer-funded, permanently.",
           ].map((line) => (
             <div key={line} className="rule border-t py-6">
               <p className="max-w-4xl font-serif text-2xl sm:text-3xl">{line}</p>
             </div>
           ))}
           <div className="rule border-t" />
-          <p className="max-w-3xl py-4 font-mono text-xs leading-relaxed text-ink/60">
-            The market&rsquo;s biggest support agent bills{" "}
-            {fmt.usd(market.finPerResolution, 2)} a resolution — and just sold for $
-            {market.finAcquisitionBn}B. Meanwhile the median company still spends{" "}
-            {fmt.usd(market.medianMonthlyAiSpend)}/mo on AI while the top 1% runs hundreds of
-            times that. The second wave hasn&rsquo;t arrived. The record should exist before it
-            does.
+          <p className="py-4 text-[15px] text-ink/70">
+            <Link href="/company" className="underline underline-offset-4 hover:text-ink">
+              Why this layer has to exist →
+            </Link>
           </p>
         </section>
 
         {/* §4 The four pillars — what the record gives you */}
-        <section className="mx-auto max-w-6xl px-4 py-24">
+        <section className="mx-auto max-w-6xl px-4 py-20">
           <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">
-            One record. Four things it does.
+            One record. Four jobs.
           </h2>
           <div className="mt-10">
             {/* Pillar 1 — one place */}
@@ -181,9 +157,8 @@ export default function LandingPage() {
               </div>
               <div>
                 <p className="max-w-2xl text-[15px] leading-relaxed text-ink/80">
-                  Built in-house, bought from a vendor, or hybrid — every agent&rsquo;s claimed
-                  outcomes land in the same record, held to the same bar, with every activity
-                  captured and every run attributed to its model.
+                  Built in-house, bought from a vendor, or hybrid — every claimed outcome lands
+                  in one record, held to one bar, every run attributed to its model.
                 </p>
                 <p className="mt-4 flex flex-wrap items-center gap-2 text-sm text-ink/70">
                   <OriginBadge origin="BUILT" />
@@ -205,9 +180,8 @@ export default function LandingPage() {
               </div>
               <div>
                 <p className="max-w-2xl text-[15px] leading-relaxed text-ink/80">
-                  Outcomes on one side, what the agents cost on the other — by agent, by vendor,
-                  by model. Invoice-grade, export-ready, and finally in the same language as
-                  every other line item.
+                  Outcomes on one side, cost on the other — by agent, by vendor, by model.
+                  Export-ready, in the same language as every other line item.
                 </p>
                 <dl className="mt-4 max-w-md">
                   {(
@@ -233,14 +207,12 @@ export default function LandingPage() {
             <Reveal className="rule grid gap-4 border-t py-8 md:grid-cols-[minmax(0,20rem)_1fr] md:gap-10">
               <div>
                 <p className="eyebrow text-ink/60">03 · The refinery</p>
-                <h3 className="mt-1 font-serif text-3xl">Refined, agent by agent.</h3>
+                <h3 className="mt-1 font-serif text-3xl">Every statement ends in a move.</h3>
               </div>
               <div>
                 <p className="max-w-2xl text-[15px] leading-relaxed text-ink/80">
-                  Every statement ends in the next best action per agent: retune its
-                  instructions, reroute it to a cheaper model, clone what works into the next
-                  workflow, cut what isn&rsquo;t beating its baseline — with the artifact
-                  drafted.
+                  Retune the instructions, reroute to a cheaper model, clone what works, cut
+                  what isn&rsquo;t beating its baseline — per agent, artifact drafted.
                 </p>
                 <div className="mt-4 space-y-3">
                   {(
@@ -274,8 +246,8 @@ export default function LandingPage() {
               <div>
                 <p className="max-w-2xl text-[15px] leading-relaxed text-ink/80">
                   Every activity captured means every question answerable — and the record
-                  learns. Causa surfaces outcomes you weren&rsquo;t measuring, recommends where
-                  to point agents next, and reads your fleet against the market.
+                  learns: outcomes you weren&rsquo;t measuring, where to point agents next,
+                  your fleet read against the market.
                 </p>
                 <p className="mt-4 font-mono text-xs leading-relaxed text-ink/70">
                   &ldquo;Why did support cost more in June?&rdquo; · &ldquo;Which runs touched
@@ -299,7 +271,7 @@ export default function LandingPage() {
         </section>
 
         {/* §5 Run it on your spend */}
-        <section className="mx-auto max-w-6xl px-4 py-24">
+        <section className="mx-auto max-w-6xl px-4 py-20">
           <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">Run it on your spend.</h2>
           <div className="mt-8 max-w-2xl">
             <SpendCalculator onGetStatement={() => setLeadOpen(true)} />
@@ -307,7 +279,7 @@ export default function LandingPage() {
         </section>
 
         {/* §6 How it works */}
-        <section className="mx-auto max-w-6xl px-4 py-24">
+        <section className="mx-auto max-w-6xl px-4 py-20">
           <Reveal>
             <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">How it works</h2>
           </Reveal>
@@ -319,7 +291,7 @@ export default function LandingPage() {
               ],
               [
                 "Causa matches every outcome to whatever did the work.",
-                "Agent, model, or person — each claimed result checked against the record. This is the hard part, and it's ours: join keys hide in tool calls, hybrid work splits credit, and Causa reports exactly what's joinable before you pay.",
+                "Agent, model, or person — each claim checked against the record. The join is the hard part, and it's ours: keys hide in tool calls, hybrid work splits credit. What's joinable is reported before you pay.",
               ],
               [
                 "Every month: a statement that ends in decisions.",
@@ -327,7 +299,7 @@ export default function LandingPage() {
               ],
             ].map(([head, body], i) => (
               <Reveal key={head} delay={i * 0.05} className="rule flex gap-5 border-t py-5">
-                <span className="font-serif text-4xl text-ink/60">{i + 1}</span>
+                <span className="eyebrow pt-2 text-ink/50">0{i + 1}</span>
                 <div>
                   <h3 className="font-serif text-2xl">{head}</h3>
                   <p className="mt-1 text-[15px] text-ink/70">{body}</p>
@@ -367,7 +339,7 @@ export default function LandingPage() {
         </section>
 
         {/* §7 Proof discipline — compressed */}
-        <section className="mx-auto max-w-6xl px-4 py-24">
+        <section className="mx-auto max-w-6xl px-4 py-20">
           <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">
             Not all proof is equal. We grade ours.
           </h2>
@@ -393,108 +365,29 @@ export default function LandingPage() {
           </p>
         </section>
 
-        {/* §7 The vision ladder */}
-        <section className="rule border-y py-24">
-          <div className="mx-auto max-w-6xl px-4">
-            <Reveal>
-              <h2 className="font-serif text-5xl sm:text-7xl">Meter</h2>
-              <p className="mt-2 max-w-xl text-[15px] text-ink/70">
-                Verify. Every claimed outcome checked where it lands, then asked: would it have
-                happened anyway?
-              </p>
-            </Reveal>
-            <Reveal className="mt-16">
-              <h2 className="font-serif text-5xl sm:text-7xl">Verdict</h2>
-              <p className="mt-2 max-w-xl text-[15px] text-ink/70">
-                Act. Every statement ends in a decision with the dollar impact attached — and
-                three of the five need no vendor conversation.
-              </p>
-              <p className="mt-3 font-mono text-xs tracking-wide text-ink/60">
-                REPRICE · REROUTE · RENEGOTIATE · RETIRE · EXPAND
-              </p>
-            </Reveal>
-            <Reveal className="mt-16">
-              <h2 className="font-serif text-5xl sm:text-7xl">Standard</h2>
-              <p className="mt-2 max-w-xl text-[15px] text-ink/70">
-                Every statement sharpens the Benchmark. &ldquo;Causa Verified&rdquo; is how
-                vendors will prove value — and how buyers will set price.
-              </p>
-            </Reveal>
-            <Reveal className="mt-16">
-              <p className="max-w-3xl font-serif text-2xl leading-snug sm:text-3xl">
-                Every economy that pays for results built a verification layer beside it —
-                audits, ratings, ad verification, payment networks. Machine labor is next.
-                Causa is that layer.
-              </p>
-            </Reveal>
-          </div>
-        </section>
-
-        {/* §8 Sell-side strip */}
-        <section className="bg-ink py-10 text-paper">
-          <div className="mx-auto max-w-6xl px-4">
-            <p className="max-w-3xl font-serif text-xl sm:text-2xl">
-              Agent vendors: enterprise buyers are going to ask who verified your outcomes. Get
-              Causa Verified before they do.
-            </p>
-          </div>
-        </section>
-
-        {/* §9 Founder block + final CTA */}
-        <section className="mx-auto max-w-6xl px-4 py-24">
-          <p className="max-w-3xl text-[15px] leading-relaxed text-ink/80">
-            Built by the operator who ran partner attribution at a $5B-ARR data company —
-            crediting logic, incentive design, and outcome measurement for the messiest actors
-            in B2B: humans. Agents are the easy part.
+        {/* §8 Final CTA */}
+        <section className="mx-auto max-w-6xl px-4 py-20">
+          <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">
+            First Verified Outcome Statement in 7 days.
+          </h2>
+          <p className="mt-3 max-w-2xl text-[15px] text-ink/70">
+            Pilot from $7.5K, credited against your first year. Two exports and a join key.
           </p>
-          <div className="mt-14">
-            <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">
-              First Verified Outcome Statement in 7 days.
-            </h2>
-            <p className="mt-3 max-w-2xl text-[15px] text-ink/70">
-              Pilot from $7.5K, credited against your first year. Two exports and a join key.
-            </p>
-            <div className="mt-6 flex flex-wrap items-center gap-4">
-              <button className="btn-ink" onClick={() => setLeadOpen(true)}>
-                Get statement
-              </button>
-              <Link
-                href="/demo"
-                className="flex min-h-[44px] items-center text-[15px] font-medium underline-offset-4 hover:underline"
-              >
-                See the demo →
-              </Link>
-            </div>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <button className="btn-ink" onClick={() => setLeadOpen(true)}>
+              Get statement
+            </button>
+            <Link
+              href="/demo"
+              className="flex min-h-[44px] items-center text-[15px] font-medium underline-offset-4 hover:underline"
+            >
+              See the demo →
+            </Link>
           </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="rule border-t py-10">
-        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 sm:flex-row sm:items-baseline sm:justify-between">
-          <p className="wordmark text-2xl">Causa.</p>
-          <div className="flex flex-col gap-2 text-sm sm:flex-row sm:gap-6">
-            <a
-              href="mailto:hello@causa.co"
-              className="flex min-h-[44px] items-center underline-offset-4 hover:underline sm:min-h-0"
-            >
-              hello@causa.co
-            </a>
-            <Link
-              href="/demo"
-              className="flex min-h-[44px] items-center underline-offset-4 hover:underline sm:min-h-0"
-            >
-              See the demo
-            </Link>
-          </div>
-        </div>
-        <div className="mx-auto max-w-6xl px-4">
-          <p className="mt-6 text-xs text-ink/60">
-            Causa provides operational outcome verification. Not accounting, audit, or assurance
-            services.
-          </p>
-        </div>
-      </footer>
+      <SiteFooter />
 
       {leadOpen && <LeadCapture onClose={() => setLeadOpen(false)} />}
     </div>

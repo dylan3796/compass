@@ -155,6 +155,14 @@ export function Stamp({
   rotate?: number;
 }) {
   const reduced = useReducedMotion();
+  // Never gate content on the observer: if whileInView hasn't fired shortly
+  // after mount (fast scrolls, static capture), force the resting state.
+  const [forced, setForced] = useState(false);
+  useEffect(() => {
+    if (trigger !== "view") return;
+    const t = window.setTimeout(() => setForced(true), 1800);
+    return () => window.clearTimeout(t);
+  }, [trigger]);
   const resting = { opacity: 1, scale: 1, rotate };
   if (reduced) {
     return (
@@ -175,7 +183,11 @@ export function Stamp({
       className={`inline-block will-change-transform ${className ?? ""}`}
       {...animation}
       {...(trigger === "view"
-        ? { whileInView: resting, viewport: { once: true, margin: "-20px" } }
+        ? {
+            whileInView: resting,
+            ...(forced ? { animate: resting } : {}),
+            viewport: { once: true, margin: "-20px" },
+          }
         : { animate: active ? resting : animation.initial })}
       onAnimationComplete={() => {}}
       style={{ transformOrigin: "center" }}
