@@ -109,11 +109,11 @@ export function buildMeridianLedgerJson(): MeridianLedgerJson {
     throw new EngineError("ledger", "Meridian statement is missing support dispute, model split, or meetings actor split");
   }
 
-  const boundary = s.discoveries.find((d) => d.kind === "qualityBarBoundary" && d.source === "zendesk");
-  const uncounted = s.discoveries.find((d) => d.kind === "qualityFailuresUncounted" && d.source === "jira");
-  const refunds = s.discoveries.find((d) => d.kind === "uncontractedJoinedEvents" && d.source === "stripe");
+  const boundary = s.candidates.find((c) => c.kind === "qualityBarBoundary" && c.source === "zendesk");
+  const uncounted = s.candidates.find((c) => c.kind === "unpricedQualityFailures" && c.source === "jira");
+  const refunds = s.candidates.find((c) => c.kind === "uncontractedOutcome" && c.source === "stripe");
   if (!boundary || boundary.pctOfVerified === undefined || !uncounted || !refunds) {
-    throw new EngineError("ledger", "expected discoveries (late reopens, uncounted rejections, refunds) not all found");
+    throw new EngineError("ledger", "expected candidates (late reopens, uncounted rejections, refunds) not all found");
   }
 
   return {

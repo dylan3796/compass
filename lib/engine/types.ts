@@ -150,6 +150,13 @@ export interface OutcomeContract {
   qualityBar: QualityPredicate | null;
   /** Would it have happened anyway. */
   counterfactual: CounterfactualDesign;
+  /**
+   * Additional baseline designs, always measured when their data exists:
+   * they corroborate the primary estimate on the statement, and they are the
+   * fallback ladder when the primary design's data is missing — a statement
+   * never ships without a measured baseline.
+   */
+  corroboration?: CounterfactualDesign[];
   join: JoinSpec;
   billing: BillingConfig;
   /** Max run→outcome lag for the join, days. */
@@ -202,6 +209,10 @@ export interface VerificationReport {
   };
   /** Quality-bar failures by reason, e.g. { ticket_reopened_within_7d: 61 }. */
   qualityFailures: Record<string, number>;
+  /** Up to five failing entities per reason — evidence the customer can check in the source system. */
+  qualityFailureSamples?: Record<string, string[]>;
+  /** Up to five double-billed entities. */
+  duplicateSamples?: string[];
   qualityPassPct: number;
 }
 
@@ -237,7 +248,11 @@ export interface EstimatorResult {
   notes: string[];
   /** Grade C: matched-baseline unit cost, consumed by the EXPAND verdict rule. */
   baselineCostPerOutcomeCents?: number;
+  /** Every other baseline design that could run — measured and attached, never averaged in. */
+  corroboration?: CorroborationResult[];
 }
+
+export type CorroborationResult = Omit<EstimatorResult, "corroboration">;
 
 export interface ModelSplitEntry {
   model: string;
@@ -309,13 +324,36 @@ export interface WorkflowStatement {
   dispute?: DisputeBlock;
 }
 
-export interface Discovery {
+/**
+ * A proposed outcome definition, drafted by the outcome engine for the
+ * customer to confirm. Not all outcomes arrive clearly defined up front —
+ * the engine interprets what the systems of record show and proposes the
+ * contract; a human accepts it. Interpretation proposes; it never settles.
+ */
+export interface DraftContract {
+  source: SourceId;
+  eventType: string;
+  entityKind: string;
+  suggestedQualityBar: QualityPredicate | null;
+}
+
+export interface CandidateOutcome {
+  kind: "uncontractedOutcome" | "qualityBarBoundary" | "unpricedQualityFailures" | "duplicateClaims";
   source: SourceId;
   eventType: string;
   count: number;
-  kind: "uncontractedJoinedEvents" | "qualityBarBoundary" | "qualityFailuresUncounted" | "duplicateClaims";
+  /** The workflow whose activity surfaced this candidate. */
+  workflowId?: string;
   /** For qualityBarBoundary: percent of verified affected in the widened window. */
   pctOfVerified?: number;
+  /** The interpretation: a proposed contract (or contract change) to confirm. */
+  draft?: DraftContract;
+  /** Human-readable provenance — why the engine believes this is an outcome. */
+  context: string[];
+  /** Up to five example entities, so the proposal is checkable in the source system. */
+  sampleEntities: string[];
+  firstSeen?: string;
+  lastSeen?: string;
 }
 
 export interface LedgerStatement {
@@ -330,7 +368,8 @@ export interface LedgerStatement {
     projectedVerdictImpactDollars: number;
   };
   workflows: WorkflowStatement[];
-  discoveries: Discovery[];
+  /** The outcome engine's interpretations: proposed outcomes awaiting confirmation. */
+  candidates: CandidateOutcome[];
   activityRunsBySource: Record<string, number>;
   totalRuns: number;
 }

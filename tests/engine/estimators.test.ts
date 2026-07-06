@@ -175,7 +175,7 @@ describe("Grade C — pre-agent baseline", () => {
     const { graph, report } = baselineWorld(10);
     const r = estimate(graph, report);
     expect(r.grade).toBe("C");
-    expect(r.cells.matchedMonths).toEqual({ n: 3, k: 4 });
+    expect(r.cells.matchedMonths).toEqual({ n: 4, k: 3 });
     expect(r.baselineCostPerOutcomeCents).toBe(1000); // median of [900, 1000, 1100]
     expect(r.attributable).toBe(10); // displacement: attribution counts work performed
     expect(r.counterfactualCount).toBe(0);

@@ -75,10 +75,10 @@ export function estimatePreAgentBaseline(
     counterfactualCount: counterfactual,
     attributable,
     incrementality: { num: attributable, den: verified },
-    cells: { matchedMonths: { n: matched.length, k: design.months.length } },
+    cells: { matchedMonths: { n: design.months.length, k: matched.length } },
     assumptions,
     notes: [
-      `Matched ${matched.length}/${design.months.length} baseline months (volume ±${design.match.volumeTolerancePct}% of ${verified}); median cost/outcome ${(baselineCostPerOutcomeCents / 100).toFixed(2)} under the old process.`,
+      `Matched ${matched.length}/${design.months.length} baseline months (volume ±${design.match.volumeTolerancePct}% of ${verified}); median cost/outcome $${(baselineCostPerOutcomeCents / 100).toFixed(2)} under the old process.`,
     ],
     baselineCostPerOutcomeCents,
   };

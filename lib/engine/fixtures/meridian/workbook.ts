@@ -171,6 +171,27 @@ export const CELLS = {
     langsmithSteps: 5698,
     logUploadSteps: 1183,
     priorCostPerVerifiedCents: [191, 186, 182, 178], // Feb–May
+    /**
+     * Corroborating Grade-C baseline (occurrence basis): pre-agent monthly
+     * quality-passing resolution volumes. Median (lower-middle of all 12;
+     * none match June's 2,802 volume, so the estimator falls back with the
+     * assumption stated) = 815/mo — within 0.3% of the holdout's 813
+     * counterfactual. Two independent designs, one conclusion.
+     */
+    preAgentMonths: [
+      { month: "2025-01", volume: 795, costPerOutcomeCents: 610 },
+      { month: "2025-02", volume: 842, costPerOutcomeCents: 605 },
+      { month: "2025-03", volume: 760, costPerOutcomeCents: 640 },
+      { month: "2025-04", volume: 828, costPerOutcomeCents: 618 },
+      { month: "2025-05", volume: 815, costPerOutcomeCents: 652 },
+      { month: "2025-06", volume: 790, costPerOutcomeCents: 600 },
+      { month: "2025-07", volume: 866, costPerOutcomeCents: 633 },
+      { month: "2025-08", volume: 820, costPerOutcomeCents: 625 },
+      { month: "2025-09", volume: 805, costPerOutcomeCents: 645 },
+      { month: "2025-10", volume: 851, costPerOutcomeCents: 612 },
+      { month: "2025-11", volume: 778, costPerOutcomeCents: 660 },
+      { month: "2025-12", volume: 833, costPerOutcomeCents: 628 },
+    ],
   },
 
   workspace: {

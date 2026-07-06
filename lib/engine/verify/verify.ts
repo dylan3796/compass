@@ -86,6 +86,8 @@ export function verifyClaims(graph: ContributionGraph): VerificationReport {
   const verified: VerifiedOutcome[] = [];
   const drop = { didNotHappen: 0, failedQualityBar: 0, unjoinable: 0, duplicateClaim: 0 };
   const qualityFailures: Record<string, number> = {};
+  const qualityFailureSamples: Record<string, string[]> = {};
+  const duplicateSamples: string[] = [];
   // Entities whose outcome a claim has already settled (verified OR failed
   // the quality bar). A later claim on a settled entity is a double-bill —
   // its own drop bucket, never folded into "didn't happen". A claim whose
@@ -105,6 +107,7 @@ export function verifyClaims(graph: ContributionGraph): VerificationReport {
     const entKey = keys[0];
     if (settledEntities.has(entKey)) {
       drop.duplicateClaim += 1;
+      if (duplicateSamples.length < 5) duplicateSamples.push(entKey);
       continue;
     }
 
@@ -128,6 +131,8 @@ export function verifyClaims(graph: ContributionGraph): VerificationReport {
     if (!quality.pass) {
       drop.failedQualityBar += 1;
       qualityFailures[quality.reason] = (qualityFailures[quality.reason] ?? 0) + 1;
+      const samples = (qualityFailureSamples[quality.reason] ??= []);
+      if (samples.length < 5) samples.push(entKey);
       continue;
     }
 
@@ -149,6 +154,8 @@ export function verifyClaims(graph: ContributionGraph): VerificationReport {
     verified,
     drop,
     qualityFailures,
+    qualityFailureSamples,
+    duplicateSamples,
     qualityPassPct: claimed === 0 ? 0 : R4_pct(verified.length, claimed),
   };
 

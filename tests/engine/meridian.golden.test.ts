@@ -10,6 +10,7 @@ import { generateMeridianInputs } from "@/lib/engine/fixtures/meridian/generate"
 import { MERIDIAN_CONFIG } from "@/lib/engine/fixtures/meridian/config";
 import { CELLS } from "@/lib/engine/fixtures/meridian/workbook";
 import { runStatement } from "@/lib/engine/statement";
+import { renderStatement } from "@/lib/engine/report";
 import { canonicalJson, hashValue } from "@/lib/engine/hash";
 
 describe("Meridian golden acceptance", () => {
@@ -37,6 +38,43 @@ describe("Meridian golden acceptance", () => {
     const diskPath = join(__dirname, "..", "..", "lib", "engine", "generated", "meridian-ledger.json");
     const disk = JSON.parse(readFileSync(diskPath, "utf8"));
     expect(canonicalJson(disk)).toBe(canonicalJson(buildMeridianLedgerJson()));
+  });
+
+  it("the checked-in evidence statement matches a fresh render (verify results there)", () => {
+    const diskPath = join(__dirname, "..", "..", "lib", "engine", "generated", "meridian-statement.md");
+    expect(readFileSync(diskPath, "utf8")).toBe(renderStatement(runMeridian()));
+  });
+
+  it("the baseline is always measured: the pre-agent history corroborates the holdout", () => {
+    const support = runMeridian().workflows.find((w) => w.workflowId === "support")!;
+    expect(support.estimator.grade).toBe("A"); // primary settles
+    const corroboration = support.estimator.corroboration;
+    expect(corroboration).toHaveLength(1);
+    expect(corroboration![0].grade).toBe("C");
+    expect(corroboration![0].designKind).toBe("preAgentBaseline");
+    // Pre-agent median 815/mo vs the holdout's 813 counterfactual — two
+    // independent designs within 0.3% of each other.
+    expect(corroboration![0].counterfactualCount).toBe(815);
+    expect(corroboration![0].attributable).toBe(1987);
+    expect(support.attributable).toBe(1989); // corroboration never moves the settlement
+  });
+
+  it("the outcome engine drafts contracts for what nobody defined", () => {
+    const refunds = runMeridian().candidates.find((c) => c.kind === "uncontractedOutcome" && c.source === "stripe")!;
+    expect(refunds.count).toBe(44);
+    expect(refunds.draft).toMatchObject({
+      source: "stripe",
+      eventType: "refund_processed",
+      entityKind: "zendesk_ticket",
+    });
+    expect(refunds.sampleEntities.length).toBeGreaterThan(0);
+    expect(refunds.workflowId).toBe("support");
+    const boundary = runMeridian().candidates.find((c) => c.kind === "qualityBarBoundary")!;
+    expect(boundary.draft?.suggestedQualityBar).toEqual({
+      kind: "noEventWithin",
+      eventType: "ticket_reopened",
+      days: 30,
+    });
   });
 
   it("carries the evidence: support's holdout cells are the workbook's, verbatim", () => {

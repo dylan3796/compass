@@ -9,6 +9,7 @@
  */
 export { runStatement } from "./statement";
 export type { EngineConfig } from "./statement";
+export { renderStatement } from "./report";
 export { ENGINE_VERSION } from "./version";
 export * from "./types";
 export type { ExtractRule, ExtractRuleSet } from "./extract/extractors";

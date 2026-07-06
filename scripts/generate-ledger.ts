@@ -11,23 +11,29 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { assertMatchesPublished, buildMeridianLedgerJson, runMeridian } from "../lib/engine/fixtures/meridian";
+import { renderStatement } from "../lib/engine/report";
 import { canonicalJson } from "../lib/engine/hash";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const outPath = join(here, "..", "lib", "engine", "generated", "meridian-ledger.json");
+const generatedDir = join(here, "..", "lib", "engine", "generated");
+const ledgerPath = join(generatedDir, "meridian-ledger.json");
+const statementPath = join(generatedDir, "meridian-statement.md");
 
 const ledger = buildMeridianLedgerJson();
 assertMatchesPublished(ledger);
 // (The byte-determinism double-run gate lives in the golden test — npm test —
 // so the dev/build loop pays for one pipeline execution, not two.)
 
-mkdirSync(dirname(outPath), { recursive: true });
-writeFileSync(outPath, JSON.stringify(JSON.parse(canonicalJson(ledger)), null, 2) + "\n");
+mkdirSync(generatedDir, { recursive: true });
+writeFileSync(ledgerPath, JSON.stringify(JSON.parse(canonicalJson(ledger)), null, 2) + "\n");
 
 const s = runMeridian();
+writeFileSync(statementPath, renderStatement(s));
+
 console.log(
   `reconciled: ${s.headers.claimed} claimed → ${s.headers.verified} verified → ${s.headers.attributable} attributable · ` +
     `$${(s.headers.spendCents / 100).toLocaleString("en-US")} spend · $${s.headers.projectedVerdictImpactDollars.toLocaleString("en-US")}/mo verdict impact · ` +
     `replay ${s.replay.inputHash.slice(0, 8)}/${s.replay.configHash.slice(0, 8)} @ engine ${s.engineVersion}`
 );
-console.log(`wrote ${outPath}`);
+console.log(`ledger    → ${ledgerPath}`);
+console.log(`evidence  → ${statementPath}  (the settled statement, human-readable — verify results here)`);

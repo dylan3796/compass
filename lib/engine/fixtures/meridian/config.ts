@@ -52,6 +52,17 @@ export const CONTRACTS: OutcomeContract[] = [
       treatedArm: "treated",
       controlArm: "control",
     },
+    // The baseline is always measured: the pre-agent history runs alongside
+    // the holdout and corroborates it (815 expected/mo vs the holdout's 813).
+    corroboration: [
+      {
+        kind: "preAgentBaseline",
+        basis: "occurrence",
+        months: [...CELLS.support.preAgentMonths],
+        match: { volumeTolerancePct: 25, minMonths: 3 },
+        seasonality: { comparisonMonth: "2025-06", maxDivergencePct: 15 },
+      },
+    ],
     join: { entityKind: "zendesk_ticket", extractorRuleSetId: "support-keys" },
     billing: { kind: "perOutcome", rateCents: CELLS.support.rateCents },
     windowDays: 30,
