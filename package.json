@@ -4,9 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "predev": "npm run reconcile",
     "build": "next build",
+    "prebuild": "npm run reconcile",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "reconcile": "tsx scripts/generate-ledger.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "framer-motion": "^11.11.17",
@@ -21,6 +25,8 @@
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.15",
-    "typescript": "^5.7.2"
+    "tsx": "^4.23.0",
+    "typescript": "^5.7.2",
+    "vitest": "^4.1.10"
   }
 }

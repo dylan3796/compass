@@ -1,13 +1,61 @@
 /**
  * Meridian (fictional) · June 2026 — the reconciled data module.
  * Single source of truth per causa-plan.md Part 7. Every number on every
- * screen traces here. The assertion block at the bottom throws at build
- * time if the math stops reconciling.
+ * screen traces here — and every number here is now ENGINE OUTPUT: the
+ * attribution core (lib/engine) derives the full ledger from ~30k synthetic
+ * event-level records (activity runs + outcome events) via
+ * extract → join → verify → estimate → economics → verdict, and
+ * `npm run reconcile` writes it to lib/engine/generated/meridian-ledger.json.
+ * Editorial copy stays authored here; the assertion block at the bottom pins
+ * the published figures and throws at build time if the engine's math stops
+ * reconciling.
  */
+import ledgerJson from "@/lib/engine/generated/meridian-ledger.json";
+import type { MeridianLedgerJson } from "@/lib/engine/fixtures/meridian";
+
+const ledger = ledgerJson as unknown as MeridianLedgerJson;
+
+function eng(id: string) {
+  const w = ledger.workflows.find((x) => x.id === id);
+  if (!w) throw new Error(`data.ts: engine ledger has no workflow "${id}"`);
+  return w;
+}
 
 export type Origin = "BUILT" | "BOUGHT" | "HYBRID";
-export type Verdict = "RENEGOTIATE" | "EXPAND" | "REROUTE" | "RETIRE";
+/** The five stamps (CAUSA.md §4.4). REPRICE is engine-supported; no Meridian row triggers it. */
+export type Verdict = "REPRICE" | "RENEGOTIATE" | "EXPAND" | "REROUTE" | "RETIRE";
 export type Grade = "A" | "B" | "C" | "D";
+
+const GRADES: readonly string[] = ["A", "B", "C", "D"];
+const VERDICTS: readonly string[] = ["REPRICE", "RENEGOTIATE", "EXPAND", "REROUTE", "RETIRE"];
+
+function asGrade(s: string): Grade {
+  if (!GRADES.includes(s)) throw new Error(`data.ts: engine emitted unknown grade "${s}"`);
+  return s as Grade;
+}
+function asVerdict(s: string): Verdict {
+  if (!VERDICTS.includes(s)) throw new Error(`data.ts: engine emitted unknown verdict "${s}"`);
+  return s as Verdict;
+}
+
+/** The engine-derived numeric fields of a workflow row; editorial copy stays authored below. */
+function fromEngine(id: string) {
+  const w = eng(id);
+  return {
+    claimed: w.claimed,
+    verified: w.verified,
+    attributable: w.attributable,
+    spend: w.spend,
+    costPerVerified: w.costPerVerified,
+    grade: asGrade(w.grade),
+    verdict: asVerdict(w.verdict),
+    impactPerMonth: w.impactPerMonth,
+    deltaVsMay: w.deltaVsMay,
+    qualityPassPct: w.qualityPassPct,
+    sparkline: w.sparkline,
+    modelSplit: w.modelSplit,
+  };
+}
 
 export interface ModelSplit {
   model: string;
@@ -49,13 +97,13 @@ export const company = {
 } as const;
 
 export const headers = {
-  claimed: 4812,
-  verified: 4203,
-  attributable: 3163,
-  spend: 9909,
-  adjustmentIdentified: 91.5,
-  projectedVerdictImpact: 7350,
-} as const;
+  claimed: ledger.headers.claimed,
+  verified: ledger.headers.verified,
+  attributable: ledger.headers.attributable,
+  spend: ledger.headers.spend,
+  adjustmentIdentified: ledger.headers.adjustmentIdentified,
+  projectedVerdictImpact: ledger.headers.projectedVerdictImpact,
+};
 
 export const workflows: Workflow[] = [
   {
@@ -63,24 +111,10 @@ export const workflows: Workflow[] = [
     name: "Support tickets",
     origin: "BOUGHT",
     actor: "Vendor support agent · claude-fable-5 + gpt-5",
-    claimed: 3214,
-    verified: 2802,
-    attributable: 1989,
-    spend: 4821,
-    costPerVerified: 1.72,
-    grade: "A",
+    ...fromEngine("support"),
     gradeLabel: "A (10% holdout)",
-    verdict: "RENEGOTIATE",
     verdictLabel: "RENEGOTIATE",
-    impactPerMonth: 1233,
-    deltaVsMay: -0.06,
-    qualityPassPct: 87,
     vsBaseline: "71% incremental vs. holdout",
-    sparkline: [1.91, 1.86, 1.82, 1.78, 1.72],
-    modelSplit: [
-      { model: "claude-fable-5", costPerVerified: 1.19, share: 0.62 },
-      { model: "gpt-5", costPerVerified: 1.31, share: 0.38 },
-    ],
     evidence: [
       "Billed $1.50/resolution; 71% of verified resolutions incremental vs. the 10% holdout (1,989 / 2,802).",
       "Fair price at 71% incrementality: $1.06. 61 reopens within 7 days → $91.50 adjustment.",
@@ -96,20 +130,10 @@ export const workflows: Workflow[] = [
     name: "New-hire accounts",
     origin: "BUILT",
     actor: "In-house account agent",
-    claimed: 486,
-    verified: 486,
-    attributable: 486,
-    spend: 204,
-    costPerVerified: 0.42,
-    grade: "C",
+    ...fromEngine("workspace"),
     gradeLabel: "C (12-mo baseline)",
-    verdict: "EXPAND",
     verdictLabel: "EXPAND",
-    impactPerMonth: 2140,
-    deltaVsMay: -0.01,
-    qualityPassPct: 100,
     vsBaseline: "$0.42 vs. $11.90 under the old process",
-    sparkline: [0.47, 0.45, 0.44, 0.43, 0.42],
     evidence: [
       "$0.42/account vs. $11.90 under the old process; 2.1 days → 4 minutes. 100% quality bar.",
       "Cloning the agent for contractor onboarding ≈ $2,140/mo additional savings.",
@@ -125,24 +149,10 @@ export const workflows: Workflow[] = [
     name: "Meeting notes → Jira tickets",
     origin: "BUILT",
     actor: "In-house notes agent · claude-fable-5 + qwen-3",
-    claimed: 640,
-    verified: 601,
-    attributable: 570,
-    spend: 1984,
-    costPerVerified: 3.3,
-    grade: "B",
+    ...fromEngine("docgen"),
     gradeLabel: "B (model switch)",
-    verdict: "REROUTE",
     verdictLabel: "REROUTE",
-    impactPerMonth: 1077,
-    deltaVsMay: 0.04,
-    qualityPassPct: 94,
     vsBaseline: "94% acceptance, both slices",
-    sparkline: [3.19, 3.21, 3.23, 3.26, 3.3],
-    modelSplit: [
-      { model: "claude-fable-5", costPerVerified: 3.1, share: 0.85 },
-      { model: "qwen-3", costPerVerified: 1.21, share: 0.15 },
-    ],
     evidence: [
       "94% of tickets accepted (601 / 640). Marginal cost $3.10 on claude-fable-5 vs. $1.21 on the qwen-3 pilot slice at the same acceptance rate.",
       "Rerouting saves $1.89 × 570 ≈ $1,077/mo.",
@@ -158,20 +168,10 @@ export const workflows: Workflow[] = [
     name: "Sales meetings booked",
     origin: "HYBRID",
     actor: "Vendor SDR agent + 3 reps",
-    claimed: 472,
-    verified: 314,
-    attributable: 118,
-    spend: 2900,
-    costPerVerified: 9.24,
-    grade: "B",
+    ...fromEngine("meetings"),
     gradeLabel: "B (staged rollout)",
-    verdict: "RETIRE",
     verdictLabel: "RETIRE agent slice",
-    impactPerMonth: 2900,
-    deltaVsMay: 0.41,
-    qualityPassPct: 67,
     vsBaseline: "8% agent-only vs. 11% without it",
-    sparkline: [8.1, 8.35, 8.6, 8.83, 9.24],
     evidence: [
       "Verified = opportunity created within 14 days (314 / 472). Only the human-assisted slice beats the counterfactual (attributable 118).",
       "Meetings from the agent-only slice convert 8% vs. an 11% baseline without it. The 118 attributable outcomes came from the assisted slice — a playbook the team keeps. Retiring the agent recovers the $2,900/mo fee.",
@@ -184,33 +184,36 @@ export const workflows: Workflow[] = [
   },
 ];
 
-/** The hybrid Meetings row's activity split: agent 62% / human 38%. */
-export const meetingsAttributionSplit = { agent: 0.62, human: 0.38 } as const;
+/** The hybrid Meetings row's activity split — touch-count credit over the contribution graph. */
+export const meetingsAttributionSplit = {
+  agent: ledger.meetingsAttributionSplit.agent,
+  human: ledger.meetingsAttributionSplit.human,
+};
 
-/** Support dispute row, verbatim math. */
+/** Support dispute row — the engine's fair-price chain, verbatim. */
 export const dispute = {
-  claimed: 3214,
-  reopenedWithin7Days: 61,
-  adjustment: 91.5,
-  billedPerResolution: 1.5,
-  fairPrice: 1.06,
-  incrementalityPct: 71,
-  renegotiationDeltaPerResolution: 0.44,
-} as const;
+  claimed: ledger.dispute.claimed,
+  reopenedWithin7Days: ledger.dispute.reopenedWithin7Days,
+  adjustment: ledger.dispute.adjustment,
+  billedPerResolution: ledger.dispute.billedPerResolution,
+  fairPrice: ledger.dispute.fairPrice,
+  incrementalityPct: ledger.dispute.incrementalityPct,
+  renegotiationDeltaPerResolution: ledger.dispute.renegotiationDeltaPerResolution,
+};
 
 /** Screen 4 closing teaser — the only Benchmark surface that exists. */
 export const benchmarkTeaser = {
-  yourCostPerResolvedTicket: 1.19,
+  yourCostPerResolvedTicket: ledger.benchmark.yourCostPerResolvedTicket,
   benchmarkMedian: 1.42,
   percentile: 71,
-} as const;
+};
 
 /** Screen 2 connect state. */
 export const connect = {
-  runs: 14203,
-  windowDays: 30,
-  jiraJoinablePct: 61,
-} as const;
+  runs: ledger.connect.runs,
+  windowDays: ledger.connect.windowDays,
+  jiraJoinablePct: ledger.connect.jiraJoinablePct,
+};
 
 /**
  * Source catalog — what Causa actually reads from each system.
@@ -228,12 +231,12 @@ export interface SourceTile {
 }
 
 // Activity run counts sum to the canonical 14,203 (asserted below).
-export const activityRuns = {
-  LangSmith: 8912,
-  Langfuse: 2145,
-  OpenTelemetry: 1659,
-  "Log upload": 1487,
-} as const;
+export const activityRuns: Record<"LangSmith" | "Langfuse" | "OpenTelemetry" | "Log upload", number> = {
+  LangSmith: ledger.activityRuns["LangSmith"],
+  Langfuse: ledger.activityRuns["Langfuse"],
+  OpenTelemetry: ledger.activityRuns["OpenTelemetry"],
+  "Log upload": ledger.activityRuns["Log upload"],
+};
 
 export const sources: SourceTile[] = [
   // Log upload leads: it's the on-ramp everyone has, not just engineers.
@@ -330,7 +333,7 @@ export const discoveredOutcomes: DiscoveredOutcome[] = [
       "44 refunds processed trace back to the support agent's runs. No outcome contract covers refunds.",
     suggestion: "Define refund processed as an outcome",
     cta: "Define outcome",
-    figure: 44,
+    figure: ledger.discoveredFigures.stripeRefunds,
   },
   {
     source: "Zendesk",
@@ -338,7 +341,7 @@ export const discoveredOutcomes: DiscoveredOutcome[] = [
       "9% of agent-resolved tickets come back after day 7 — outside the 7-day quality bar.",
     suggestion: "Tighten the quality bar to 14 days",
     cta: "Tighten quality bar",
-    figure: 9,
+    figure: ledger.discoveredFigures.lateReopenPct,
   },
   {
     source: "Jira",
@@ -346,7 +349,7 @@ export const discoveredOutcomes: DiscoveredOutcome[] = [
       "39 tickets created from meetings were rejected by their assignees. Rejections weren't counted.",
     suggestion: "Count acceptance, not creation",
     cta: "Add outcome",
-    figure: 39,
+    figure: ledger.discoveredFigures.jiraRejections,
   },
 ];
 
@@ -441,6 +444,120 @@ assert(
 assert(
   impactSplit.recovered + impactSplit.expandable === headers.projectedVerdictImpact,
   "impact split must reconcile to the projected verdict impact"
+);
+
+/* ------------------------------------------------------------------ */
+/* Golden pins — the published Part 7 ledger, as literals. Everything  */
+/* above is engine-derived; if the attribution core drifts from the    */
+/* published statement by a single unit, the build fails here.         */
+/* ------------------------------------------------------------------ */
+
+const published = {
+  headers: {
+    claimed: 4812,
+    verified: 4203,
+    attributable: 3163,
+    spend: 9909,
+    adjustmentIdentified: 91.5,
+    projectedVerdictImpact: 7350,
+  },
+  rows: {
+    support: {
+      claimed: 3214, verified: 2802, attributable: 1989, spend: 4821, costPerVerified: 1.72,
+      grade: "A", verdict: "RENEGOTIATE", impactPerMonth: 1233, deltaVsMay: -0.06, qualityPassPct: 87,
+    },
+    workspace: {
+      claimed: 486, verified: 486, attributable: 486, spend: 204, costPerVerified: 0.42,
+      grade: "C", verdict: "EXPAND", impactPerMonth: 2140, deltaVsMay: -0.01, qualityPassPct: 100,
+    },
+    docgen: {
+      claimed: 640, verified: 601, attributable: 570, spend: 1984, costPerVerified: 3.3,
+      grade: "B", verdict: "REROUTE", impactPerMonth: 1077, deltaVsMay: 0.04, qualityPassPct: 94,
+    },
+    meetings: {
+      claimed: 472, verified: 314, attributable: 118, spend: 2900, costPerVerified: 9.24,
+      grade: "B", verdict: "RETIRE", impactPerMonth: 2900, deltaVsMay: 0.41, qualityPassPct: 67,
+    },
+  },
+  modelSplit: {
+    support: [
+      { model: "claude-fable-5", costPerVerified: 1.19, share: 0.62 },
+      { model: "gpt-5", costPerVerified: 1.31, share: 0.38 },
+    ],
+    docgen: [
+      { model: "claude-fable-5", costPerVerified: 3.1, share: 0.85 },
+      { model: "qwen-3", costPerVerified: 1.21, share: 0.15 },
+    ],
+  },
+  dispute: {
+    claimed: 3214, reopenedWithin7Days: 61, adjustment: 91.5, billedPerResolution: 1.5,
+    fairPrice: 1.06, incrementalityPct: 71, renegotiationDeltaPerResolution: 0.44,
+  },
+  meetingsSplit: { agent: 0.62, human: 0.38 },
+  activityRuns: { LangSmith: 8912, Langfuse: 2145, OpenTelemetry: 1659, "Log upload": 1487 },
+  connect: { runs: 14203, jiraJoinablePct: 61 },
+  discoveredFigures: [44, 9, 39],
+  benchmarkYourCost: 1.19,
+} as const;
+
+for (const [key, value] of Object.entries(published.headers)) {
+  assert(
+    headers[key as keyof typeof headers] === value,
+    `engine drift: headers.${key} must equal published ${value}`
+  );
+}
+for (const [id, row] of Object.entries(published.rows)) {
+  const w = workflows.find((x) => x.id === id)!;
+  for (const [key, value] of Object.entries(row)) {
+    assert(
+      w[key as keyof typeof row] === value,
+      `engine drift: ${id}.${key} must equal published ${value}`
+    );
+  }
+}
+for (const [id, split] of Object.entries(published.modelSplit)) {
+  const w = workflows.find((x) => x.id === id)!;
+  assert(w.modelSplit !== undefined && w.modelSplit.length === split.length, `engine drift: ${id}.modelSplit shape`);
+  split.forEach((m, i) => {
+    const actual = w.modelSplit![i];
+    assert(
+      actual.model === m.model && actual.costPerVerified === m.costPerVerified && actual.share === m.share,
+      `engine drift: ${id}.modelSplit[${i}] must equal published ${m.model} $${m.costPerVerified} @ ${m.share}`
+    );
+  });
+}
+for (const [key, value] of Object.entries(published.dispute)) {
+  assert(
+    dispute[key as keyof typeof dispute] === value,
+    `engine drift: dispute.${key} must equal published ${value}`
+  );
+}
+assert(
+  meetingsAttributionSplit.agent === published.meetingsSplit.agent &&
+    meetingsAttributionSplit.human === published.meetingsSplit.human,
+  "engine drift: meetings attribution split must equal published 0.62 / 0.38"
+);
+for (const [label, value] of Object.entries(published.activityRuns)) {
+  assert(
+    activityRuns[label as keyof typeof activityRuns] === value,
+    `engine drift: activityRuns.${label} must equal published ${value}`
+  );
+}
+assert(connect.runs === published.connect.runs, `engine drift: connect.runs must equal ${published.connect.runs}`);
+assert(
+  connect.jiraJoinablePct === published.connect.jiraJoinablePct,
+  `engine drift: Jira joinable % must equal ${published.connect.jiraJoinablePct}`
+);
+assert(connect.windowDays === 30, "engine drift: connect window must stay 30 days");
+discoveredOutcomes.forEach((d, i) => {
+  assert(
+    d.figure === published.discoveredFigures[i],
+    `engine drift: discovered outcome ${d.source} figure must equal ${published.discoveredFigures[i]}`
+  );
+});
+assert(
+  benchmarkTeaser.yourCostPerResolvedTicket === published.benchmarkYourCost,
+  `engine drift: benchmark cost/resolved ticket must equal ${published.benchmarkYourCost}`
 );
 
 export const fmt = {
