@@ -1,19 +1,69 @@
 /**
  * Meridian (fictional) · June 2026 — the reconciled data module.
  * Single source of truth per causa-plan.md Part 7. Every number on every
- * screen traces here — and every number here is now ENGINE OUTPUT: the
- * attribution core (lib/engine) derives the full ledger from ~30k synthetic
- * event-level records (activity runs + outcome events) via
- * extract → join → verify → estimate → economics → verdict, and
- * `npm run reconcile` writes it to lib/engine/generated/meridian-ledger.json.
+ * screen traces here — and every number here is ENGINE OUTPUT: the
+ * attribution core lives in its own repo (dylan3796/causa-engine) and
+ * derives the full ledger from ~30k synthetic event-level records via
+ * extract → join → verify → estimate → economics → verdict. Its
+ * `npm run reconcile` regenerates the artifact committed here as
+ * lib/generated/meridian-ledger.json. To change a number: change the
+ * engine's workbook/fixtures, reconcile there, copy the artifact over, and
+ * update the golden pins below deliberately — never hand-edit either file.
  * Editorial copy stays authored here; the assertion block at the bottom pins
- * the published figures and throws at build time if the engine's math stops
- * reconciling.
+ * the published figures and throws at build time if the artifact drifts.
  */
-import ledgerJson from "@/lib/engine/generated/meridian-ledger.json";
-import type { MeridianLedgerJson } from "@/lib/engine/fixtures/meridian";
+import ledgerJson from "@/lib/generated/meridian-ledger.json";
 
-const ledger = ledgerJson as unknown as MeridianLedgerJson;
+/**
+ * Consumer-owned contract for the engine artifact: exactly the fields this
+ * module reads. Shape drift fails typecheck; value drift fails the pins.
+ */
+interface LedgerWorkflowJson {
+  id: string;
+  claimed: number;
+  verified: number;
+  attributable: number;
+  spend: number;
+  costPerVerified: number;
+  grade: string;
+  verdict: string;
+  impactPerMonth: number;
+  deltaVsMay: number;
+  qualityPassPct: number;
+  incrementalityPct: number;
+  sparkline: number[];
+  modelSplit?: Array<{ model: string; costPerVerified: number; share: number }>;
+}
+
+interface LedgerJson {
+  engineVersion: string;
+  replay: { inputHash: string; configHash: string };
+  headers: {
+    claimed: number;
+    verified: number;
+    attributable: number;
+    spend: number;
+    adjustmentIdentified: number;
+    projectedVerdictImpact: number;
+  };
+  workflows: LedgerWorkflowJson[];
+  meetingsAttributionSplit: { agent: number; human: number };
+  dispute: {
+    claimed: number;
+    reopenedWithin7Days: number;
+    adjustment: number;
+    billedPerResolution: number;
+    fairPrice: number;
+    incrementalityPct: number;
+    renegotiationDeltaPerResolution: number;
+  };
+  connect: { runs: number; windowDays: number; jiraJoinablePct: number };
+  activityRuns: Record<string, number>;
+  discoveredFigures: { stripeRefunds: number; lateReopenPct: number; jiraRejections: number };
+  benchmark: { yourCostPerResolvedTicket: number };
+}
+
+const ledger = ledgerJson as unknown as LedgerJson;
 
 function eng(id: string) {
   const w = ledger.workflows.find((x) => x.id === id);
