@@ -103,8 +103,9 @@ export default function LeadCapture({ onClose }: { onClose: () => void }) {
               </span>
             </Stamp>
             <p className="mt-6 max-w-sm text-[15px] leading-relaxed">
-              Your first Verified Outcome Statement is 7 days from your data. We&rsquo;ll reply
-              within one business day with the export checklist — two files and a join key.
+              Your first Verified Outcome Statement lands days after your data does. We&rsquo;ll
+              reply within one business day with the export checklist — two files and a join
+              key.
             </p>
             <button className="btn-outline mt-8" onClick={onClose}>
               Close form
@@ -123,8 +124,8 @@ export default function LeadCapture({ onClose }: { onClose: () => void }) {
               </button>
             </div>
             <p className="mt-2 text-sm text-ink/70">
-              First Verified Outcome Statement in 7 days — from $7.5K, credited against your
-              first year. Have three things ready: an export of agent activity, an export of
+              Your first Verified Outcome Statement, days from your data — from $7.5K, credited
+              against your first year. Have three things ready: an export of agent activity, an export of
               outcomes (Zendesk, Jira, Stripe…), and the ID column they share — ticket_id
               works.
             </p>

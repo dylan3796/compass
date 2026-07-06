@@ -28,12 +28,12 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://causa.vercel.app"),
   title: "Causa — Know what your agents actually delivered.",
   description:
-    "Every agent result is self-reported. Causa checks each claimed outcome where it lands, prices what was real, and tells you what to do next. First statement in 7 days.",
+    "Causa prices every result your agents bill for against what it actually earned you, then drafts the move: double down, reroute, or cut. Proof from your own files in minutes.",
   icons: { icon: "/favicon.svg" },
   openGraph: {
     title: "Causa — Know what your agents actually delivered.",
     description:
-      "Every agent result is self-reported. Causa checks each claimed outcome where it lands, prices what was real, and tells you what to do next. First statement in 7 days.",
+      "Causa prices every result your agents bill for against what it actually earned you, then drafts the move: double down, reroute, or cut. Proof from your own files in minutes.",
     images: [{ url: "/og.png", width: 1200, height: 630 }],
   },
   twitter: {

@@ -33,7 +33,7 @@ export default function CompanyPage() {
             {[
               "Software is moving from paying for time to paying for results — per resolved ticket, per provisioned account, per booked meeting.",
               "Every one of those invoices is self-reported by the party getting paid. The agent's maker can't be the agent's referee.",
-              "Causa is the independent layer that checks the work. Payer-funded, permanently.",
+              "Causa is the independent record of what that work is worth — priced, settled, and turned into the next move. Payer-funded, permanently.",
             ].map((line) => (
               <div key={line} className="rule border-t py-5">
                 <p className="font-serif text-2xl leading-snug sm:text-3xl">{line}</p>
@@ -78,7 +78,7 @@ export default function CompanyPage() {
             <Reveal>
               <h2 className="font-serif text-5xl sm:text-7xl">Meter</h2>
               <p className="mt-2 max-w-xl text-[15px] text-ink/70">
-                Verify. Every claimed outcome checked where it lands, then asked: would it have
+                Verify. Every claimed outcome proved where it lands, then asked: would it have
                 happened anyway?
               </p>
             </Reveal>
@@ -129,7 +129,7 @@ export default function CompanyPage() {
           </p>
           <div className="mt-14">
             <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">
-              First Verified Outcome Statement in 7 days.
+              Minutes to proof. Days to your first statement.
             </h2>
             <p className="mt-3 max-w-2xl text-[15px] text-ink/70">
               Pilot from $7.5K, credited against your first year. Two exports and a join key.

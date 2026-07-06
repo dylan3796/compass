@@ -39,7 +39,7 @@ export default function LandingPage() {
         {/* §1 Hero */}
         <section className="mx-auto max-w-6xl px-4 pb-20 pt-10 sm:pt-16">
           <p className="eyebrow text-ink/60">
-            AI vendors grade their own homework. Causa checks the work.
+            Causa doesn&rsquo;t report outcomes. It settles them.
           </p>
           <h1
             className="mt-4 max-w-5xl font-serif leading-[1.02]"
@@ -48,9 +48,9 @@ export default function LandingPage() {
             Know what your agents actually delivered.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink/80">
-            Tickets closed, meetings booked, accounts provisioned — Causa checks every claim
-            where it lands, prices what was real, and drafts the next move. First statement in
-            7 days.
+            Every result your agents bill for, priced against what it actually earned you.
+            Then the move, drafted: double down, reroute, or cut. Proof from your own files in
+            minutes.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <button className="btn-ink" onClick={() => setLeadOpen(true)}>
@@ -128,8 +128,8 @@ export default function LandingPage() {
         {/* §3 The claim */}
         <section className="mx-auto max-w-6xl px-4 py-20">
           {[
-            "Every outcome invoice is self-reported. The agent's maker can't be its referee.",
-            "Causa is that record — what your AI workforce actually delivered, priced and settled. Payer-funded, permanently.",
+            "Doubt freezes agent budgets. Renewals stall, invoices get paid on faith, the third agent never gets funded.",
+            "Causa turns doubt into a record — and the record into moves. Payer-funded, permanently.",
           ].map((line) => (
             <div key={line} className="rule border-t py-6">
               <p className="max-w-4xl font-serif text-2xl sm:text-3xl">{line}</p>
@@ -217,7 +217,7 @@ export default function LandingPage() {
                 <div className="mt-4 space-y-3">
                   {(
                     [
-                      ["support", "Fair price is $1.06, not $1.50 — email drafted", `${fmt.usd(1233)}/mo back`],
+                      ["support", "Fair price is $1.06, not $1.50. Your case, drafted.", `${fmt.usd(1233)}/mo back`],
                       ["meetings", "The reps were right — agent-only meetings convert worse", `${fmt.usd(2900)}/mo back`],
                       ["workspace", "Clone the account agent to contractor onboarding", `+${fmt.usd(2140)}/mo`],
                     ] as const
@@ -291,7 +291,7 @@ export default function LandingPage() {
               ],
               [
                 "Causa matches every outcome to whatever did the work.",
-                "Agent, model, or person — each claim checked against the record. The join is the hard part, and it's ours: keys hide in tool calls, hybrid work splits credit. What's joinable is reported before you pay.",
+                "Agent, model, or person — each claim matched to what did the work. The join is the hard part, and it's ours: keys hide in tool calls, hybrid work splits credit. What's joinable is reported before you pay.",
               ],
               [
                 "Every month: a statement that ends in decisions.",
@@ -368,20 +368,21 @@ export default function LandingPage() {
         {/* §8 Final CTA */}
         <section className="mx-auto max-w-6xl px-4 py-20">
           <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">
-            First Verified Outcome Statement in 7 days.
+            Minutes to proof. Days to your first statement.
           </h2>
           <p className="mt-3 max-w-2xl text-[15px] text-ink/70">
-            Pilot from $7.5K, credited against your first year. Two exports and a join key.
+            Run your own exports in the workbench right now — no signup. Pilot from $7.5K,
+            credited against your first year. Two exports and a join key.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-4">
             <button className="btn-ink" onClick={() => setLeadOpen(true)}>
               Get statement
             </button>
             <Link
-              href="/demo"
+              href="/workbench"
               className="flex min-h-[44px] items-center text-[15px] font-medium underline-offset-4 hover:underline"
             >
-              See the demo →
+              Run your own files →
             </Link>
           </div>
         </section>

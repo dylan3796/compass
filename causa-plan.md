@@ -236,6 +236,15 @@ Founder review of the live landing page. Where these conflict with anything abov
 7. **Numerals are instruments.** Data figures set in the grotesque, semibold, tabular. The display serif is reserved for headlines, canonical lines, and verdict stamps. Tier and step indices are mono ledger annotations (TIER 0, 01), never display digits.
 8. **Pillars header:** *One record. Four jobs.* Refinery head: *Every statement ends in a move.*
 
+## ADDENDUM 7 — Add value, don't play cop (July 2026)
+
+Founder review of PR #10. Where these conflict with anything above, these win:
+
+1. **Retire the referee framing from payer-facing copy.** No "checks the work," no homework line on the landing or the OG card. The premise (invoices are self-reported) survives as context on `/company`; Causa's role is stated as value: price what results earned, hand back the move. The canonical motto — *Causa doesn't report outcomes. It settles them.* — replaces the homework eyebrow everywhere it appeared.
+2. **Speed: never lead with "7 days."** The lead speed claim is the workbench: proof from your own files in minutes. The statement promise is "days from your data." (Set a hard SLA number only when ops can back it.) The 7-day quality bar in the Meridian ledger (reopen window) is unrelated and unchanged.
+3. **Renegotiation is an armory, not a service.** Causa never contacts vendors; it drafts the case and the customer decides to send it. Copy never implies Causa hassles anyone. The self-serve moves (double down, reroute, cut) lead; renegotiate follows — it is ~17% of specimen verdict impact and should read that way.
+4. **Voice: the numbers do the selling.** Second person, short declaratives, fewer symmetrical triads and em-dashes. The claim frame is doubt-thaws-budgets (thesis §3.2): doubt freezes agent budgets; the record turns doubt into moves.
+
 ## PART 8 — DEFINITION OF DONE
 
 1. `npm run build` clean; data assertions pass; deploys to Vercel; light mode only.
