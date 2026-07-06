@@ -77,7 +77,7 @@ function DesktopFunnel() {
     <div ref={ref} className="relative mt-14 hidden h-[250px] md:block" aria-hidden="true">
       {/* Origin: the claim, at ledger scale */}
       <div className="absolute left-0 top-0">
-        <p className="font-serif text-4xl">{fmt.int(headers.claimed)}</p>
+        <p className="font-sans text-4xl font-semibold tracking-tight">{fmt.int(headers.claimed)}</p>
         <p className="eyebrow mt-1 text-ink/60">claimed</p>
       </div>
 
@@ -86,7 +86,7 @@ function DesktopFunnel() {
         className="absolute top-0 -translate-x-1/2 text-center"
         style={{ left: `${GATE1_X / 10}%` }}
       >
-        <p className="font-serif text-4xl">{fmt.int(headers.verified)}</p>
+        <p className="font-sans text-4xl font-semibold tracking-tight">{fmt.int(headers.verified)}</p>
         <p className="eyebrow mt-1 text-ink/60">verified</p>
       </div>
 
@@ -95,7 +95,7 @@ function DesktopFunnel() {
         className="absolute top-0 -translate-x-1/2 text-center"
         style={{ left: `${GATE2_X / 10}%` }}
       >
-        <motion.p className="font-serif text-4xl" style={{ opacity: stampOpacity }}>
+        <motion.p className="font-sans text-4xl font-semibold tracking-tight" style={{ opacity: stampOpacity }}>
           {fmt.int(headers.attributable)}
         </motion.p>
         <p className="eyebrow mt-1 text-ink/60">attributable</p>
@@ -124,13 +124,13 @@ function DesktopFunnel() {
 
       {/* What fell away, said plainly */}
       <p
-        className="absolute top-[196px] -translate-x-1/2 whitespace-nowrap font-mono text-[11px] text-ink/60"
+        className="absolute top-[196px] -translate-x-1/2 whitespace-nowrap font-mono text-xs text-ink/60"
         style={{ left: `${GATE1_X / 10}%` }}
       >
         −{fmt.int(headers.claimed - headers.verified)} failed the quality bar
       </p>
       <p
-        className="absolute top-[196px] -translate-x-1/2 whitespace-nowrap font-mono text-[11px] text-ink/60"
+        className="absolute top-[196px] -translate-x-1/2 whitespace-nowrap font-mono text-xs text-ink/60"
         style={{ left: `${GATE2_X / 10}%` }}
       >
         −{fmt.int(headers.verified - headers.attributable)} would have happened anyway
@@ -142,14 +142,14 @@ function DesktopFunnel() {
         style={{ transform: "rotate(-2deg)" }}
         aria-hidden="true"
       >
-        <span className="font-serif text-3xl opacity-0">{fmt.int(headers.attributable)}</span>
+        <span className="font-sans text-3xl font-semibold tracking-tight opacity-0">{fmt.int(headers.attributable)}</span>
         <span className="eyebrow block opacity-60">settled</span>
       </div>
       <motion.div
         className="absolute right-0 top-[84px] border-2 border-ledger bg-paper px-4 py-2 text-ledger"
         style={{ opacity: stampOpacity, scale: stampScale, rotate: -2 }}
       >
-        <span className="font-serif text-3xl">{fmt.int(headers.attributable)}</span>
+        <span className="font-sans text-3xl font-semibold tracking-tight">{fmt.int(headers.attributable)}</span>
         <span className="eyebrow block">settled</span>
       </motion.div>
     </div>
@@ -188,7 +188,7 @@ function StaticStages({ mode }: { mode: "empty" | "animate" | "final" }) {
           <div className="flex items-baseline justify-between">
             <span className="eyebrow text-ink/60">{s.label}</span>
             <span
-              className={`font-serif text-2xl ${i === STAGES.length - 1 ? "text-ledger" : ""}`}
+              className={`font-sans text-xl font-semibold tracking-tight ${i === STAGES.length - 1 ? "text-ledger" : ""}`}
             >
               {fmt.int(s.value)}
             </span>
@@ -207,7 +207,7 @@ function StaticStages({ mode }: { mode: "empty" | "animate" | "final" }) {
             />
           </div>
           {i > 0 && (
-            <p className="mt-1 text-right font-mono text-[10px] text-ink/60">
+            <p className="mt-1 text-right font-mono text-[11px] text-ink/60">
               −{fmt.int(STAGES[i - 1].value - s.value)} {s.drop}
             </p>
           )}

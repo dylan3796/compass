@@ -223,6 +223,19 @@ The product must prove the join, not narrate it. `/workbench` runs Causa's join 
 - **Demo intelligence**: Screen 3 gains "Ask the record" (three sample questions whose answers compute from the ledger, labeled — nothing generated beyond it); Screen 4 gains the July cadence strip (statement drafts automatically, recommendations queued, adjustment files to accounting) — the statement is a subscription, not a report.
 - Links: landing hero ("Run your own files →") and demo Screen 2 footnote point at the workbench.
 
+## ADDENDUM 6 — Three surfaces, quicker everywhere, confidence over caveats (July 2026)
+
+Founder review of the live landing page. Where these conflict with anything above, these win:
+
+1. **Three surfaces.** The landing carries the problem, the claim, and the value. `/demo` is the product surface ("Product" in nav). `/company` carries the vision ladder (Meter → Verdict → Standard), the why-now market facts, the sell-side strip, and the founder block — all removed from the landing. The wordmark is the only route home; the landing has no nav item for itself.
+2. **Nav is sticky**; the wordmark renders at display scale (≥ text-4xl desktop) so the mark is never the smallest thing on screen. Nav: wordmark left · Product · Company · *Get statement*.
+3. **Hero stays value-first and gets quicker.** H1 unchanged (*Know what your agents actually delivered.* — six words is the zinger). Sub ≤ 30 words. Two CTAs (*Get statement* · *See the demo*); the workbench link demotes to the specimen line under the funnel.
+4. **No internal talk in visitor copy.** Build assertions, "fictional," and "not a promise" hedges never ship on the landing. The specimen is labeled once, plainly: *Meridian, June 2026 — the specimen statement behind every number on this page.* The demo keeps its SAMPLE DATA banner; that is where the disclosure lives.
+5. **Confidence rule for the calculator:** state the mechanism, not the apology — *Meridian's verdict rate — 74% of spend — applied to yours. Your statement computes the real number.*
+6. **The cast speaks its own vocabulary.** Persona lines ≤ 25 words, written in the words of the job (reopens, pipeline, cost per result) — no writerly flourishes a practitioner wouldn't say.
+7. **Numerals are instruments.** Data figures set in the grotesque, semibold, tabular. The display serif is reserved for headlines, canonical lines, and verdict stamps. Tier and step indices are mono ledger annotations (TIER 0, 01), never display digits.
+8. **Pillars header:** *One record. Four jobs.* Refinery head: *Every statement ends in a move.*
+
 ## PART 8 — DEFINITION OF DONE
 
 1. `npm run build` clean; data assertions pass; deploys to Vercel; light mode only.
