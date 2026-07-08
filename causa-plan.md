@@ -245,6 +245,18 @@ Founder review of PR #10. Where these conflict with anything above, these win:
 3. **Renegotiation is an armory, not a service.** Causa never contacts vendors; it drafts the case and the customer decides to send it. Copy never implies Causa hassles anyone. The self-serve moves (double down, reroute, cut) lead; renegotiate follows — it is ~17% of specimen verdict impact and should read that way.
 4. **Voice: the numbers do the selling.** Second person, short declaratives, fewer symmetrical triads and em-dashes. The claim frame is doubt-thaws-budgets (thesis §3.2): doubt freezes agent budgets; the record turns doubt into moves.
 
+## ADDENDUM 8 — Show the statement, sell the benefit (July 2026)
+
+Founder review: "Does the landing convey the benefit, or just spew numbers and text?" Benchmarked against recent YC AI companies, the design canon (Linear, Stripe), CFO pages (Ramp, Mercury, Brex), and the verification-category analog (DoubleVerify/IAS — independent verification of billed ad outcomes). Where these conflict with anything above, these win:
+
+1. **Show the artifact, not the method.** The hero's tick-mark Settlement Funnel is replaced by a **statement card** — a fragment of the real Meridian Verified Outcome Statement (four workflow rows, each ending in its verdict, closing on the $7,350/mo · 74% total). Mercury/Brex move: let the buyer picture their own statement. The funnel stays in /demo Screen 3, where the spec still requires it.
+2. **Outcome first; mechanism in the subhead.** Ramp/Metronome discipline. The H1 stays (*Know what your agents actually delivered.*); the subhead names the systems (Zendesk/Salesforce/ServiceNow) and the payer (*the leader who signs the AI invoices*).
+3. **Verb spine, five sections, each ends in a door.** Hero → §1 self-reported (villain + vision → /company) → §01 Verify (→ /workbench) → §02 Price (→ calculator/lead) → §03 Decide (→ /demo) → §Start. Down from eight sections; body copy roughly halved. Every section resolves to a decision or a link.
+4. **Numbers after meaning; red is a budget.** No figure appears before the sentence that makes it land. Verdict red is spent on large focal numbers only (the statement total, the calculator output, the DECIDE recovery); verdict chips and small dollar figures stay ink (red clears WCAG AA only ≥24px); ledger green carries EXPAND.
+5. **Cut from the landing (all survive in the demo):** the four-persona table, the two-line claim section, the four-pillar grid, the A/B/C/D grades grid, the six-row source index, the three-tier diagram, the Origin chip row. A pillar/table tour is a feature list; the landing is a story.
+6. **Name the villain in the payer's words, and cite the analog honestly.** §1 leads "Every result on the invoice is self-reported." The ad-verification precedent is used qualitatively (independent measurement became a permanent layer) — no precise borrowed stat unless it can be sourced to primary and lives in `lib/data.ts`.
+7. **Worked prices are data, not literals.** The $11.90→$0.42 and $1.50→$1.06 lines read from a new `workedExamples` block in `data.ts`, asserted against the workspace row and the dispute row so they reconcile like every other number.
+
 ## PART 8 — DEFINITION OF DONE
 
 1. `npm run build` clean; data assertions pass; deploys to Vercel; light mode only.

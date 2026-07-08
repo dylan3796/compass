@@ -380,6 +380,15 @@ export const market = {
   top1PctPerEmployeeMonthly: 7450,
 } as const;
 
+/**
+ * The two worked prices the landing quotes in prose. Held here (not as string
+ * literals in the component) and asserted against the ledger so they reconcile.
+ */
+export const workedExamples = {
+  workspace: { agentCost: 0.42, oldCost: 11.9, oldDays: 2.1, agentMinutes: 4 },
+  support: { billed: 1.5, fair: 1.06 },
+} as const;
+
 /** Verdict impact split: recovered now vs. additional if EXPAND is acted on. */
 export const impactSplit = {
   recovered: workflows
@@ -441,6 +450,18 @@ assert(
 assert(
   impactSplit.recovered + impactSplit.expandable === headers.projectedVerdictImpact,
   "impact split must reconcile to the projected verdict impact"
+);
+
+// Worked prices quoted on the landing must match the ledger they come from.
+const workspaceRow = workflows.find((w) => w.id === "workspace")!;
+assert(
+  workedExamples.workspace.agentCost === workspaceRow.costPerVerified,
+  "worked workspace price must equal the workspace row's $/verified"
+);
+assert(
+  workedExamples.support.billed === dispute.billedPerResolution &&
+    workedExamples.support.fair === dispute.fairPrice,
+  "worked support prices must equal the dispute row"
 );
 
 export const fmt = {

@@ -1,32 +1,15 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
 import { Reveal, Stamp } from "@/components/motion";
-import {
-  benchmarkTeaser,
-  company,
-  fmt,
-  gradeDescriptions,
-  headers,
-  workflows,
-} from "@/lib/data";
-import type { Grade } from "@/lib/data";
-import { OriginBadge, VerdictStamp } from "@/components/chips";
+import { fmt, market, workedExamples } from "@/lib/data";
+import { VerdictStamp } from "@/components/chips";
 import LeadCapture from "./LeadCapture";
 import SiteFooter from "./SiteFooter";
 import SiteNav from "./SiteNav";
 import SpendCalculator from "./SpendCalculator";
-import Tiers from "./Tiers";
-
-// Hero animation code-split; static fallback keeps LCP light.
-const SettlementFunnel = dynamic(() => import("./SettlementFunnel"), {
-  ssr: false,
-  loading: () => <div className="mt-14 h-[220px] max-md:h-[280px]" aria-hidden="true" />,
-});
-
-const GRADES: Grade[] = ["A", "B", "C", "D"];
+import StatementCard from "./StatementCard";
 
 export default function LandingPage() {
   const [leadOpen, setLeadOpen] = useState(false);
@@ -36,8 +19,8 @@ export default function LandingPage() {
       <SiteNav onGetStatement={() => setLeadOpen(true)} />
 
       <main>
-        {/* §1 Hero */}
-        <section className="mx-auto max-w-6xl px-4 pb-20 pt-10 sm:pt-16">
+        {/* Hero — the outcome, then the artifact */}
+        <section className="mx-auto max-w-6xl px-4 pb-24 pt-10 sm:pt-16">
           <p className="eyebrow text-ink/60">
             Causa doesn&rsquo;t report outcomes. It settles them.
           </p>
@@ -48,9 +31,9 @@ export default function LandingPage() {
             Know what your agents actually delivered.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink/80">
-            Every result your agents bill for, priced against what it actually earned you.
-            Then the move, drafted: double down, reroute, or cut. Proof from your own files in
-            minutes.
+            Causa verifies every result your agents claim — in your own Zendesk, Salesforce, and
+            ServiceNow records — prices what it earned you, and drafts the next move. For the
+            leader who signs the AI invoices.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <button className="btn-ink" onClick={() => setLeadOpen(true)}>
@@ -64,317 +47,195 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          <SettlementFunnel />
-
-          <p className="mt-6 font-serif text-2xl text-verdict sm:text-3xl">
-            Verdicts: {fmt.usd(headers.projectedVerdictImpact)}/mo —{" "}
-            {Math.round((headers.projectedVerdictImpact / headers.spend) * 100)}% of agent
-            spend.
-          </p>
-          <p className="mt-2 max-w-2xl font-mono text-xs leading-relaxed text-ink/60">
-            Meridian, June 2026 — the specimen statement behind every number on this page.{" "}
-            <Link href="/demo" className="whitespace-nowrap underline underline-offset-4">
-              See it in full →
-            </Link>{" "}
-            ·{" "}
-            <Link href="/workbench" className="whitespace-nowrap underline underline-offset-4">
-              Run your own files →
-            </Link>
-          </p>
+          <StatementCard />
         </section>
 
-        {/* §2 The problem, told at ground level */}
-        <section className="mx-auto max-w-6xl px-4 py-20">
-          <p className="eyebrow text-ink/60">
-            Meridian — {company.headcount} people, a year into agents
-          </p>
-          <h2 className="mt-2 max-w-3xl font-serif text-4xl sm:text-5xl">
-            Everyone suspects. Nobody knows.
+        {/* §1 — the villain, named in the payer's words + the vision */}
+        <section className="mx-auto max-w-6xl px-4 py-28">
+          <h2 className="max-w-4xl font-serif text-5xl leading-[1.05] sm:text-6xl">
+            Every result on the invoice is self-reported.
           </h2>
-          <div className="mt-8 max-w-3xl">
-            {(
-              [
-                [
-                  "Support manager",
-                  "The vendor billed 3,214 resolutions. Reopens don't show on its dashboard, and she has no count of her own. She pays.",
-                ],
-                [
-                  "IT lead",
-                  "His onboarding agent works — he's almost sure. No number for what it saves, so his ask for two more dies in review.",
-                ],
-                [
-                  "Sales director",
-                  "The SDR agent bills for meetings her reps say were already coming. Nobody can prove it either way. The fight repeats monthly.",
-                ],
-                [
-                  "CFO",
-                  "Agent spend: one line, up and to the right. She can price a rep, a contractor, a seat. Not this.",
-                ],
-              ] as const
-            ).map(([role, line]) => (
-              <div key={role} className="rule grid gap-1 border-t py-5 md:grid-cols-[11rem_1fr] md:gap-6">
-                <p className="eyebrow pt-1 text-ink/60">{role}</p>
-                <p className="text-[15px] leading-relaxed text-ink/80">{line}</p>
-              </div>
-            ))}
-            <div className="rule border-t" />
+          <div className="mt-10 max-w-[60ch] space-y-5 text-[17px] leading-relaxed text-ink/80">
+            <p>
+              Agents now close tickets, set up new hires, and book meetings — and bill you per
+              result. Intercom&rsquo;s Fin charges {fmt.usd(market.finPerResolution, 2)} a
+              resolution; it sold for ${market.finAcquisitionBn}B. But every count on those
+              invoices comes from the seller&rsquo;s own dashboard. The support manager has no
+              reopen count of her own. The CFO can price a rep, a contractor, a seat — not this.
+            </p>
+            <p>
+              Advertising crossed this bridge twenty years ago. When ads went outcome-priced,
+              buyers stopped taking the seller&rsquo;s word for it, and independent measurement
+              became a permanent layer of that economy. Machine labor is the next economy that
+              pays for results. Its record doesn&rsquo;t exist yet.
+            </p>
           </div>
-          <p className="mt-8 max-w-3xl font-serif text-2xl leading-snug sm:text-3xl">
-            Four people, one missing thing: an independent record of what the agents actually
-            delivered.
+          <p className="mt-8 max-w-3xl font-serif text-3xl leading-snug sm:text-4xl">
+            Causa is that record. Built for the payer, funded by the payer, permanently.
           </p>
-        </section>
-
-        {/* §3 The claim */}
-        <section className="mx-auto max-w-6xl px-4 py-20">
-          {[
-            "Doubt freezes agent budgets. Renewals stall, invoices get paid on faith, the third agent never gets funded.",
-            "Causa turns doubt into a record — and the record into moves. Payer-funded, permanently.",
-          ].map((line) => (
-            <div key={line} className="rule border-t py-6">
-              <p className="max-w-4xl font-serif text-2xl sm:text-3xl">{line}</p>
-            </div>
-          ))}
-          <div className="rule border-t" />
-          <p className="py-4 text-[15px] text-ink/70">
-            <Link href="/company" className="underline underline-offset-4 hover:text-ink">
+          <p className="mt-6">
+            <Link
+              href="/company"
+              className="text-[15px] underline underline-offset-4 hover:text-ink"
+            >
               Why this layer has to exist →
             </Link>
           </p>
         </section>
 
-        {/* §4 The four pillars — what the record gives you */}
-        <section className="mx-auto max-w-6xl px-4 py-20">
-          <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">
-            One record. Four jobs.
+        {/* §2 VERIFY — how it works, part one; entices /workbench */}
+        <section className="mx-auto max-w-6xl px-4 py-24">
+          <p className="eyebrow text-ink/50">01 · Verify</p>
+          <h2 className="mt-2 max-w-3xl font-serif text-4xl sm:text-5xl">
+            Your systems already know the truth.
           </h2>
-          <div className="mt-10">
-            {/* Pillar 1 — one place */}
-            <Reveal className="rule grid gap-4 border-t py-8 md:grid-cols-[minmax(0,20rem)_1fr] md:gap-10">
-              <div>
-                <p className="eyebrow text-ink/60">01 · One place</p>
-                <h3 className="mt-1 font-serif text-3xl">Every agent, one ledger.</h3>
-              </div>
-              <div>
-                <p className="max-w-2xl text-[15px] leading-relaxed text-ink/80">
-                  Built in-house, bought from a vendor, or hybrid — every claimed outcome lands
-                  in one record, held to one bar, every run attributed to its model.
-                </p>
-                <p className="mt-4 flex flex-wrap items-center gap-2 text-sm text-ink/70">
-                  <OriginBadge origin="BUILT" />
-                  <OriginBadge origin="BOUGHT" />
-                  <OriginBadge origin="HYBRID" />
-                  <span>
-                    Meridian&rsquo;s four workflows · {fmt.usd(headers.spend)}/mo · one
-                    statement
-                  </span>
-                </p>
-              </div>
-            </Reveal>
-
-            {/* Pillar 2 — the read */}
-            <Reveal className="rule grid gap-4 border-t py-8 md:grid-cols-[minmax(0,20rem)_1fr] md:gap-10">
-              <div>
-                <p className="eyebrow text-ink/60">02 · The read</p>
-                <h3 className="mt-1 font-serif text-3xl">An Agent P&amp;L, finally.</h3>
-              </div>
-              <div>
-                <p className="max-w-2xl text-[15px] leading-relaxed text-ink/80">
-                  Outcomes on one side, cost on the other — by agent, by vendor, by model.
-                  Export-ready, in the same language as every other line item.
-                </p>
-                <dl className="mt-4 max-w-md">
-                  {(
-                    [
-                      ["Spend", fmt.usd(headers.spend)],
-                      ["Verified outcomes", fmt.int(headers.verified)],
-                      ["Verdict impact identified", `${fmt.usd(headers.projectedVerdictImpact)}/mo`],
-                    ] as const
-                  ).map(([label, figure]) => (
-                    <div
-                      key={label}
-                      className="rule flex items-baseline justify-between gap-4 border-t py-2"
-                    >
-                      <dt className="text-sm text-ink/80">{label}</dt>
-                      <dd className="font-mono text-sm">{figure}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            </Reveal>
-
-            {/* Pillar 3 — the refinery */}
-            <Reveal className="rule grid gap-4 border-t py-8 md:grid-cols-[minmax(0,20rem)_1fr] md:gap-10">
-              <div>
-                <p className="eyebrow text-ink/60">03 · The refinery</p>
-                <h3 className="mt-1 font-serif text-3xl">Every statement ends in a move.</h3>
-              </div>
-              <div>
-                <p className="max-w-2xl text-[15px] leading-relaxed text-ink/80">
-                  Retune the instructions, reroute to a cheaper model, clone what works, cut
-                  what isn&rsquo;t beating its baseline — per agent, artifact drafted.
-                </p>
-                <div className="mt-4 space-y-3">
-                  {(
-                    [
-                      ["support", "Fair price is $1.06, not $1.50. Your case, drafted.", `${fmt.usd(1233)}/mo back`],
-                      ["meetings", "The reps were right — agent-only meetings convert worse", `${fmt.usd(2900)}/mo back`],
-                      ["workspace", "Clone the account agent to contractor onboarding", `+${fmt.usd(2140)}/mo`],
-                    ] as const
-                  ).map(([id, line, figure]) => {
-                    const w = workflows.find((x) => x.id === id)!;
-                    return (
-                      <div key={id} className="flex flex-wrap items-center gap-3">
-                        <Stamp rotate={-1 - ((w.verdict.length * 3) % 5) * 0.5}>
-                          <VerdictStamp verdict={w.verdict} label={w.verdict} size="sm" />
-                        </Stamp>
-                        <span className="text-sm text-ink/80">{line}</span>
-                        <span className="ml-auto font-mono text-sm">{figure}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </Reveal>
-
-            {/* Pillar 4 — the intelligence */}
-            <Reveal className="rule grid gap-4 border-y py-8 md:grid-cols-[minmax(0,20rem)_1fr] md:gap-10">
-              <div>
-                <p className="eyebrow text-ink/60">04 · The intelligence</p>
-                <h3 className="mt-1 font-serif text-3xl">A record you can ask.</h3>
-              </div>
-              <div>
-                <p className="max-w-2xl text-[15px] leading-relaxed text-ink/80">
-                  Every activity captured means every question answerable — and the record
-                  learns: outcomes you weren&rsquo;t measuring, where to point agents next,
-                  your fleet read against the market.
-                </p>
-                <p className="mt-4 font-mono text-xs leading-relaxed text-ink/70">
-                  &ldquo;Why did support cost more in June?&rdquo; · &ldquo;Which runs touched
-                  this ticket?&rdquo; · &ldquo;What should the notes agent stop doing?&rdquo;
-                </p>
-                <p className="rule mt-4 max-w-md border-t pt-3 text-sm text-ink/80">
-                  Market signal: your cost per resolved ticket{" "}
-                  <span className="font-mono">
-                    {fmt.usd(benchmarkTeaser.yourCostPerResolvedTicket, 2)}
-                  </span>{" "}
-                  · Benchmark median{" "}
-                  <span className="font-mono">{fmt.usd(benchmarkTeaser.benchmarkMedian, 2)}</span>{" "}
-                  · {benchmarkTeaser.percentile}st percentile. Every statement sharpens it.
-                </p>
-              </div>
-            </Reveal>
-          </div>
-          <p className="mt-6 font-serif text-xl italic text-ink/80">
-            One record. It cascades — board deck to team standup.
-          </p>
-        </section>
-
-        {/* §5 Run it on your spend */}
-        <section className="mx-auto max-w-6xl px-4 py-20">
-          <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">Run it on your spend.</h2>
-          <div className="mt-8 max-w-2xl">
-            <SpendCalculator onGetStatement={() => setLeadOpen(true)} />
-          </div>
-        </section>
-
-        {/* §6 How it works */}
-        <section className="mx-auto max-w-6xl px-4 py-20">
-          <Reveal>
-            <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">How it works</h2>
-          </Reveal>
-          <div className="mt-8 max-w-3xl">
-            {[
-              [
-                "Connect where outcomes land.",
-                "Zendesk, Jira, Salesforce, Stripe — or start with two CSV exports and a join key. Read-only.",
-              ],
-              [
-                "Causa matches every outcome to whatever did the work.",
-                "Agent, model, or person — each claim matched to what did the work. The join is the hard part, and it's ours: keys hide in tool calls, hybrid work splits credit. What's joinable is reported before you pay.",
-              ],
-              [
-                "Every month: a statement that ends in decisions.",
-                "What was real, what each outcome cost, and the next step drafted.",
-              ],
-            ].map(([head, body], i) => (
-              <Reveal key={head} delay={i * 0.05} className="rule flex gap-5 border-t py-5">
-                <span className="eyebrow pt-2 text-ink/50">0{i + 1}</span>
-                <div>
-                  <h3 className="font-serif text-2xl">{head}</h3>
-                  <p className="mt-1 text-[15px] text-ink/70">{body}</p>
-                </div>
-              </Reveal>
-            ))}
-            <div className="rule border-t" />
+          <div className="mt-8 max-w-[60ch] space-y-5 text-[17px] leading-relaxed text-ink/80">
+            <p>
+              A resolved ticket lands in Zendesk. A new hire&rsquo;s account goes live in
+              ServiceNow. An opportunity opens in Salesforce. Causa reads those records —
+              read-only, no SDK, nothing to rip out — and holds every claimed result to two
+              tests: <em>did it hold up</em>, and{" "}
+              <em>would it have happened anyway?</em>{" "}
+              Built or bought, every agent answers to the same bar.
+            </p>
+            <p>
+              In Meridian&rsquo;s June statement, 4,812 claimed results came in. 4,203 held up.
+              3,163 would not have happened without the agents. The gap is money.
+            </p>
+            <p>
+              Not all proof is equal. We grade ours — every verdict carries its evidence grade,
+              A to D, and the path to a stronger one.
+            </p>
           </div>
 
-          {/* What lands where — the outcomes themselves, per system */}
-          <div className="mt-10 grid max-w-3xl gap-x-10 sm:grid-cols-2">
-            {[
-              ["Zendesk", "Ticket resolved"],
-              ["Stripe", "Payment settled · Refund processed"],
-              ["Salesforce", "Opportunity created"],
-              ["ServiceNow", "Workspace provisioned"],
-              ["Google Drive", "Document approved"],
-              ["Jira", "Meeting notes → ticket · Issue closed"],
-            ].map(([source, event]) => (
-              <div
-                key={source}
-                className="rule flex items-baseline justify-between gap-4 border-b py-2"
-              >
-                <span className="eyebrow text-ink/60">{source}</span>
-                <span className="text-right text-sm">{event}</span>
-              </div>
-            ))}
-          </div>
-          <p className="mt-3 max-w-3xl text-sm text-ink/70">
-            Whatever the outcome, if it lands in a system of record, Causa verifies it — and
-            ties it to whatever did the work.
+          <p className="mt-8 max-w-3xl font-mono text-xs leading-relaxed text-ink/60">
+            ZENDESK · ticket resolved &nbsp;—&nbsp; SERVICENOW · account live &nbsp;—&nbsp;
+            SALESFORCE · opportunity created &nbsp;—&nbsp; STRIPE · payment settled
+            &nbsp;—&nbsp; JIRA · issue closed
           </p>
 
-          <div className="mt-10">
-            <Tiers />
-          </div>
-        </section>
-
-        {/* §7 Proof discipline — compressed */}
-        <section className="mx-auto max-w-6xl px-4 py-20">
-          <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">
-            Not all proof is equal. We grade ours.
-          </h2>
-          <div className="mt-8 grid max-w-3xl gap-x-10 sm:grid-cols-2">
-            {GRADES.map((g) => (
-              <div key={g} className="rule flex items-baseline gap-3 border-t py-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center self-center border-2 border-ink font-serif text-xl">
-                  {g}
-                </span>
-                <p className="text-sm leading-relaxed text-ink/80">
-                  <span className="font-medium">{gradeDescriptions[g].name}.</span>{" "}
-                  {gradeDescriptions[g].line}
-                </p>
-              </div>
-            ))}
-          </div>
-          <p className="mt-6 max-w-3xl text-[15px] text-ink/70">
-            Every verdict carries its grade — and the path to a better one. Built or bought,
-            every agent answers to the same bar:{" "}
-            <Link href="/demo" className="underline underline-offset-4">
-              see the fleet in the demo →
+          <p className="mt-8 max-w-[60ch] text-[17px] leading-relaxed text-ink/80">
+            Don&rsquo;t take the method on faith. The workbench runs it on your own exports, in
+            your browser, in minutes. No signup; no row leaves the tab. Two exports and a join
+            key.
+          </p>
+          <p className="mt-6">
+            <Link
+              href="/workbench"
+              className="text-[15px] font-medium underline underline-offset-4 hover:text-ink"
+            >
+              Run your own files →
             </Link>
           </p>
         </section>
 
-        {/* §8 Final CTA */}
-        <section className="mx-auto max-w-6xl px-4 py-20">
+        {/* §3 PRICE — how it works, part two; entices lead capture via calculator */}
+        <section className="mx-auto max-w-6xl px-4 py-24">
+          <p className="eyebrow text-ink/50">02 · Price</p>
+          <h2 className="mt-2 max-w-3xl font-serif text-4xl sm:text-5xl">
+            What each result actually earned you.
+          </h2>
+          <div className="mt-8 max-w-[60ch] space-y-5 text-[17px] leading-relaxed text-ink/80">
+            <p>
+              Meridian&rsquo;s in-house agent sets up new-hire accounts for{" "}
+              {fmt.usd(workedExamples.workspace.agentCost, 2)} each. The old process cost{" "}
+              {fmt.usd(workedExamples.workspace.oldCost, 2)} and took{" "}
+              {workedExamples.workspace.oldDays} days; the agent takes{" "}
+              {workedExamples.workspace.agentMinutes} minutes. That&rsquo;s the evidence that
+              funds the next agent — no vendor conversation required.
+            </p>
+            <p>
+              The support vendor bills {fmt.usd(workedExamples.support.billed, 2)} a resolution.
+              Checked against a slice of tickets the agent never touches, the fair price is{" "}
+              {fmt.usd(workedExamples.support.fair, 2)}. That case comes drafted, ready to send.
+            </p>
+          </div>
+
+          <dl className="mt-8 max-w-lg">
+            {(
+              [
+                ["New-hire account", workedExamples.workspace.oldCost, workedExamples.workspace.agentCost],
+                ["Support resolution", workedExamples.support.billed, workedExamples.support.fair],
+              ] as const
+            ).map(([label, from, to]) => (
+              <div
+                key={label}
+                className="flex items-baseline justify-between gap-4 border-t border-hairline py-2.5"
+              >
+                <dt className="text-[15px] text-ink/80">{label}</dt>
+                <dd className="font-sans text-lg font-semibold tabular-nums tracking-tight">
+                  {fmt.usd(from, 2)} <span className="text-ink/40">→</span> {fmt.usd(to, 2)}
+                </dd>
+              </div>
+            ))}
+            <div className="border-t border-hairline" />
+          </dl>
+
+          <p className="mt-8 max-w-[60ch] text-[17px] leading-relaxed text-ink/80">
+            Spend on one side, verified value on the other — cost per real result, by agent and
+            by model. An Agent P&amp;L, finally, in the same language as every other line item.
+          </p>
+
+          <div className="mt-12">
+            <h3 className="font-serif text-2xl">Run it on your spend.</h3>
+            <div className="mt-5 max-w-2xl">
+              <SpendCalculator onGetStatement={() => setLeadOpen(true)} />
+            </div>
+          </div>
+        </section>
+
+        {/* §4 DECIDE — the payoff; entices /demo */}
+        <section className="mx-auto max-w-6xl px-4 py-28">
+          <p className="eyebrow text-ink/50">03 · Decide</p>
+          <h2 className="mt-2 max-w-3xl font-serif text-4xl sm:text-5xl">
+            Every statement ends in a move.
+          </h2>
+          <div className="mt-8 grid gap-x-12 gap-y-8 md:grid-cols-[1fr_auto] md:items-start">
+            <div className="max-w-[60ch] space-y-5 text-[17px] leading-relaxed text-ink/80">
+              <p>
+                Not a chart — a drafted decision per workflow: double down on what&rsquo;s
+                earning, reroute work to the cheaper model that passes the same bar, cut what
+                isn&rsquo;t beating its baseline, renegotiate what&rsquo;s overpriced. Evidence
+                attached, dollars projected.
+              </p>
+              <p>
+                June&rsquo;s sharpest call: the sales director&rsquo;s reps swore the
+                meeting-booker was claiming pipeline they had already built. The staged rollout
+                proved them right — meetings from the agent-only slice convert 8%, against 11%
+                without it. Retire the agent slice, keep the assisted playbook, recover{" "}
+                <span className="font-mono text-verdict">{fmt.usd(2900)}/mo</span>. The
+                wind-down is drafted. She clicks send.
+              </p>
+            </div>
+            <Stamp className="justify-self-start md:mt-2" rotate={-3}>
+              <VerdictStamp verdict="RETIRE" label="RETIRE" size="lg" />
+            </Stamp>
+          </div>
+          <p className="mt-10 font-serif text-2xl italic text-ink/80">
+            One record. It cascades — board deck to team standup.
+          </p>
+          <p className="mt-6">
+            <Link
+              href="/demo"
+              className="text-[15px] font-medium underline underline-offset-4 hover:text-ink"
+            >
+              Walk Meridian&rsquo;s full statement →
+            </Link>
+          </p>
+        </section>
+
+        {/* §5 START — conversion */}
+        <section className="mx-auto max-w-6xl px-4 py-24">
           <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">
             Minutes to proof. Days to your first statement.
           </h2>
-          <p className="mt-3 max-w-2xl text-[15px] text-ink/70">
-            Run your own exports in the workbench right now — no signup. Pilot from $7.5K,
-            credited against your first year. Two exports and a join key.
+          <p className="mt-6 max-w-[60ch] text-[17px] leading-relaxed text-ink/80">
+            Proof first: drop two exports into the workbench and watch it match work to results
+            in your browser. Minutes, no signup. Then the statement: pilots from $7.5K, credited
+            against your first year. Two exports and a join key — and we tell you what&rsquo;s
+            verifiable with what you&rsquo;ve connected before you pay for anything.
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-4">
+          <div className="mt-8 flex flex-wrap items-center gap-4">
             <button className="btn-ink" onClick={() => setLeadOpen(true)}>
               Get statement
             </button>
