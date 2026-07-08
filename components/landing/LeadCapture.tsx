@@ -124,7 +124,7 @@ export default function LeadCapture({ onClose }: { onClose: () => void }) {
               </button>
             </div>
             <p className="mt-2 text-sm text-ink/70">
-              Your first Verified Outcome Statement, days from your data — from $7.5K, credited
+              Your first Verified Outcome Statement, days from your data — from $7,500, credited
               against your first year. Have three things ready: an export of agent activity, an export of
               outcomes (Zendesk, Jira, Stripe…), and the ID column they share — ticket_id
               works.

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Stamp } from "@/components/motion";
-import { fmt, workedExamples } from "@/lib/data";
+import { fmt, headers, workedExamples, workflows } from "@/lib/data";
 import { VerdictStamp } from "@/components/chips";
 import LeadCapture from "./LeadCapture";
 import SiteFooter from "./SiteFooter";
@@ -57,7 +57,7 @@ export default function LandingPage() {
           <p className="mt-8 max-w-[54ch] text-lg leading-relaxed text-ink/80">
             Agents close your tickets, onboard your hires, book your meetings — then bill you per
             result. Every count comes from the seller&rsquo;s own dashboard. Advertising settled
-            this with independent measurement once it went outcome-priced. Machine labor is next.
+            this with an independent record once it went outcome-priced. Machine labor is next.
           </p>
           <p className="mt-8 max-w-3xl font-serif text-3xl leading-snug sm:text-4xl">
             Causa is that record. Built for the payer, funded by the payer.
@@ -74,15 +74,16 @@ export default function LandingPage() {
 
         {/* §2 VERIFY — how it works, part one; entices /workbench */}
         <section className="mx-auto max-w-6xl px-4 py-24">
-          <p className="eyebrow text-ink/50">01 · Verify</p>
+          <p className="eyebrow text-ink/60">01 · Verify</p>
           <h2 className="mt-2 max-w-3xl font-serif text-4xl sm:text-5xl">
             Your systems already know the truth.
           </h2>
           <p className="mt-8 max-w-[54ch] text-lg leading-relaxed text-ink/80">
             Causa reads your own records — Zendesk, Salesforce, ServiceNow — read-only, and tests
             every claim two ways: <em>did it hold up</em>, and{" "}
-            <em>would it have happened anyway?</em> In Meridian&rsquo;s June, 4,812 results were
-            claimed. 3,163 would not have happened without the agents. The gap is money.
+            <em>would it have happened anyway?</em> In Meridian&rsquo;s June, {fmt.int(headers.claimed)}{" "}
+            results were claimed. {fmt.int(headers.attributable)} would not have happened without
+            the agents. The gap is money.
           </p>
           <p className="mt-6 max-w-[54ch] text-lg leading-relaxed text-ink/80">
             Prove it on your own exports — in your browser, in minutes, no signup.
@@ -99,9 +100,9 @@ export default function LandingPage() {
 
         {/* §3 PRICE — how it works, part two; entices lead capture via calculator */}
         <section className="mx-auto max-w-6xl px-4 py-24">
-          <p className="eyebrow text-ink/50">02 · Price</p>
+          <p className="eyebrow text-ink/60">02 · Price</p>
           <h2 className="mt-2 max-w-3xl font-serif text-4xl sm:text-5xl">
-            What each result actually earned you.
+            What each result earned you.
           </h2>
           <p className="mt-8 max-w-[54ch] text-lg leading-relaxed text-ink/80">
             Every verified result, priced against the invoice and against the old way. The
@@ -143,18 +144,20 @@ export default function LandingPage() {
 
         {/* §4 DECIDE — the payoff; entices /demo */}
         <section className="mx-auto max-w-6xl px-4 py-28">
-          <p className="eyebrow text-ink/50">03 · Decide</p>
+          <p className="eyebrow text-ink/60">03 · Decide</p>
           <h2 className="mt-2 max-w-3xl font-serif text-4xl sm:text-5xl">
             Every statement ends in a move.
           </h2>
-          <div className="mt-8 grid gap-x-12 gap-y-8 md:grid-cols-[1fr_auto] md:items-start">
+          <div className="mt-8 grid max-w-3xl gap-x-12 gap-y-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-start">
             <p className="max-w-[54ch] text-lg leading-relaxed text-ink/80">
               Not a chart — a move per agent, evidence attached. June&rsquo;s sharpest call: the
               SDR agent kept booking meetings the reps say they&rsquo;d have closed anyway. The
               staged rollout proved it — the agent-only slice converts 8%, against 11% without
               it. Retire it, recover{" "}
-              <span className="font-mono text-verdict">{fmt.usd(2900)}/mo</span>. The wind-down
-              comes drafted.
+              <span className="font-semibold tabular-nums">
+                {fmt.usd(workflows.find((w) => w.id === "meetings")!.impactPerMonth)}/mo
+              </span>
+              . The wind-down comes drafted.
             </p>
             <Stamp className="justify-self-start md:mt-2" rotate={-3}>
               <VerdictStamp verdict="RETIRE" label="RETIRE" size="lg" />
@@ -179,9 +182,9 @@ export default function LandingPage() {
             Minutes to proof. Days to your first statement.
           </h2>
           <p className="mt-6 max-w-[54ch] text-lg leading-relaxed text-ink/80">
-            Drop two exports into the workbench and watch it match work to results in your
-            browser — no signup. Then the statement: pilots from $7.5K, credited against year
-            one. Two exports and a join key.
+            Drop your exports into the workbench and watch it match work to results — no signup.
+            Then the statement: pilots from $7,500, credited against year one. Two exports and a
+            join key.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <button className="btn-ink" onClick={() => setLeadOpen(true)}>

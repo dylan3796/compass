@@ -7,7 +7,7 @@ const TIERS = [
     name: "Tier 0 — Pilot",
     summary: "No integration required.",
     detail:
-      "Export your agent activity — from your vendor's dashboard or wherever your agent runs. Export your outcomes. Give us the key that joins them. Statement in days, from $7.5K, credited against your first year.",
+      "Export your agent activity — from your vendor's dashboard or wherever your agent runs. Export your outcomes. Give us the key that joins them. Statement in days, from $7,500, credited against your first year.",
   },
   {
     name: "Tier 1 — One workflow, live",

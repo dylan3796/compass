@@ -132,7 +132,7 @@ export default function CompanyPage() {
               Minutes to proof. Days to your first statement.
             </h2>
             <p className="mt-3 max-w-2xl text-[15px] text-ink/70">
-              Pilot from $7.5K, credited against your first year. Two exports and a join key.
+              Pilot from $7,500, credited against your first year. Two exports and a join key.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-4">
               <button className="btn-ink" onClick={() => setLeadOpen(true)}>

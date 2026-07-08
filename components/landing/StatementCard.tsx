@@ -17,9 +17,9 @@ export default function StatementCard() {
   return (
     <figure className="mt-12 max-w-2xl">
       <div className="border-2 border-ink bg-white/40 p-5 sm:p-7">
-        <p className="eyebrow text-ink/55">
-          Verified Outcome Statement · Meridian · June 2026 · Agent spend{" "}
-          {fmt.usd(headers.spend)}
+        <p className="eyebrow text-ink/60">
+          Verified Outcome Statement · Meridian · June 2026 ·{" "}
+          <span className="whitespace-nowrap">Agent spend {fmt.usd(headers.spend)}</span>
         </p>
 
         <div className="mt-4">
@@ -28,23 +28,23 @@ export default function StatementCard() {
             return (
               <div
                 key={w.id}
-                className="grid grid-cols-[minmax(0,1fr)_auto_5.25rem] items-baseline gap-x-3 border-t border-hairline py-3"
+                className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3 border-t border-hairline py-3 sm:grid-cols-[minmax(0,1fr)_auto_5.25rem]"
               >
                 <div>
                   <p className="font-sans text-[15px] leading-tight">{w.name}</p>
-                  <p className="mt-0.5 font-mono text-xs text-ink/55">
+                  <p className="mt-0.5 font-mono text-xs text-ink/60">
                     {fmt.int(w.verified)} of {fmt.int(w.claimed)} verified
                   </p>
                 </div>
                 <span
-                  className={`self-center whitespace-nowrap border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] ${
+                  className={`col-start-1 row-start-2 mt-2 justify-self-start self-center whitespace-nowrap border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] sm:col-start-2 sm:row-start-1 sm:mt-0 ${
                     isExpand ? "border-ledger text-ledger" : "border-ink text-ink"
                   }`}
                 >
                   {w.verdict}
                 </span>
                 <span
-                  className={`text-right font-mono text-sm tabular-nums ${
+                  className={`col-start-2 row-start-1 text-right font-sans text-sm font-semibold tabular-nums tracking-tight sm:col-start-3 ${
                     isExpand ? "text-ledger" : "text-ink"
                   }`}
                 >
@@ -58,7 +58,7 @@ export default function StatementCard() {
 
         <div className="mt-1 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t-2 border-ink pt-3">
           <span className="font-sans text-sm text-ink/70">Decisions on the table</span>
-          <span className="font-sans text-2xl font-semibold tracking-tight text-verdict sm:text-3xl">
+          <span className="ml-auto text-right font-sans text-2xl font-semibold tracking-tight text-verdict sm:text-3xl">
             {fmt.usd(headers.projectedVerdictImpact)}/mo · {pct}% of spend
           </span>
         </div>

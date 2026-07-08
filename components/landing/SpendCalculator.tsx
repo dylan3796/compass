@@ -31,8 +31,11 @@ export default function SpendCalculator({ onGetStatement }: { onGetStatement: ()
           <span className="w-28 shrink-0 text-right font-mono text-lg">{fmt.usd(spend)}</span>
         </span>
       </label>
-      <p className="mt-6 font-serif text-4xl text-verdict sm:text-5xl">
-        {fmt.usd(verdicts)}/mo in verdicts.
+      <p className="mt-6 text-4xl text-verdict sm:text-5xl">
+        <span className="font-sans font-semibold tabular-nums tracking-tight">
+          {fmt.usd(verdicts)}/mo
+        </span>{" "}
+        <span className="font-serif">in verdicts.</span>
       </p>
       <p className="mt-2 max-w-xl text-sm text-ink/70">
         Meridian&rsquo;s verdict rate — {Math.round(RATE * 100)}% of spend — applied to yours.
