@@ -41,12 +41,12 @@ const ACTIONS: Record<string, { button: string; title: string; body: React.React
     body: (
       <div className="space-y-3 text-sm leading-relaxed">
         <p>
-          New-hire accounts verified at $0.42 each vs. $11.90 under the old process, with cycle
-          time down from 2.1 days to 4 minutes and a 100% quality bar — every account active
-          within 48 hours.
+          Employee onboarding verified at $0.42 per new hire vs. $11.90 under the old process,
+          with cycle time down from 2.1 days to 4 minutes and a 100% quality bar — every account
+          active within 48 hours.
         </p>
         <ol className="list-decimal space-y-1 pl-5">
-          <li>Clone the account agent for contractor onboarding — same contract, same quality bar.</li>
+          <li>Clone the onboarding agent for contractor onboarding — same contract, same quality bar.</li>
           <li>Point it at the existing ServiceNow queue; no new integration.</li>
           <li>Causa verifies the clone from its first sync.</li>
         </ol>

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Reveal, Stamp } from "@/components/motion";
-import { fmt, market, workedExamples } from "@/lib/data";
+import { Stamp } from "@/components/motion";
+import { fmt, workedExamples } from "@/lib/data";
 import { VerdictStamp } from "@/components/chips";
 import LeadCapture from "./LeadCapture";
 import SiteFooter from "./SiteFooter";
@@ -31,9 +31,8 @@ export default function LandingPage() {
             Know what your agents actually delivered.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink/80">
-            Causa verifies every result your agents claim — in your own Zendesk, Salesforce, and
-            ServiceNow records — prices what it earned you, and drafts the next move. For the
-            leader who signs the AI invoices.
+            Every result your agents bill for — verified in your own systems, priced in dollars,
+            and closed with a decision. For whoever signs the AI invoices.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <button className="btn-ink" onClick={() => setLeadOpen(true)}>
@@ -55,23 +54,13 @@ export default function LandingPage() {
           <h2 className="max-w-4xl font-serif text-5xl leading-[1.05] sm:text-6xl">
             Every result on the invoice is self-reported.
           </h2>
-          <div className="mt-10 max-w-[60ch] space-y-5 text-[17px] leading-relaxed text-ink/80">
-            <p>
-              Agents now close tickets, set up new hires, and book meetings — and bill you per
-              result. Intercom&rsquo;s Fin charges {fmt.usd(market.finPerResolution, 2)} a
-              resolution; it sold for ${market.finAcquisitionBn}B. But every count on those
-              invoices comes from the seller&rsquo;s own dashboard. The support manager has no
-              reopen count of her own. The CFO can price a rep, a contractor, a seat — not this.
-            </p>
-            <p>
-              Advertising crossed this bridge twenty years ago. When ads went outcome-priced,
-              buyers stopped taking the seller&rsquo;s word for it, and independent measurement
-              became a permanent layer of that economy. Machine labor is the next economy that
-              pays for results. Its record doesn&rsquo;t exist yet.
-            </p>
-          </div>
+          <p className="mt-8 max-w-[54ch] text-lg leading-relaxed text-ink/80">
+            Agents close your tickets, onboard your hires, book your meetings — then bill you per
+            result. Every count comes from the seller&rsquo;s own dashboard. Advertising settled
+            this with independent measurement once it went outcome-priced. Machine labor is next.
+          </p>
           <p className="mt-8 max-w-3xl font-serif text-3xl leading-snug sm:text-4xl">
-            Causa is that record. Built for the payer, funded by the payer, permanently.
+            Causa is that record. Built for the payer, funded by the payer.
           </p>
           <p className="mt-6">
             <Link
@@ -89,37 +78,16 @@ export default function LandingPage() {
           <h2 className="mt-2 max-w-3xl font-serif text-4xl sm:text-5xl">
             Your systems already know the truth.
           </h2>
-          <div className="mt-8 max-w-[60ch] space-y-5 text-[17px] leading-relaxed text-ink/80">
-            <p>
-              A resolved ticket lands in Zendesk. A new hire&rsquo;s account goes live in
-              ServiceNow. An opportunity opens in Salesforce. Causa reads those records —
-              read-only, no SDK, nothing to rip out — and holds every claimed result to two
-              tests: <em>did it hold up</em>, and{" "}
-              <em>would it have happened anyway?</em>{" "}
-              Built or bought, every agent answers to the same bar.
-            </p>
-            <p>
-              In Meridian&rsquo;s June statement, 4,812 claimed results came in. 4,203 held up.
-              3,163 would not have happened without the agents. The gap is money.
-            </p>
-            <p>
-              Not all proof is equal. We grade ours — every verdict carries its evidence grade,
-              A to D, and the path to a stronger one.
-            </p>
-          </div>
-
-          <p className="mt-8 max-w-3xl font-mono text-xs leading-relaxed text-ink/60">
-            ZENDESK · ticket resolved &nbsp;—&nbsp; SERVICENOW · account live &nbsp;—&nbsp;
-            SALESFORCE · opportunity created &nbsp;—&nbsp; STRIPE · payment settled
-            &nbsp;—&nbsp; JIRA · issue closed
+          <p className="mt-8 max-w-[54ch] text-lg leading-relaxed text-ink/80">
+            Causa reads your own records — Zendesk, Salesforce, ServiceNow — read-only, and tests
+            every claim two ways: <em>did it hold up</em>, and{" "}
+            <em>would it have happened anyway?</em> In Meridian&rsquo;s June, 4,812 results were
+            claimed. 3,163 would not have happened without the agents. The gap is money.
           </p>
-
-          <p className="mt-8 max-w-[60ch] text-[17px] leading-relaxed text-ink/80">
-            Don&rsquo;t take the method on faith. The workbench runs it on your own exports, in
-            your browser, in minutes. No signup; no row leaves the tab. Two exports and a join
-            key.
+          <p className="mt-6 max-w-[54ch] text-lg leading-relaxed text-ink/80">
+            Prove it on your own exports — in your browser, in minutes, no signup.
           </p>
-          <p className="mt-6">
+          <p className="mt-4">
             <Link
               href="/workbench"
               className="text-[15px] font-medium underline underline-offset-4 hover:text-ink"
@@ -135,26 +103,16 @@ export default function LandingPage() {
           <h2 className="mt-2 max-w-3xl font-serif text-4xl sm:text-5xl">
             What each result actually earned you.
           </h2>
-          <div className="mt-8 max-w-[60ch] space-y-5 text-[17px] leading-relaxed text-ink/80">
-            <p>
-              Meridian&rsquo;s in-house agent sets up new-hire accounts for{" "}
-              {fmt.usd(workedExamples.workspace.agentCost, 2)} each. The old process cost{" "}
-              {fmt.usd(workedExamples.workspace.oldCost, 2)} and took{" "}
-              {workedExamples.workspace.oldDays} days; the agent takes{" "}
-              {workedExamples.workspace.agentMinutes} minutes. That&rsquo;s the evidence that
-              funds the next agent — no vendor conversation required.
-            </p>
-            <p>
-              The support vendor bills {fmt.usd(workedExamples.support.billed, 2)} a resolution.
-              Checked against a slice of tickets the agent never touches, the fair price is{" "}
-              {fmt.usd(workedExamples.support.fair, 2)}. That case comes drafted, ready to send.
-            </p>
-          </div>
+          <p className="mt-8 max-w-[54ch] text-lg leading-relaxed text-ink/80">
+            Every verified result, priced against the invoice and against the old way. The
+            support vendor bills {fmt.usd(workedExamples.support.billed, 2)} a resolution; the
+            fair price is {fmt.usd(workedExamples.support.fair, 2)} — case drafted, ready to send.
+          </p>
 
           <dl className="mt-8 max-w-lg">
             {(
               [
-                ["New-hire account", workedExamples.workspace.oldCost, workedExamples.workspace.agentCost],
+                ["Employee onboarding", workedExamples.workspace.oldCost, workedExamples.workspace.agentCost],
                 ["Support resolution", workedExamples.support.billed, workedExamples.support.fair],
               ] as const
             ).map(([label, from, to]) => (
@@ -171,9 +129,8 @@ export default function LandingPage() {
             <div className="border-t border-hairline" />
           </dl>
 
-          <p className="mt-8 max-w-[60ch] text-[17px] leading-relaxed text-ink/80">
-            Spend on one side, verified value on the other — cost per real result, by agent and
-            by model. An Agent P&amp;L, finally, in the same language as every other line item.
+          <p className="mt-6 max-w-[54ch] text-lg leading-relaxed text-ink/80">
+            An Agent P&amp;L, in the same language as every other line item.
           </p>
 
           <div className="mt-12">
@@ -191,22 +148,14 @@ export default function LandingPage() {
             Every statement ends in a move.
           </h2>
           <div className="mt-8 grid gap-x-12 gap-y-8 md:grid-cols-[1fr_auto] md:items-start">
-            <div className="max-w-[60ch] space-y-5 text-[17px] leading-relaxed text-ink/80">
-              <p>
-                Not a chart — a drafted decision per workflow: double down on what&rsquo;s
-                earning, reroute work to the cheaper model that passes the same bar, cut what
-                isn&rsquo;t beating its baseline, renegotiate what&rsquo;s overpriced. Evidence
-                attached, dollars projected.
-              </p>
-              <p>
-                June&rsquo;s sharpest call: the sales director&rsquo;s reps swore the
-                meeting-booker was claiming pipeline they had already built. The staged rollout
-                proved them right — meetings from the agent-only slice convert 8%, against 11%
-                without it. Retire the agent slice, keep the assisted playbook, recover{" "}
-                <span className="font-mono text-verdict">{fmt.usd(2900)}/mo</span>. The
-                wind-down is drafted. She clicks send.
-              </p>
-            </div>
+            <p className="max-w-[54ch] text-lg leading-relaxed text-ink/80">
+              Not a chart — a move per agent, evidence attached. June&rsquo;s sharpest call: the
+              SDR agent kept booking meetings the reps say they&rsquo;d have closed anyway. The
+              staged rollout proved it — the agent-only slice converts 8%, against 11% without
+              it. Retire it, recover{" "}
+              <span className="font-mono text-verdict">{fmt.usd(2900)}/mo</span>. The wind-down
+              comes drafted.
+            </p>
             <Stamp className="justify-self-start md:mt-2" rotate={-3}>
               <VerdictStamp verdict="RETIRE" label="RETIRE" size="lg" />
             </Stamp>
@@ -229,11 +178,10 @@ export default function LandingPage() {
           <h2 className="max-w-3xl font-serif text-4xl sm:text-5xl">
             Minutes to proof. Days to your first statement.
           </h2>
-          <p className="mt-6 max-w-[60ch] text-[17px] leading-relaxed text-ink/80">
-            Proof first: drop two exports into the workbench and watch it match work to results
-            in your browser. Minutes, no signup. Then the statement: pilots from $7.5K, credited
-            against your first year. Two exports and a join key — and we tell you what&rsquo;s
-            verifiable with what you&rsquo;ve connected before you pay for anything.
+          <p className="mt-6 max-w-[54ch] text-lg leading-relaxed text-ink/80">
+            Drop two exports into the workbench and watch it match work to results in your
+            browser — no signup. Then the statement: pilots from $7.5K, credited against year
+            one. Two exports and a join key.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <button className="btn-ink" onClick={() => setLeadOpen(true)}>

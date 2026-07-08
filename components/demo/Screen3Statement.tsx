@@ -137,7 +137,7 @@ export default function Screen3Statement({
         </p>
         <p className="w-full font-mono text-[10px] text-ink/60">
           {fmt.usd(impactSplit.recovered)} recovered by repricing, rerouting, and retiring ·{" "}
-          {fmt.usd(impactSplit.expandable)} more if the account agent is cloned
+          {fmt.usd(impactSplit.expandable)} more if the onboarding agent is cloned
         </p>
       </div>
 

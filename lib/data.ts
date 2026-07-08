@@ -60,9 +60,9 @@ export const headers = {
 export const workflows: Workflow[] = [
   {
     id: "support",
-    name: "Support tickets",
+    name: "Customer support tickets",
     origin: "BOUGHT",
-    actor: "Vendor support agent · claude-fable-5 + gpt-5",
+    actor: "AI support agent (vendor) · claude-fable-5 + gpt-5",
     claimed: 3214,
     verified: 2802,
     attributable: 1989,
@@ -93,9 +93,9 @@ export const workflows: Workflow[] = [
   },
   {
     id: "workspace",
-    name: "New-hire accounts",
+    name: "Employee onboarding",
     origin: "BUILT",
-    actor: "In-house account agent",
+    actor: "In-house onboarding agent",
     claimed: 486,
     verified: 486,
     attributable: 486,
@@ -111,11 +111,11 @@ export const workflows: Workflow[] = [
     vsBaseline: "$0.42 vs. $11.90 under the old process",
     sparkline: [0.47, 0.45, 0.44, 0.43, 0.42],
     evidence: [
-      "$0.42/account vs. $11.90 under the old process; 2.1 days → 4 minutes. 100% quality bar.",
+      "$0.42 per new hire vs. $11.90 under the old process; 2.1 days → 4 minutes. 100% quality bar.",
       "Cloning the agent for contractor onboarding ≈ $2,140/mo additional savings.",
     ],
     contract: {
-      event: "New-hire account live in ServiceNow",
+      event: "New-hire access provisioned in ServiceNow",
       qualityBar: "User active within 48 hours",
       counterfactual: "12-month pre-agent baseline, matched",
     },

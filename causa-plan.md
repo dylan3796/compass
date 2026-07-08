@@ -257,6 +257,13 @@ Founder review: "Does the landing convey the benefit, or just spew numbers and t
 6. **Name the villain in the payer's words, and cite the analog honestly.** §1 leads "Every result on the invoice is self-reported." The ad-verification precedent is used qualitatively (independent measurement became a permanent layer) — no precise borrowed stat unless it can be sourced to primary and lives in `lib/data.ts`.
 7. **Worked prices are data, not literals.** The $11.90→$0.42 and $1.50→$1.06 lines read from a new `workedExamples` block in `data.ts`, asserted against the workspace row and the dispute row so they reconcile like every other number.
 
+## ADDENDUM 9 — Real examples, less text (July 2026)
+
+Founder review of the statement-card landing. Where these conflict with anything above, these win:
+
+1. **Examples read as real deployed agents, in real nomenclature.** Meridian's four workflows are the most-deployed, finance/ops-recognizable agent categories of 2026: **Customer support tickets** (BOUGHT — the Fin/Decagon class), **Employee onboarding** (BUILT — HR/IT provisioning; replaces the earlier "New-hire accounts" wording the founder flagged), **Meeting notes → Jira tickets** (BUILT — the Granola/Circleback class), **Sales meetings booked** (HYBRID — the AI-SDR class). Names live in `lib/data.ts`; the Part 7 math and systems of record are unchanged.
+2. **The landing is not the product; it carries far less text.** Body copy on the landing is cut to roughly one short paragraph per section — the statement card, the red figures, the calculator, and the stamp do the selling. Exhaustive explanation belongs in /demo and /company, never on the landing. Prose that merely restates a number the card already shows is a defect.
+
 ## PART 8 — DEFINITION OF DONE
 
 1. `npm run build` clean; data assertions pass; deploys to Vercel; light mode only.
